@@ -69,6 +69,18 @@ export default function ExpCalculatorScreen() {
     };
   };
 
+  const calcularPacksRealizados = (resultado: TarefaResultado) => {
+    if (tarefaSelecionada === "The Water") {
+      const coposNum = parseInt(coposAgua) || 0;
+      return coposNum * resultado.packs;
+    } else {
+      const [horas, minutos] = tempo.split(":").map(Number);
+      const totalMinutos = (horas || 0) * 60 + (minutos || 0);
+      const packsTempo = Math.floor(totalMinutos / 10); // Divide o tempo em "packs" de 10 minutos
+      return packsTempo * resultado.packs;
+    }
+  };
+
   const renderInputAdicional = () => {
     if (tarefaSelecionada === "Todos") {
       return null;
@@ -143,6 +155,7 @@ export default function ExpCalculatorScreen() {
         </Picker>
 
         {renderInputAdicional()}
+ 
       </View>
 
       <ScrollView style={styles.resultadosContainer}>
@@ -151,10 +164,13 @@ export default function ExpCalculatorScreen() {
             <ThemedText style={styles.tarefaNome}>{resultado.nome}</ThemedText>
             <ThemedText>Nível: {resultado.nivel}</ThemedText>
             <ThemedText>
-              Número de packs para sortear: {resultado.packs}
+              Packs por execução: {resultado.packs}
             </ThemedText>
             <ThemedText>
               EXP total a ser sorteada: {resultado.expTotal.toLocaleString()}
+            </ThemedText>
+            <ThemedText>
+              Packs pelo que realizou: {calcularPacksRealizados(resultado)}
             </ThemedText>
           </ThemedView>
         ))}
@@ -162,6 +178,7 @@ export default function ExpCalculatorScreen() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
