@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TextInput, ScrollView } from "react-native";
+import { StyleSheet, View, TextInput, ScrollView, Button, Text } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Picker } from "@react-native-picker/picker";
@@ -17,6 +17,8 @@ export default function ExpCalculatorScreen() {
   const [resultados, setResultados] = useState<TarefaResultado[]>([]);
   const [tempo, setTempo] = useState("");
   const [coposAgua, setCoposAgua] = useState("");
+  const [sorteioRealizado, setSorteioRealizado] = useState(false);
+  const [resultadoSorteio, setResultadoSorteio] = useState<{ totalGanhadores: number, numerosGanhadores: number[] }>({ totalGanhadores: 0, numerosGanhadores: [] });
 
   const calcularEXP = (nivelInput: string, tarefa: string) => {
     const nivelNum = parseInt(nivelInput);
@@ -81,6 +83,46 @@ export default function ExpCalculatorScreen() {
     }
   };
 
+  const realizarSorteioFunc = (quantidade: number) => {
+    const numerosSorteados: number[] = [];
+    let ganhadores: number[] = [];
+    
+    for (let i = 0; i < quantidade; i++) {
+      const numeroSorteado = Math.floor(Math.random() * 100) + 1; // Sorteia entre 1 e 100
+      numerosSorteados.push(numeroSorteado);
+      if (numeroSorteado >= 1 && numeroSorteado <= 50) {
+        ganhadores.push(numeroSorteado); // Os ganhadores estão entre 1 e 50
+      }
+    }
+
+    return {
+      totalGanhadores: ganhadores.length,
+      numerosGanhadores: numerosSorteados
+    };
+  };
+
+  const handleSorteio = () => {
+    const packsTotal = resultados.reduce((acc, resultado) => acc + calcularPacksRealizados(resultado), 0);
+    const sorteio = realizarSorteioFunc(packsTotal);
+    setResultadoSorteio(sorteio);
+    setSorteioRealizado(true);
+  };
+
+  const renderNumerosSorteio = () => {
+    return (
+      <View style={styles.numerosContainer}>
+        {resultadoSorteio.numerosGanhadores.map((numero, index) => {
+          const isGanhador = numero >= 1 && numero <= 50;
+          return (
+            <View key={index} style={[styles.bolinha, isGanhador ? styles.verde : styles.vermelho]}>
+              <Text style={styles.numeroTexto}>{numero}</Text>
+            </View>
+          );
+        })}
+      </View>
+    );
+  };
+
   const renderInputAdicional = () => {
     if (tarefaSelecionada === "Todos") {
       return null;
@@ -104,7 +146,6 @@ export default function ExpCalculatorScreen() {
         style={styles.input}
         value={tempo}
         onChangeText={(text) => {
-          // Permite apenas o formato 00:00
           if (text.length <= 5) {
             const cleaned = text.replace(/[^0-9:]/g, '');
             if (text.length === 2 && tempo.length === 1) {
@@ -155,30 +196,48 @@ export default function ExpCalculatorScreen() {
         </Picker>
 
         {renderInputAdicional()}
- 
+
+        {/* Botão para realizar o sorteio */}
+        <Button
+          title="Realizar Sorteio"
+          onPress={handleSorteio}
+        />
       </View>
 
       <ScrollView style={styles.resultadosContainer}>
-        {resultados.map((resultado, index) => (
-          <ThemedView key={index} style={styles.tarefaCard}>
-            <ThemedText style={styles.tarefaNome}>{resultado.nome}</ThemedText>
-            <ThemedText>Nível: {resultado.nivel}</ThemedText>
+        {resultados.map((resultado, index) => {
+          const packsRealizados = calcularPacksRealizados(resultado);
+
+          return (
+            <ThemedView key={index} style={styles.tarefaCard}>
+              <ThemedText style={styles.tarefaNome}>{resultado.nome}</ThemedText>
+              <ThemedText>Nível: {resultado.nivel}</ThemedText>
+              <ThemedText>
+                Packs por execução: {resultado.packs}
+              </ThemedText>
+              <ThemedText>
+                EXP total a ser sorteada: {resultado.expTotal.toLocaleString()}
+              </ThemedText>
+              <ThemedText>
+                Packs pelo que realizou: {packsRealizados}
+              </ThemedText>
+            </ThemedView>
+          );
+        })}
+
+        {/* Mostrar o resultado do sorteio apenas após a realização */}
+        {sorteioRealizado && (
+          <View>
             <ThemedText>
-              Packs por execução: {resultado.packs}
+              Ganhadores: {resultadoSorteio.totalGanhadores}
             </ThemedText>
-            <ThemedText>
-              EXP total a ser sorteada: {resultado.expTotal.toLocaleString()}
-            </ThemedText>
-            <ThemedText>
-              Packs pelo que realizou: {calcularPacksRealizados(resultado)}
-            </ThemedText>
-          </ThemedView>
-        ))}
+            {renderNumerosSorteio()}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -196,35 +255,61 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     borderWidth: 1,
+    color: "#fff",
     borderColor: "#ccc",
     borderRadius: 8,
     paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     marginVertical: 8,
   },
   picker: {
     height: 50,
+    color: '#fff',
     marginVertical: 20,
     backgroundColor: "#fff",
-    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
-  },
-  resultadosContainer: {
-    flex: 1,
   },
   tarefaCard: {
+    marginBottom: 20,
     padding: 16,
+    backgroundColor: "#000", // Fundo branco nos cards
     borderRadius: 8,
-    marginBottom: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "#ffff", // Borda leve para os cards
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   tarefaNome: {
     fontSize: 18,
-    fontWeight: "bold",
     marginBottom: 8,
+    fontWeight: 700,
+    color: "#fff", // Texto escuro nos títulos das tarefas
+  },
+  resultadosContainer: {
+    marginTop: 20,
+  },
+  numerosContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginVertical: 10,
+  },
+  bolinha: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 5,
+  },
+  verde: {
+    backgroundColor: "green",
+  },
+  vermelho: {
+    backgroundColor: "red",
+  },
+  numeroTexto: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
+
