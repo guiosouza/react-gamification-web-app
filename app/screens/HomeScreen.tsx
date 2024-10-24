@@ -1,124 +1,108 @@
-import { Image, StyleSheet, Platform, Button, FlatList, TouchableOpacity, View } from 'react-native';
-import { useState, useEffect } from 'react';
-import { HelloWave } from '@/components/HelloWave';
+import React, { useState } from 'react';
+import { StyleSheet, View, TextInput, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import * as SQLite from 'expo-sqlite';
+import {Picker} from '@react-native-picker/picker';
 
-interface Item {
-  id: number;
-  text: string;
-  created_at: string;
+
+interface TarefaResultado {
+  nome: string;
+  nivel: number;
+  packs: number;
+  expTotal: number;
 }
 
-export default function HomeScreen() {
-  const [message, setMessage] = useState<string>('');
-  const [items, setItems] = useState<Item[]>([]);
+export default function ExpCalculatorScreen() {
+  const [nivel, setNivel] = useState('');
+  const [tarefaSelecionada, setTarefaSelecionada] = useState('The Water');
+  const [resultados, setResultados] = useState<TarefaResultado[]>([]);
   
-  useEffect(() => {
-    initDatabase();
-    loadItems();
-  }, []);
-
-  const initDatabase = async () => {
-    try {
-      const db = await SQLite.openDatabaseAsync('testdb.db');
-      await db.execAsync(`
-        CREATE TABLE IF NOT EXISTS items (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          text TEXT NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
-    } catch (error) {
-      setMessage('Erro ao inicializar banco: ' + error);
+  const calcularEXP = (nivelInput: string, tarefa: string) => {
+    const nivelNum = parseInt(nivelInput);
+    const expPorPack = 99998;
+    
+    if (!nivelInput.trim()) {
+      setResultados([]);
+      return;
     }
-  };
 
-  const loadItems = async () => {
-    try {
-      const db = await SQLite.openDatabaseAsync('testdb.db');
-      const rows = await db.getAllAsync<Item>('SELECT * FROM items ORDER BY id DESC');
-      setItems(rows);
-      setMessage('');
-    } catch (error) {
-      setMessage('Erro ao carregar itens: ' + error);
+    if (isNaN(nivelNum) || nivelNum < 0) {
+      alert("Por favor, digite um nível válido (número inteiro não negativo).");
+      return;
     }
-  };
 
-  const addItem = async () => {
-    try {
-      const db = await SQLite.openDatabaseAsync('testdb.db');
-      const testText = 'Teste ' + new Date().toISOString();
-      await db.runAsync(
-        'INSERT INTO items (text) VALUES (?)',
-        testText
-      );
-      setMessage('Item inserido com sucesso');
-      loadItems();
-    } catch (error) {
-      setMessage('Erro ao inserir: ' + error);
+    let packs = 1;
+    if (tarefa === "The Grind") {
+      if (nivelNum < 41) {
+        packs = 1;
+      } else {
+        packs = Math.floor(nivelNum / 41);
+      }
+    } else if (nivelNum >= 14) {
+      packs = 1 * Math.floor(nivelNum / 14);
     }
-  };
-
-  const deleteItem = async (id: number) => {
-    try {
-      const db = await SQLite.openDatabaseAsync('testdb.db');
-      const result = await db.runAsync(
-        'DELETE FROM items WHERE id = ?',
-        id
-      );
-      setMessage(`Item ${id} deletado`);
-      loadItems();
-    } catch (error) {
-      setMessage('Erro ao deletar: ' + error);
+    if (nivelNum >= 14 && tarefa === "Alimentação") {
+      packs = 9 * Math.floor(nivelNum / 14);
     }
+
+    const expTotal = packs * expPorPack;
+
+    const resultado = {
+      nome: tarefa,
+      nivel: nivelNum,
+      packs,
+      expTotal,
+    };
+
+    setResultados([resultado]);
   };
-
-  const renderHeader = () => (
-    <View>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Teste SQLite!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-
-      <ThemedView style={styles.stepContainer}>
-        <Button title="Adicionar Item" onPress={addItem} />
-        <ThemedText style={styles.messageText}>{message}</ThemedText>
-      </ThemedView>
-    </View>
-  );
-
-  const renderItem = ({ item }: { item: Item }) => (
-    <ThemedView style={styles.itemContainer}>
-      <ThemedText>ID: {item.id}</ThemedText>
-      <ThemedText>{item.text}</ThemedText>
-      <ThemedText style={styles.dateText}>
-        {new Date(item.created_at).toLocaleString()}
-      </ThemedText>
-      <TouchableOpacity 
-        style={styles.deleteButton}
-        onPress={() => deleteItem(item.id)}
-      >
-        <ThemedText style={styles.deleteButtonText}>Deletar</ThemedText>
-      </TouchableOpacity>
-    </ThemedView>
-  );
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('@/assets/images/partial-react-logo.png')}
-        style={styles.reactLogo}
-      />
-      
-      <FlatList
-        data={items}
-        renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
-        ListHeaderComponent={renderHeader}
-        contentContainerStyle={styles.listContent}
-      />
+      <View style={styles.header}>
+        <ThemedText style={styles.title}>Calculadora de EXP</ThemedText>
+        <TextInput
+          style={styles.input}
+          value={nivel}
+          onChangeText={(text) => {
+            setNivel(text);
+            calcularEXP(text, tarefaSelecionada);
+          }}
+          placeholder="Digite seu nível"
+          keyboardType="numeric"
+          placeholderTextColor="#666"
+        />
+
+        {/* Picker para selecionar a tarefa */}
+        <Picker
+          selectedValue={tarefaSelecionada}
+          style={styles.picker}
+          onValueChange={(itemValue) => {
+            setTarefaSelecionada(itemValue);
+            calcularEXP(nivel, itemValue);  // Recalcular com a tarefa selecionada
+          }}
+        >
+          <Picker.Item label="The Water" value="The Water" />
+          <Picker.Item label="Exercícios" value="Exercícios" />
+          <Picker.Item label="Alimentação" value="Alimentação" />
+          <Picker.Item label="The Grind" value="The Grind" />
+        </Picker>
+      </View>
+
+      <ScrollView style={styles.resultadosContainer}>
+        {resultados.map((resultado, index) => (
+          <ThemedView key={index} style={styles.tarefaCard}>
+            <ThemedText style={styles.tarefaNome}>{resultado.nome}</ThemedText>
+            <ThemedText>Nível: {resultado.nivel}</ThemedText>
+            <ThemedText>
+              Número de packs para sortear: {resultado.packs}
+            </ThemedText>
+            <ThemedText>
+              EXP total a ser sorteada: {resultado.expTotal.toLocaleString()}
+            </ThemedText>
+          </ThemedView>
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -126,55 +110,47 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#A1CEDC',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 16,
-    paddingTop: 60, // Espaço para o header
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
     padding: 16,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    top: 0,
-    left: 0,
-    position: 'absolute',
+  header: {
+    marginBottom: 20,
   },
-  itemContainer: {
-    padding: 10,
-    marginVertical: 5,
-    marginHorizontal: 16,
-    borderRadius: 5,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  input: {
+    height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
-    backgroundColor: 'white',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    backgroundColor: '#fff',
   },
-  deleteButton: {
-    backgroundColor: '#ff4444',
-    padding: 8,
-    borderRadius: 5,
-    marginTop: 5,
-    alignItems: 'center',
+  picker: {
+    height: 50,
+    marginVertical: 20,
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
   },
-  deleteButtonText: {
-    color: 'white',
+  resultadosContainer: {
+    flex: 1,
   },
-  dateText: {
-    fontSize: 12,
-    color: '#666',
+  tarefaCard: {
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-  messageText: {
-    color: '#666',
-    textAlign: 'center',
-  },
-  listContent: {
-    paddingBottom: 20,
+  tarefaNome: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
 });
