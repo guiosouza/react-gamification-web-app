@@ -1,8 +1,16 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TextInput, ScrollView, Button, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  ScrollView,
+  Text,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Picker } from "@react-native-picker/picker";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 interface TarefaResultado {
   nome: string;
@@ -11,18 +19,22 @@ interface TarefaResultado {
   expTotal: number;
 }
 
-export default function ExpCalculatorScreen() {
+export default function ExpCalculator() {
   const [nivel, setNivel] = useState("");
   const [tarefaSelecionada, setTarefaSelecionada] = useState("Todos");
   const [resultados, setResultados] = useState<TarefaResultado[]>([]);
   const [tempo, setTempo] = useState("");
   const [coposAgua, setCoposAgua] = useState("");
+  const [alimentacao, setAlimentacao] = useState("")
   const [sorteioRealizado, setSorteioRealizado] = useState(false);
-  const [resultadoSorteio, setResultadoSorteio] = useState<{ totalGanhadores: number, numerosGanhadores: number[] }>({ totalGanhadores: 0, numerosGanhadores: [] });
+  const [resultadoSorteio, setResultadoSorteio] = useState<{
+    totalGanhadores: number;
+    numerosGanhadores: number[];
+  }>({ totalGanhadores: 0, numerosGanhadores: [] });
 
   const calcularEXP = (nivelInput: string, tarefa: string) => {
     const nivelNum = parseInt(nivelInput);
-    
+
     const tarefas = ["The Water", "Exercícios", "Alimentação", "The Grind"];
 
     if (!nivelInput.trim()) {
@@ -75,7 +87,11 @@ export default function ExpCalculatorScreen() {
     if (tarefaSelecionada === "The Water") {
       const coposNum = parseInt(coposAgua) || 0;
       return coposNum * resultado.packs;
-    } else {
+    } else if(tarefaSelecionada === "Alimentação") {
+      const alimentacaoNum = parseInt(alimentacao) || 0;
+      return alimentacaoNum * resultado.packs;
+    }
+    else {
       const [horas, minutos] = tempo.split(":").map(Number);
       const totalMinutos = (horas || 0) * 60 + (minutos || 0);
       const packsTempo = Math.floor(totalMinutos / 10); // Divide o tempo em "packs" de 10 minutos
@@ -86,7 +102,7 @@ export default function ExpCalculatorScreen() {
   const realizarSorteioFunc = (quantidade: number) => {
     const numerosSorteados: number[] = [];
     let ganhadores: number[] = [];
-    
+
     for (let i = 0; i < quantidade; i++) {
       const numeroSorteado = Math.floor(Math.random() * 100) + 1; // Sorteia entre 1 e 100
       numerosSorteados.push(numeroSorteado);
@@ -97,12 +113,15 @@ export default function ExpCalculatorScreen() {
 
     return {
       totalGanhadores: ganhadores.length,
-      numerosGanhadores: numerosSorteados
+      numerosGanhadores: numerosSorteados,
     };
   };
 
   const handleSorteio = () => {
-    const packsTotal = resultados.reduce((acc, resultado) => acc + calcularPacksRealizados(resultado), 0);
+    const packsTotal = resultados.reduce(
+      (acc, resultado) => acc + calcularPacksRealizados(resultado),
+      0
+    );
     const sorteio = realizarSorteioFunc(packsTotal);
     setResultadoSorteio(sorteio);
     setSorteioRealizado(true);
@@ -114,7 +133,13 @@ export default function ExpCalculatorScreen() {
         {resultadoSorteio.numerosGanhadores.map((numero, index) => {
           const isGanhador = numero >= 1 && numero <= 50;
           return (
-            <View key={index} style={[styles.bolinha, isGanhador ? styles.verde : styles.vermelho]}>
+            <View
+              key={index}
+              style={[
+                styles.bolinha,
+                isGanhador ? styles.verde : styles.vermelho,
+              ]}
+            >
               <Text style={styles.numeroTexto}>{numero}</Text>
             </View>
           );
@@ -141,15 +166,28 @@ export default function ExpCalculatorScreen() {
       );
     }
 
+    if (tarefaSelecionada === "Alimentação") {
+      return (
+        <TextInput
+          style={styles.input}
+          value={alimentacao}
+          onChangeText={setAlimentacao}
+          placeholder="Alimentação"
+          keyboardType="numeric"
+          placeholderTextColor="#666"
+        />
+      );
+    }
+
     return (
       <TextInput
         style={styles.input}
         value={tempo}
         onChangeText={(text) => {
           if (text.length <= 5) {
-            const cleaned = text.replace(/[^0-9:]/g, '');
+            const cleaned = text.replace(/[^0-9:]/g, "");
             if (text.length === 2 && tempo.length === 1) {
-              setTempo(cleaned + ':');
+              setTempo(cleaned + ":");
             } else {
               setTempo(cleaned);
             }
@@ -163,83 +201,101 @@ export default function ExpCalculatorScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <ThemedText style={styles.title}>Calculadora de EXP</ThemedText>
-        <TextInput
-          style={styles.input}
-          value={nivel}
-          onChangeText={(text) => {
-            setNivel(text);
-            calcularEXP(text, tarefaSelecionada);
-          }}
-          placeholder="Digite seu nível"
-          keyboardType="numeric"
-          placeholderTextColor="#666"
-        />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <ThemedText style={styles.title}>Calculadora de EXP</ThemedText>
+          <TextInput
+            style={styles.input}
+            value={nivel}
+            onChangeText={(text) => {
+              setNivel(text);
+              calcularEXP(text, tarefaSelecionada);
+            }}
+            placeholder="Digite seu nível"
+            keyboardType="numeric"
+            placeholderTextColor="#666"
+          />
 
-        <Picker
-          selectedValue={tarefaSelecionada}
-          style={styles.picker}
-          onValueChange={(itemValue) => {
-            setTarefaSelecionada(itemValue);
-            setTempo("");
-            setCoposAgua("");
-            calcularEXP(nivel, itemValue);
-          }}
-        >
-          <Picker.Item label="Todos" value="Todos" />
-          <Picker.Item label="The Water" value="The Water" />
-          <Picker.Item label="Exercícios" value="Exercícios" />
-          <Picker.Item label="Alimentação" value="Alimentação" />
-          <Picker.Item label="The Grind" value="The Grind" />
-        </Picker>
+          <Picker
+            selectedValue={tarefaSelecionada}
+            style={styles.picker}
+            onValueChange={(itemValue) => {
+              setTarefaSelecionada(itemValue);
+              setTempo("");
+              setCoposAgua("");
+              calcularEXP(nivel, itemValue);
+            }}
+          >
+            <Picker.Item label="Todos" value="Todos" />
+            <Picker.Item label="The Water" value="The Water" />
+            <Picker.Item label="Exercícios" value="Exercícios" />
+            <Picker.Item label="Alimentação" value="Alimentação" />
+            <Picker.Item label="The Grind" value="The Grind" />
+          </Picker>
 
-        {renderInputAdicional()}
+          {renderInputAdicional()}
 
-        {/* Botão para realizar o sorteio */}
-        <Button
-          title="Realizar Sorteio"
-          onPress={handleSorteio}
-        />
+          {/* Botão para realizar o sorteio */}
+          <TouchableOpacity onPress={handleSorteio} style={styles.botaoSorteio}>
+            <Text style={styles.textoBotao}>SORTEAR EXP</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView style={styles.resultadosContainer}>
+          {resultados.map((resultado, index) => {
+            const packsRealizados = calcularPacksRealizados(resultado);
+
+            return (
+              <ThemedView key={index} style={styles.tarefaCard}>
+                <ThemedText style={styles.tarefaNome}>
+                  {resultado.nome}
+                </ThemedText>
+                <ThemedText>Nível: {resultado.nivel}</ThemedText>
+                <ThemedText>Packs por execução: {resultado.packs}</ThemedText>
+                <ThemedText>
+                  EXP total a ser sorteada:{" "}
+                  {resultado.expTotal.toLocaleString()}
+                </ThemedText>
+                <ThemedText>
+                  Packs pelo que realizou: {packsRealizados}
+                </ThemedText>
+              </ThemedView>
+            );
+          })}
+
+          {/* Mostrar o resultado do sorteio apenas após a realização */}
+          {sorteioRealizado && (
+            <View>
+              <ThemedText>
+                Ganhadores: {resultadoSorteio.totalGanhadores}
+              </ThemedText>
+              {renderNumerosSorteio()}
+            </View>
+          )}
+        </ScrollView>
       </View>
-
-      <ScrollView style={styles.resultadosContainer}>
-        {resultados.map((resultado, index) => {
-          const packsRealizados = calcularPacksRealizados(resultado);
-
-          return (
-            <ThemedView key={index} style={styles.tarefaCard}>
-              <ThemedText style={styles.tarefaNome}>{resultado.nome}</ThemedText>
-              <ThemedText>Nível: {resultado.nivel}</ThemedText>
-              <ThemedText>
-                Packs por execução: {resultado.packs}
-              </ThemedText>
-              <ThemedText>
-                EXP total a ser sorteada: {resultado.expTotal.toLocaleString()}
-              </ThemedText>
-              <ThemedText>
-                Packs pelo que realizou: {packsRealizados}
-              </ThemedText>
-            </ThemedView>
-          );
-        })}
-
-        {/* Mostrar o resultado do sorteio apenas após a realização */}
-        {sorteioRealizado && (
-          <View>
-            <ThemedText>
-              Ganhadores: {resultadoSorteio.totalGanhadores}
-            </ThemedText>
-            {renderNumerosSorteio()}
-          </View>
-        )}
-      </ScrollView>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
+  botaoSorteio: {
+    backgroundColor: "#4CAF50", 
+    paddingVertical: 12, 
+    paddingHorizontal: 20, 
+    alignItems: "center", 
+    justifyContent: "center",
+    marginVertical: 10, 
+    fontWeight: "bold",
+    height: 60
+  },
+  textoBotao: {
+    color: "#FFFFFF", 
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  
   container: {
     flex: 1,
     padding: 16,
@@ -253,11 +309,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    height: 50,
+    height: 60,
     borderWidth: 1,
     color: "#fff",
     borderColor: "#ccc",
-    borderRadius: 8,
     paddingHorizontal: 16,
     fontSize: 16,
     backgroundColor: "#000",
@@ -265,7 +320,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    color: '#fff',
+    color: "#000",
     marginVertical: 20,
     backgroundColor: "#fff",
     borderWidth: 1,
@@ -275,7 +330,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 16,
     backgroundColor: "#000", // Fundo branco nos cards
-    borderRadius: 8,
     borderColor: "#ffff", // Borda leve para os cards
     borderWidth: 1,
   },
@@ -312,4 +366,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-

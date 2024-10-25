@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "gamification-app",
+    "name": "Mother Base",
     "slug": "gamification-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.guiosouza.gamificationapp"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +32,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "44d6d21f-8fae-467b-8dd8-7ddb7ba36ab5"
+      }
     }
   }
 }
