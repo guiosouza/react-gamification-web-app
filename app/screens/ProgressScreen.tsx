@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-const startDate = new Date("2024-10-06T00:00:00");
-const endDate = new Date("2025-02-06T00:00:00");
+const startDate = new Date("2024-11-17T00:00:00");
+const endDate = new Date("2025-03-18T00:00:00");
 
 // Lista de marcos (dias após a data inicial)
 const milestones = [7, 12, 19, 25, 32, 70, 90, 121]; // Em dias
