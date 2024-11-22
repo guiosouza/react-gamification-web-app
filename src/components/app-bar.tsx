@@ -134,7 +134,7 @@ function ResponsiveAppBar() {
               <Avatar alt="Gui" src="/static/images/avatar/2.jpg" />
             </IconButton>
           </Box>
-        </Toolbar>
+        </Toolbar>  
       </Container>
     </AppBar>
   );
