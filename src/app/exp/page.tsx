@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import { Autocomplete, TextField, Button } from "@mui/material";
 import TaskCard from "@/components/task-card";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { Dayjs } from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 interface TaskOption {
   label: string;
@@ -21,6 +25,7 @@ interface TaskInput {
 
 const options: TaskOption[] = [
   { label: "Todas" },
+  { label: "Dias de NF" },
   { label: "The Grind" },
   { label: "The Water" },
   { label: "The Exercise" },
@@ -32,17 +37,29 @@ export default function Exp() {
   const [taskInput, setTaskInput] = useState<TaskInput>({});
   const [drawResults, setDrawResults] = useState<TaskInfo | null>(null);
   const [level, setLevel] = useState<string>("");
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
 
   useEffect(() => {
     const savedLevel = localStorage.getItem("userLevel");
+    const savedStartDate = localStorage.getItem("startDate");
+    
     if (savedLevel) {
       setLevel(savedLevel);
+    }
+    if (savedStartDate) {
+      setStartDate(dayjs(savedStartDate));
     }
   }, []);
 
   const handleLevelChange = (newLevel: string) => {
     setLevel(newLevel);
     localStorage.setItem("userLevel", newLevel);
+  };
+
+  const calculateDaysSinceStart = (startDate: Dayjs | null): number => {
+    if (!startDate) return 0;
+    const today = dayjs();
+    return today.diff(startDate, 'day');
   };
 
   const calculatePacksByTask = (taskName: string, level: string): number => {
@@ -60,13 +77,28 @@ export default function Exp() {
         return baseMultiplier;
       case "The Water":
         return baseMultiplier;
+      case "Dias de NF": {
+        const daysPassed = calculateDaysSinceStart(startDate);
+        return daysPassed * 228;
+      }
       default:
         return 0;
     }
   };
 
+  const handleStartDateChange = (newValue: Dayjs | null) => {
+    setStartDate(newValue);
+    if (newValue) {
+      localStorage.setItem("startDate", newValue.toISOString());
+    }
+  };
+
   const calculateTotalPacks = (): number => {
     const basePacks = calculatePacksByTask(selectedTask.label, level);
+    
+    if (selectedTask.label === "Dias de NF") {
+      return basePacks;
+    }
 
     if (
       selectedTask.label === "The Water" ||
@@ -171,6 +203,18 @@ export default function Exp() {
           renderInput={(params) => <TextField {...params} label="Task" />}
         />
       </div>
+
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+        <div className="generic-container">
+          <DatePicker
+            sx={{ width: "100%" }}
+            label="Data da queda"
+            value={startDate}
+            onChange={handleStartDateChange}
+            format="DD/MM/YYYY"
+          />
+        </div>
+      </LocalizationProvider>
 
       {selectedTask.label !== "Todas" && renderTaskInput()}
 
