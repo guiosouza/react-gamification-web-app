@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Autocomplete, TextField, Button } from "@mui/material";
 import TaskCard from "@/components/task-card";
-import { Autocomplete, TextField } from "@mui/material";
 
 interface TaskOption {
   label: string;
@@ -11,6 +11,12 @@ interface TaskOption {
 interface TaskInfo {
   task: string;
   packs: number;
+  wonPacks: number;
+}
+
+interface TaskInput {
+  quantity?: number;
+  time?: string;
 }
 
 const options: TaskOption[] = [
@@ -22,8 +28,22 @@ const options: TaskOption[] = [
 ];
 
 export default function Exp() {
-  const [level, setLevel] = useState<string>("");
   const [selectedTask, setSelectedTask] = useState<TaskOption>(options[0]);
+  const [taskInput, setTaskInput] = useState<TaskInput>({});
+  const [drawResults, setDrawResults] = useState<TaskInfo | null>(null);
+  const [level, setLevel] = useState<string>("");
+
+  useEffect(() => {
+    const savedLevel = localStorage.getItem('userLevel');
+    if (savedLevel) {
+      setLevel(savedLevel);
+    }
+  }, []);
+
+  const handleLevelChange = (newLevel: string) => {
+    setLevel(newLevel);
+    localStorage.setItem("userLevel", newLevel);
+  };
 
   const calculatePacksByTask = (taskName: string, level: string): number => {
     const levelNumber = Number(level);
@@ -45,13 +65,84 @@ export default function Exp() {
     }
   };
 
-  const calculateAllPacks = (level: string): TaskInfo[] => {
-    if (!level) return [];
+  const calculateTotalPacks = (): number => {
+    const basePacks = calculatePacksByTask(selectedTask.label, level);
 
-    return options.slice(1).map((option) => ({
-      task: option.label,
-      packs: calculatePacksByTask(option.label, level),
-    }));
+    if (
+      selectedTask.label === "The Water" ||
+      selectedTask.label === "The Nutrition"
+    ) {
+      return basePacks * (taskInput.quantity || 0);
+    }
+
+    if (
+      selectedTask.label === "The Exercise" ||
+      selectedTask.label === "The Grind"
+    ) {
+      if (!taskInput.time) return 0;
+      const [hours, minutes] = taskInput.time.split(":").map(Number);
+      const totalMinutes = hours * 60 + minutes;
+      return basePacks * Math.floor(totalMinutes / 10);
+    }
+
+    return 0;
+  };
+
+  const drawPacks = () => {
+    const totalPacks = calculateTotalPacks();
+    let wonPacks = 0;
+
+    for (let i = 0; i < totalPacks; i++) {
+      if (Math.random() < 0.5) {
+        // 50% chance
+        wonPacks++;
+      }
+    }
+
+    setDrawResults({
+      task: selectedTask.label,
+      packs: totalPacks,
+      wonPacks,
+    });
+  };
+
+  const renderTaskInput = () => {
+    if (
+      selectedTask.label === "The Water" ||
+      selectedTask.label === "The Nutrition"
+    ) {
+      return (
+        <TextField
+          type="number"
+          label={
+            selectedTask.label === "The Water"
+              ? "Quantidade de copos"
+              : "Vezes que se alimentou"
+          }
+          value={taskInput.quantity || ""}
+          onChange={(e) => setTaskInput({ quantity: Number(e.target.value) })}
+          sx={{ width: "100%", marginY: 2 }}
+        />
+      );
+    }
+
+    if (
+      selectedTask.label === "The Exercise" ||
+      selectedTask.label === "The Grind"
+    ) {
+      return (
+        <TextField
+          type="time"
+          label="Tempo de execução"
+          value={taskInput.time || ""}
+          onChange={(e) => setTaskInput({ time: e.target.value })}
+          sx={{ width: "100%", marginY: 2 }}
+          InputLabelProps={{ shrink: true }}
+        />
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -62,7 +153,7 @@ export default function Exp() {
           label="Level"
           type="number"
           value={level}
-          onChange={(e) => setLevel(e.target.value)}
+          onChange={(e) => handleLevelChange(e.target.value)}
           sx={{ width: "100%" }}
         />
       </div>
@@ -71,29 +162,46 @@ export default function Exp() {
           disablePortal
           options={options}
           value={selectedTask}
-          onChange={(_, newValue: TaskOption | null) =>
-            setSelectedTask(newValue || options[0])
-          }
+          onChange={(_, newValue: TaskOption | null) => {
+            setSelectedTask(newValue || options[0]);
+            setTaskInput({});
+            setDrawResults(null);
+          }}
           sx={{ width: "100%" }}
           renderInput={(params) => <TextField {...params} label="Task" />}
         />
       </div>
 
+      {selectedTask.label !== "Todas" && renderTaskInput()}
+
+      {selectedTask.label !== "Todas" && (
+        <Button
+          variant="contained"
+          onClick={drawPacks}
+          sx={{ width: "100%", marginY: 2 }}
+        >
+          Sortear
+        </Button>
+      )}
+
       <div className="task-selector">
         {selectedTask.label === "Todas" ? (
-          calculateAllPacks(level).map((taskInfo, index) => (
-            <TaskCard
-              key={index}
-              taskName={taskInfo.task}
-              level={level}
-              packs={taskInfo.packs}
-            />
-          ))
+          options
+            .slice(1)
+            .map((option, index) => (
+              <TaskCard
+                key={index}
+                taskName={option.label}
+                level={level}
+                packs={calculatePacksByTask(option.label, level)}
+              />
+            ))
         ) : (
           <TaskCard
             taskName={selectedTask.label}
             level={level}
             packs={calculatePacksByTask(selectedTask.label, level)}
+            drawResults={drawResults}
           />
         )}
       </div>
