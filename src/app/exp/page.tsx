@@ -34,7 +34,7 @@ export default function Exp() {
   const [level, setLevel] = useState<string>("");
 
   useEffect(() => {
-    const savedLevel = localStorage.getItem('userLevel');
+    const savedLevel = localStorage.getItem("userLevel");
     if (savedLevel) {
       setLevel(savedLevel);
     }
@@ -147,7 +147,7 @@ export default function Exp() {
 
   return (
     <>
-      <div className="task-selector">
+      <div className="generic-container">
         <TextField
           id="outlined-number"
           label="Level"
@@ -157,7 +157,7 @@ export default function Exp() {
           sx={{ width: "100%" }}
         />
       </div>
-      <div className="task-selector">
+      <div className="generic-container">
         <Autocomplete
           disablePortal
           options={options}
@@ -184,7 +184,7 @@ export default function Exp() {
         </Button>
       )}
 
-      <div className="task-selector">
+      <div className="generic-container">
         {selectedTask.label === "Todas" ? (
           options
             .slice(1)
