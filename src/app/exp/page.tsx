@@ -26,7 +26,8 @@ interface TaskInput {
 const options: TaskOption[] = [
   { label: "Todas" },
   { label: "Dias de NF" },
-  { label: "The Grind" },
+  { label: "Sono" },
+  // { label: "The Grind" },
   { label: "The Water" },
   { label: "The Exercise" },
   { label: "The Nutrition" },
@@ -42,7 +43,7 @@ export default function Exp() {
   useEffect(() => {
     const savedLevel = localStorage.getItem("userLevel");
     const savedStartDate = localStorage.getItem("startDate");
-    
+
     if (savedLevel) {
       setLevel(savedLevel);
     }
@@ -59,7 +60,7 @@ export default function Exp() {
   const calculateDaysSinceStart = (startDate: Dayjs | null): number => {
     if (!startDate) return 0;
     const today = dayjs();
-    return today.diff(startDate, 'day');
+    return today.diff(startDate, "day");
   };
 
   const calculatePacksByTask = (taskName: string, level: string): number => {
@@ -79,7 +80,11 @@ export default function Exp() {
         return baseMultiplier;
       case "Dias de NF": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 228;
+        return daysPassed * 482;
+      }
+      case "Sono": {
+        const daysPassed = calculateDaysSinceStart(startDate);
+        return daysPassed * 482;
       }
       default:
         return 0;
@@ -95,7 +100,7 @@ export default function Exp() {
 
   const calculateTotalPacks = (): number => {
     const basePacks = calculatePacksByTask(selectedTask.label, level);
-    
+
     if (selectedTask.label === "Dias de NF") {
       return basePacks;
     }
@@ -153,7 +158,7 @@ export default function Exp() {
           }
           value={taskInput.quantity || ""}
           onChange={(e) => setTaskInput({ quantity: Number(e.target.value) })}
-          sx={{ width: "100%", marginY: 2 }}
+          sx={{ width: "100%", marginTop: "24px", marginBottom: "24px" }}
         />
       );
     }
@@ -168,7 +173,7 @@ export default function Exp() {
           label="Tempo de execução"
           value={taskInput.time || ""}
           onChange={(e) => setTaskInput({ time: e.target.value })}
-          sx={{ width: "100%", marginY: 2 }}
+          sx={{ width: "100%", marginTop: "24px", marginBottom: "24px" }}
           InputLabelProps={{ shrink: true }}
         />
       );
@@ -204,18 +209,20 @@ export default function Exp() {
         />
       </div>
 
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
-        <div className="generic-container">
-          <DatePicker
-            sx={{ width: "100%" }}
-            label="Data da queda"
-            value={startDate}
-            onChange={handleStartDateChange}
-            format="DD/MM/YYYY"
-          />
-        </div>
-      </LocalizationProvider>
-
+      {(selectedTask.label === "Dias de NF" ||
+        selectedTask.label === "Sono") && (
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+          <div style={{ marginTop: "24px", marginBottom: "24px" }}>
+            <DatePicker
+              sx={{ width: "100%" }}
+              label="Data da queda"
+              value={startDate}
+              onChange={handleStartDateChange}
+              format="DD/MM/YYYY"
+            />
+          </div>
+        </LocalizationProvider>
+      )}
       {selectedTask.label !== "Todas" && renderTaskInput()}
 
       {selectedTask.label !== "Todas" && (
@@ -227,7 +234,6 @@ export default function Exp() {
           Sortear
         </Button>
       )}
-
       <div className="generic-container">
         {selectedTask.label === "Todas" ? (
           options
