@@ -105,6 +105,11 @@ export default function Exp() {
       return basePacks;
     }
 
+    
+    if (selectedTask.label === "Sono") {
+      return basePacks;
+    }
+
     if (
       selectedTask.label === "The Water" ||
       selectedTask.label === "The Nutrition"
