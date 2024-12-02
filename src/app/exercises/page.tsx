@@ -173,10 +173,16 @@ function Exercises() {
             recordDate.isBefore(endDate.add(1, "day"))
           );
         })
-        .sort(
-          (a: ExerciseHistory, b: ExerciseHistory) =>
-            b.totalWeightLifted - a.totalWeightLifted
-        )
+        .sort((a: ExerciseHistory, b: ExerciseHistory) => {
+          // Ordena por peso total em ordem decrescente
+          if (b.totalWeightLifted !== a.totalWeightLifted) {
+            return b.totalWeightLifted - a.totalWeightLifted;
+          }
+          // Se empatar, ordena por data mais recente
+          const dateA = dayjs(a.date, "DD/MM/YYYY - HH:mm");
+          const dateB = dayjs(b.date, "DD/MM/YYYY - HH:mm");
+          return dateB.diff(dateA);
+        })
         .slice(0, 3);
 
       setRecords(filteredRecords);
