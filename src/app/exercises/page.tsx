@@ -141,7 +141,7 @@ function Exercises() {
     weight: number,
     fails: number
   ) => {
-    return reps * weight - fails * (weight / 2);
+    return reps * Number(weight) - fails * (weight / 2);
   };
 
   const fetchRecords = useCallback(async () => {
@@ -190,7 +190,7 @@ function Exercises() {
     if (!auth.currentUser) return;
 
     const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
-    const totalWeight = calculateTotalWeight(reps, weight, fails);
+    const totalWeight = calculateTotalWeight(reps, Number(weight), fails);
 
     try {
       const snapshot = await get(userRef);
@@ -320,7 +320,13 @@ function Exercises() {
               label="Peso"
               type="text"
               value={weight}
-              onChange={(e) => setWeight(Number(e.target.value))}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Valida apenas números decimais
+                if (/^\d*\.?\d*$/.test(value)) {
+                  setWeight(Number(value));
+                }
+              }}
               sx={{ width: "100%" }}
             />
           </div>
@@ -330,7 +336,13 @@ function Exercises() {
               label="Repetições"
               type="text"
               value={reps}
-              onChange={(e) => setReps(Number(e.target.value))}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                if (/^\d*\.?\d*$/.test(value)) {
+                  setReps(Number(e.target.value));
+                }
+              }}
               sx={{ width: "100%" }}
             />
           </div>
@@ -340,7 +352,13 @@ function Exercises() {
               label="Quantas falhou ou usou negativa"
               type="text"
               value={fails}
-              onChange={(e) => setFails(Number(e.target.value))}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                if (/^\d*\.?\d*$/.test(value)) {
+                  setFails(Number(e.target.value));
+                }
+              }}
               sx={{ width: "100%" }}
             />
           </div>
