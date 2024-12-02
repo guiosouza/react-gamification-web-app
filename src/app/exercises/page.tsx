@@ -1,15 +1,17 @@
 "use client";
 import {
+  Alert,
   Autocomplete,
   Button,
   Card,
   CardActionArea,
   CardContent,
+  Chip,
   Divider,
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
@@ -20,15 +22,74 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import { ref, set, get } from "firebase/database";
+import { database } from "@/lib/firebase";
 
 interface ExerciseOption {
   label: string;
 }
 
-const style = {
+interface ExerciseOption {
+  label: string;
+}
+
+interface ExerciseHistory {
+  date: string;
+  reps: number;
+  weight: number;
+  totalWeightLifted: number;
+  failsOrNegative: number;
+}
+
+interface Exercise {
+  title: string;
+  history: ExerciseHistory[];
+}
+
+type DatabaseExerciseData = Exercise[];
+
+const marginBottomAndTop = {
   marginTop: 4,
   marginBottom: 4,
 };
+
+// const mockedData = {
+//   data: [
+//     {
+//       title: "flexoes",
+//       history: [
+//         {
+//           date: "2024-12-01T17:54:00",
+//           reps: 10,
+//           weight: 10,
+//           totalWeightLifted: 95,
+//           failsOrNegative: 1,
+//         },
+//         {
+//           date: "2024-12-02T18:00:00",
+//           reps: 10,
+//           weight: 10,
+//           totalWeightLifted: 90,
+//           failsOrNegative: 2,
+//         },
+//         // outros históricos
+//       ],
+//     },
+//     {
+//       title: "barras",
+//       history: [],
+//     },
+//     {
+//       title: "abdominais",
+//       history: [],
+//     },
+//     {
+//       title: "agachamentos",
+//       history: [],
+//     },
+//     // Adicione mais exercícios aqui
+//   ],
+// };
 
 function Exercises() {
   const exerciseOptions: ExerciseOption[] = [
@@ -54,13 +115,17 @@ function Exercises() {
   const [isLogged, setIsLogged] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  // const [data, setData] = useState(mockedData.data);
+  const [weight, setWeight] = useState<number>(0);
+  const [reps, setReps] = useState<number>(0);
+  const [fails, setFails] = useState<number>(0);
+  const [records, setRecords] = useState<ExerciseHistory[]>([]);
 
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
     value: ExerciseOption | null
   ) => {
     setSelectedExercise(value);
-    console.log("Selected Exercise:", value);
   };
 
   const onStartDateChange = (date: Dayjs | null) => {
@@ -69,6 +134,109 @@ function Exercises() {
 
   const onEndDateChange = (date: Dayjs | null) => {
     setEndDate(date);
+  };
+
+  const calculateTotalWeight = (
+    reps: number,
+    weight: number,
+    fails: number
+  ) => {
+    return reps * weight - fails * (weight / 2);
+  };
+
+  const fetchRecords = useCallback(async () => {
+    if (!auth.currentUser || !selectedExercise || !startDate || !endDate)
+      return;
+
+    const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
+
+    try {
+      const snapshot = await get(userRef);
+      const data: DatabaseExerciseData = snapshot.val() || [];
+
+      const exercise = data.find(
+        (item: Exercise) =>
+          item.title.toLowerCase() === selectedExercise.label.toLowerCase()
+      );
+
+      if (!exercise || !exercise.history) {
+        setRecords([]);
+        return;
+      }
+
+      // Filtra por data e ordena por peso total
+      const filteredRecords = exercise.history
+        .filter((record: ExerciseHistory) => {
+          const recordDate = dayjs(record.date, "DD/MM/YYYY - HH:mm");
+          return (
+            recordDate.isAfter(startDate) &&
+            recordDate.isBefore(endDate.add(1, "day"))
+          );
+        })
+        .sort(
+          (a: ExerciseHistory, b: ExerciseHistory) =>
+            b.totalWeightLifted - a.totalWeightLifted
+        )
+        .slice(0, 3);
+
+      setRecords(filteredRecords);
+    } catch (error) {
+      console.error("Erro ao buscar recordes:", error);
+      alert("Erro ao buscar os recordes.");
+    }
+  }, [selectedExercise, startDate, endDate]);
+
+  const saveExerciseData = async () => {
+    if (!auth.currentUser) return;
+
+    const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
+    const totalWeight = calculateTotalWeight(reps, weight, fails);
+
+    try {
+      const snapshot = await get(userRef);
+      const existingData = snapshot.val() || [];
+
+      // Procura o exercício existente
+      let exerciseIndex = existingData.findIndex(
+        (item: Exercise) =>
+          item.title.toLowerCase() === selectedExercise?.label.toLowerCase()
+      );
+
+      if (exerciseIndex === -1) {
+        // Se o exercício não existe, cria um novo
+        existingData.push({
+          title: selectedExercise?.label.toLowerCase(),
+          history: [],
+        });
+        exerciseIndex = existingData.length - 1;
+      }
+
+      // Adiciona o novo registro ao histórico
+      if (!existingData[exerciseIndex].history) {
+        existingData[exerciseIndex].history = [];
+      }
+
+      existingData[exerciseIndex].history.push({
+        date: dayjs().format("DD/MM/YYYY - HH:mm"),
+        reps,
+        weight,
+        totalWeightLifted: totalWeight,
+        failsOrNegative: fails,
+      });
+
+      await set(userRef, existingData);
+
+      // Limpa os campos após salvar
+      setWeight(0);
+      setReps(0);
+      setFails(0);
+
+      // Atualiza os recordes
+      fetchRecords();
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+      alert("Erro ao salvar os dados do exercício.");
+    }
   };
 
   useEffect(() => {
@@ -81,8 +249,8 @@ function Exercises() {
 
   const handleLogin = async () => {
     try {
-    //   localStorage.setItem("email", email);
-    //   localStorage.setItem("password", password);
+      //   localStorage.setItem("email", email);
+      //   localStorage.setItem("password", password);
 
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -100,8 +268,8 @@ function Exercises() {
 
   const logout = async () => {
     try {
-    //   localStorage.removeItem("email");
-    //   localStorage.removeItem("password");
+      //   localStorage.removeItem("email");
+      //   localStorage.removeItem("password");
 
       await signOut(auth);
 
@@ -112,6 +280,12 @@ function Exercises() {
       alert("Erro ao deslogar.");
     }
   };
+
+  useEffect(() => {
+    if (isLogged && selectedExercise && startDate && endDate) {
+      fetchRecords();
+    }
+  }, [isLogged, selectedExercise, startDate, endDate, fetchRecords]);
 
   return (
     <div>
@@ -144,9 +318,19 @@ function Exercises() {
             <TextField
               id="outlined-number"
               label="Peso"
-              type="number"
-              value={0}
-              onChange={() => {}}
+              type="text"
+              value={weight}
+              onChange={(e) => setWeight(Number(e.target.value))}
+              sx={{ width: "100%" }}
+            />
+          </div>
+          <div className="generic-container">
+            <TextField
+              id="outlined-number"
+              label="Repetições"
+              type="text"
+              value={reps}
+              onChange={(e) => setReps(Number(e.target.value))}
               sx={{ width: "100%" }}
             />
           </div>
@@ -154,21 +338,23 @@ function Exercises() {
             <TextField
               id="outlined-number"
               label="Quantas falhou ou usou negativa"
-              type="number"
-              value={0}
-              onChange={() => {}}
+              type="text"
+              value={fails}
+              onChange={(e) => setFails(Number(e.target.value))}
               sx={{ width: "100%" }}
             />
           </div>
           <Button
             variant="contained"
-            onClick={() => {}}
+            onClick={saveExerciseData}
             sx={{ width: "100%", marginY: 2 }}
           >
             Enviar
           </Button>
-          <Divider sx={style}>RECORDES</Divider>
-          <p>Para ver os 3 últimos recordes, selecione o período.</p>
+          <Divider sx={marginBottomAndTop}>RECORDES</Divider>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            Para ver os 3 últimos recordes, selecione o período.
+          </Typography>
           <LocalizationProvider
             dateAdapter={AdapterDayjs}
             adapterLocale="pt-br"
@@ -194,15 +380,64 @@ function Exercises() {
           </LocalizationProvider>
 
           {selectedExercise && startDate && endDate && (
-            <Card sx={{ marginBottom: 2, marginTop: 4 }}>
-              <CardActionArea>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {selectedExercise.label}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
+            <>
+              {records.length === 0 ? (
+                <div className="generic-container">
+                  <Alert variant="outlined" severity="success">
+                    Sem dados para exibir.
+                  </Alert>
+                </div>
+              ) : (
+                records.map((record, index) => (
+                  <Card key={index} sx={{ marginBottom: 2, marginTop: 4 }}>
+                    <CardActionArea>
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {selectedExercise.label}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Data: {record.date}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Repetições: {record.reps}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Peso usado: {record.weight} KG
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Negativas ou falhas: {record.failsOrNegative}
+                        </Typography>
+                        <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+                        <Typography
+                          variant="body2"
+                          component="span"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Peso total:{" "}
+                          <Chip
+                            color="secondary"
+                            label={`${record.totalWeightLifted}KG`}
+                            size="small"
+                          />
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                ))
+              )}
+            </>
           )}
         </>
       ) : (
