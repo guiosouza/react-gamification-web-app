@@ -354,7 +354,6 @@ function Exercises() {
               value={fails}
               onChange={(e) => {
                 const value = e.target.value;
-
                 if (/^\d*\.?\d*$/.test(value)) {
                   setFails(Number(e.target.value));
                 }
