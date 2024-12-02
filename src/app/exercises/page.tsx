@@ -9,11 +9,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
+import { auth } from "@/lib/firebase";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 interface ExerciseOption {
   label: string;
@@ -65,15 +71,46 @@ function Exercises() {
     setEndDate(date);
   };
 
-  const handleLogin = () => {
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) setIsLogged(true);
+      else setIsLogged(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+    //   localStorage.setItem("email", email);
+    //   localStorage.setItem("password", password);
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      console.log("Usuário autenticado:", userCredential.user);
+      setIsLogged(true);
+    } catch (error) {
+      console.error("Error saving login data", error);
+      alert("E-mail ou senha incorretos.");
+    }
   };
 
-  const logout = () => {
-    setIsLogged(false);
-    localStorage.removeItem("email");
-    localStorage.removeItem("password");
+  const logout = async () => {
+    try {
+    //   localStorage.removeItem("email");
+    //   localStorage.removeItem("password");
+
+      await signOut(auth);
+
+      setIsLogged(false);
+      console.log("Usuário deslogado.");
+    } catch (error) {
+      console.error("Error on logout", error);
+      alert("Erro ao deslogar.");
+    }
   };
 
   return (
@@ -180,7 +217,7 @@ function Exercises() {
               id="outlined-email-input"
               label="E-mail"
               type="email"
-              value={""}
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               sx={{ width: "100%" }}
             />
@@ -190,7 +227,7 @@ function Exercises() {
               id="outlined-password-input"
               label="Senha"
               type="password"
-              value={""}
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={{ width: "100%" }}
             />
