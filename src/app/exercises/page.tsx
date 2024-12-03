@@ -428,7 +428,6 @@ function Exercises() {
                                 label="Registro de hoje"
                                 color="primary"
                                 size="small"
-                                sx={{ marginLeft: 1 }}
                               />
                             )}
                           </div>
@@ -468,6 +467,11 @@ function Exercises() {
                               label={`${record.totalWeightLifted}KG`}
                               size="small"
                             />
+                            <Chip
+                                label={`# ${index  + 1}`}
+                                size="small"
+                                sx={{ marginLeft: 1 }}
+                              />
                           </Typography>
                         </CardContent>
                       </CardActionArea>
