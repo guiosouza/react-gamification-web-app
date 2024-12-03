@@ -53,44 +53,6 @@ const marginBottomAndTop = {
   marginBottom: 4,
 };
 
-// const mockedData = {
-//   data: [
-//     {
-//       title: "flexoes",
-//       history: [
-//         {
-//           date: "2024-12-01T17:54:00",
-//           reps: 10,
-//           weight: 10,
-//           totalWeightLifted: 95,
-//           failsOrNegative: 1,
-//         },
-//         {
-//           date: "2024-12-02T18:00:00",
-//           reps: 10,
-//           weight: 10,
-//           totalWeightLifted: 90,
-//           failsOrNegative: 2,
-//         },
-//         // outros históricos
-//       ],
-//     },
-//     {
-//       title: "barras",
-//       history: [],
-//     },
-//     {
-//       title: "abdominais",
-//       history: [],
-//     },
-//     {
-//       title: "agachamentos",
-//       history: [],
-//     },
-//     // Adicione mais exercícios aqui
-//   ],
-// };
-
 function Exercises() {
   const exerciseOptions: ExerciseOption[] = [
     { label: "Flexão" },
@@ -98,6 +60,7 @@ function Exercises() {
     { label: "Abdominal" },
     { label: "Agachamento" },
     { label: "Agachamento (1 perna)" },
+    { label: "Levantamento lateral (1 perna)" },
     { label: "Bícepes" },
     { label: "Trícepes" },
     { label: "Ombro" },
@@ -115,7 +78,6 @@ function Exercises() {
   const [isLogged, setIsLogged] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  // const [data, setData] = useState(mockedData.data);
   const [weight, setWeight] = useState<number>(0);
   const [reps, setReps] = useState<number>(0);
   const [fails, setFails] = useState<number>(0);
@@ -255,17 +217,13 @@ function Exercises() {
 
   const handleLogin = async () => {
     try {
-      //   localStorage.setItem("email", email);
-      //   localStorage.setItem("password", password);
-
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
 
-      console.log("Usuário autenticado:", userCredential.user);
-      setIsLogged(true);
+      return userCredential.user && setIsLogged(true);
     } catch (error) {
       console.error("Error saving login data", error);
       alert("E-mail ou senha incorretos.");
@@ -274,13 +232,9 @@ function Exercises() {
 
   const logout = async () => {
     try {
-      //   localStorage.removeItem("email");
-      //   localStorage.removeItem("password");
-
       await signOut(auth);
 
       setIsLogged(false);
-      console.log("Usuário deslogado.");
     } catch (error) {
       console.error("Error on logout", error);
       alert("Erro ao deslogar.");
@@ -411,54 +365,92 @@ function Exercises() {
                   </Alert>
                 </div>
               ) : (
-                records.map((record, index) => (
-                  <Card key={index} sx={{ marginBottom: 2, marginTop: 4 }}>
-                    <CardActionArea>
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {selectedExercise.label}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "text.secondary" }}
+                records.map((record, index) => {
+                  const recordDate = record.date.split(" - ")[0];
+                  const today = dayjs().format("DD/MM/YYYY");
+                  const isToday = recordDate === today;
+
+                  return (
+                        <Card
+                          key={index}
+                          sx={{
+                            marginBottom: 2,
+                            marginTop: 4,
+                            // Aplica um background diferente se for o registro de hoje
+                            backgroundColor: isToday ? "secondary" : "inherit",
+                            // Adiciona uma transição suave
+                            transition: "background-color 0.3s ease",
+                            // Adiciona uma borda se for o registro de hoje
+                            border: isToday ? "2px solid #2196f3" : "none",
+                          }}
                         >
-                          Data: {record.date}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Repetições: {record.reps}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Peso usado: {record.weight} KG
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Negativas ou falhas: {record.failsOrNegative}
-                        </Typography>
-                        <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Peso total:{" "}
-                          <Chip
-                            color="secondary"
-                            label={`${record.totalWeightLifted}KG`}
-                            size="small"
-                          />
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                ))
+                          <CardActionArea>
+                            <CardContent>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Typography
+                                  gutterBottom
+                                  variant="h5"
+                                  component="div"
+                                >
+                                  {selectedExercise.label}
+                                </Typography>
+                                {isToday && (
+                                  <Chip
+                                    label="Registro de hoje"
+                                    color="primary"
+                                    size="small"
+                                    sx={{ marginLeft: 1 }}
+                                  />
+                                )}
+                              </div>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "text.secondary" }}
+                              >
+                                Data: {record.date}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "text.secondary" }}
+                              >
+                                Repetições: {record.reps}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "text.secondary" }}
+                              >
+                                Peso usado: {record.weight} KG
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "text.secondary" }}
+                              >
+                                Negativas ou falhas: {record.failsOrNegative}
+                              </Typography>
+                              <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+                              <Typography
+                                variant="body2"
+                                component="span"
+                                sx={{ color: "text.secondary" }}
+                              >
+                                Peso total:{" "}
+                                <Chip
+                                  color="secondary"
+                                  label={`${record.totalWeightLifted}KG`}
+                                  size="small"
+                                />
+                              </Typography>
+                            </CardContent>
+                          </CardActionArea>
+                        </Card>
+                  );
+                })
               )}
             </>
           )}
