@@ -48,7 +48,7 @@ interface Exercise {
 
 type DatabaseExerciseData = Exercise[];
 
-const marginBottomAndTop = {
+const marginBottomAndTop4 = {
   marginTop: 4,
   marginBottom: 4,
 };
@@ -207,14 +207,6 @@ function Exercises() {
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) setIsLogged(true);
-      else setIsLogged(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -233,13 +225,20 @@ function Exercises() {
   const logout = async () => {
     try {
       await signOut(auth);
-
       setIsLogged(false);
     } catch (error) {
       console.error("Error on logout", error);
       alert("Erro ao deslogar.");
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) setIsLogged(true);
+      else setIsLogged(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (isLogged && selectedExercise && startDate && endDate) {
@@ -328,9 +327,9 @@ function Exercises() {
           >
             Enviar
           </Button>
-          <Divider sx={marginBottomAndTop}>RECORDES</Divider>
+          <Divider sx={marginBottomAndTop4}>RECORDES</Divider>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Para ver os 3 últimos recordes, selecione o período.
+            Para ver os 20 últimos recordes, selecione o período.
           </Typography>
           <LocalizationProvider
             dateAdapter={AdapterDayjs}
@@ -376,11 +375,8 @@ function Exercises() {
                           sx={{
                             marginBottom: 2,
                             marginTop: 4,
-                            // Aplica um background diferente se for o registro de hoje
                             backgroundColor: isToday ? "secondary" : "inherit",
-                            // Adiciona uma transição suave
                             transition: "background-color 0.3s ease",
-                            // Adiciona uma borda se for o registro de hoje
                             border: isToday ? "2px solid #2196f3" : "none",
                           }}
                         >

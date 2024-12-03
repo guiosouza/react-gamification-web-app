@@ -7,6 +7,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import LevelCard from "@/components/level-card";
 
 interface TaskOption {
   label: string;
@@ -105,7 +106,6 @@ export default function Exp() {
       return basePacks;
     }
 
-    
     if (selectedTask.label === "Sono") {
       return basePacks;
     }
@@ -189,6 +189,7 @@ export default function Exp() {
 
   return (
     <>
+      <LevelCard level={level} />
       <div className="generic-container">
         <TextField
           id="outlined-number"
