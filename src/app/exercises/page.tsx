@@ -145,7 +145,7 @@ function Exercises() {
           const dateB = dayjs(b.date, "DD/MM/YYYY - HH:mm");
           return dateB.diff(dateA);
         })
-        .slice(0, 3);
+        .slice(0, 30);
 
       setRecords(filteredRecords);
     } catch (error) {
@@ -179,19 +179,46 @@ function Exercises() {
         exerciseIndex = existingData.length - 1;
       }
 
-      // Adiciona o novo registro ao histórico
-      if (!existingData[exerciseIndex].history) {
-        existingData[exerciseIndex].history = [];
+      // Adiciona o novo registro ao histórico temporariamente
+      const newHistory = [
+        ...(existingData[exerciseIndex].history || []),
+        {
+          date: dayjs().format("DD/MM/YYYY - HH:mm"),
+          reps,
+          weight,
+          totalWeightLifted: totalWeight,
+          failsOrNegative: fails,
+        },
+      ];
+
+      // Ordena o histórico temporário para verificar o TOP 20
+      const topRecords = newHistory
+        .sort((a: ExerciseHistory, b: ExerciseHistory) => {
+          if (b.totalWeightLifted !== a.totalWeightLifted) {
+            return b.totalWeightLifted - a.totalWeightLifted;
+          }
+          const dateA = dayjs(a.date, "DD/MM/YYYY - HH:mm");
+          const dateB = dayjs(b.date, "DD/MM/YYYY - HH:mm");
+          return dateB.diff(dateA);
+        })
+        .slice(0, 30);
+
+      // Verifica se o novo registro está no TOP 3
+      const isInTop30 = topRecords.some(
+        (record) =>
+          record.date === dayjs().format("DD/MM/YYYY - HH:mm") &&
+          record.totalWeightLifted === totalWeight
+      );
+
+      if (!isInTop30) {
+        alert(
+          "Obrigado por tentar, mas como não bateu nenhum dos da lista, seus dados não serão gravados na base."
+        );
+        return;
       }
 
-      existingData[exerciseIndex].history.push({
-        date: dayjs().format("DD/MM/YYYY - HH:mm"),
-        reps,
-        weight,
-        totalWeightLifted: totalWeight,
-        failsOrNegative: fails,
-      });
-
+      // Atualiza o histórico no Firebase mantendo apenas o TOP 3
+      existingData[exerciseIndex].history = topRecords;
       await set(userRef, existingData);
 
       // Limpa os campos após salvar
@@ -329,7 +356,7 @@ function Exercises() {
           </Button>
           <Divider sx={marginBottomAndTop4}>RECORDES</Divider>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Para ver os 20 últimos recordes, selecione o período.
+            Para ver os 30 maiores recordes, selecione o período.
           </Typography>
           <LocalizationProvider
             dateAdapter={AdapterDayjs}
@@ -370,81 +397,81 @@ function Exercises() {
                   const isToday = recordDate === today;
 
                   return (
-                        <Card
-                          key={index}
-                          sx={{
-                            marginBottom: 2,
-                            marginTop: 4,
-                            backgroundColor: isToday ? "secondary" : "inherit",
-                            transition: "background-color 0.3s ease",
-                            border: isToday ? "2px solid #2196f3" : "none",
-                          }}
-                        >
-                          <CardActionArea>
-                            <CardContent>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Typography
-                                  gutterBottom
-                                  variant="h5"
-                                  component="div"
-                                >
-                                  {selectedExercise.label}
-                                </Typography>
-                                {isToday && (
-                                  <Chip
-                                    label="Registro de hoje"
-                                    color="primary"
-                                    size="small"
-                                    sx={{ marginLeft: 1 }}
-                                  />
-                                )}
-                              </div>
-                              <Typography
-                                variant="body2"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                Data: {record.date}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                Repetições: {record.reps}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                Peso usado: {record.weight} KG
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                Negativas ou falhas: {record.failsOrNegative}
-                              </Typography>
-                              <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
-                              <Typography
-                                variant="body2"
-                                component="span"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                Peso total:{" "}
-                                <Chip
-                                  color="secondary"
-                                  label={`${record.totalWeightLifted}KG`}
-                                  size="small"
-                                />
-                              </Typography>
-                            </CardContent>
-                          </CardActionArea>
-                        </Card>
+                    <Card
+                      key={index}
+                      sx={{
+                        marginBottom: 2,
+                        marginTop: 4,
+                        backgroundColor: isToday ? "secondary" : "inherit",
+                        transition: "background-color 0.3s ease",
+                        border: isToday ? "2px solid #2196f3" : "none",
+                      }}
+                    >
+                      <CardActionArea>
+                        <CardContent>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography
+                              gutterBottom
+                              variant="h5"
+                              component="div"
+                            >
+                              {selectedExercise.label}
+                            </Typography>
+                            {isToday && (
+                              <Chip
+                                label="Registro de hoje"
+                                color="primary"
+                                size="small"
+                                sx={{ marginLeft: 1 }}
+                              />
+                            )}
+                          </div>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Data: {record.date}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Repetições: {record.reps}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Peso usado: {record.weight} KG
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Negativas ou falhas: {record.failsOrNegative}
+                          </Typography>
+                          <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+                          <Typography
+                            variant="body2"
+                            component="span"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Peso total:{" "}
+                            <Chip
+                              color="secondary"
+                              label={`${record.totalWeightLifted}KG`}
+                              size="small"
+                            />
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
                   );
                 })
               )}
