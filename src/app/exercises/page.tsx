@@ -396,6 +396,15 @@ function Exercises() {
                   const today = dayjs().format("DD/MM/YYYY");
                   const isToday = recordDate === today;
 
+                  // Calcula a melhora em relação ao próximo registro, se existir
+                  const nextRecord = records[index + 1];
+                  const improvementPercentage = nextRecord
+                    ? ((record.totalWeightLifted -
+                        nextRecord.totalWeightLifted) /
+                        nextRecord.totalWeightLifted) *
+                      100
+                    : null;
+
                   return (
                     <Card
                       key={index}
@@ -455,6 +464,17 @@ function Exercises() {
                           >
                             Negativas ou falhas: {record.failsOrNegative}
                           </Typography>
+                          {nextRecord && (
+                            <Typography
+                              variant="body2"
+                              sx={{ color: "text.secondary" }}
+                            >
+                              Melhora de:{" "}
+                              <strong style={{color: "green" }}>
+                                {improvementPercentage?.toFixed(2)}%
+                              </strong> se comparado ao #{index + 2}
+                            </Typography>
+                          )}
                           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
                           <Typography
                             variant="body2"
@@ -468,10 +488,10 @@ function Exercises() {
                               size="small"
                             />
                             <Chip
-                                label={`# ${index  + 1}`}
-                                size="small"
-                                sx={{ marginLeft: 1 }}
-                              />
+                              label={`# ${index + 1}`}
+                              size="small"
+                              sx={{ marginLeft: 1 }}
+                            />
                           </Typography>
                         </CardContent>
                       </CardActionArea>
