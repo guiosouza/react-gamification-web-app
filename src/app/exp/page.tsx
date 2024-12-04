@@ -55,6 +55,22 @@ export default function Exp() {
     }
   }, []);
 
+  useEffect(() => {
+    const savedLevel = localStorage.getItem("userLevel");
+    const savedStartDate = localStorage.getItem("startDate");
+    const savedExp = localStorage.getItem("currentExp");
+  
+    if (savedLevel) {
+      setLevel(savedLevel);
+    }
+    if (savedStartDate) {
+      setStartDate(dayjs(savedStartDate));
+    }
+    if (savedExp) {
+      setExp(parseInt(savedExp));
+    }
+  }, []);
+
   const handleLevelChange = (newLevel: string) => {
     setLevel(newLevel);
     localStorage.setItem("userLevel", newLevel);
@@ -139,49 +155,35 @@ export default function Exp() {
   const drawPacks = () => {
     const totalPacks = calculateTotalPacks();
     let wonPacks = 0;
-
+  
     for (let i = 0; i < totalPacks; i++) {
       if (Math.random() < 0.5) {
-        // 50% chance
         wonPacks++;
       }
     }
-
+  
     const newExp = calculateExp(wonPacks);
     const currentExp = parseInt(localStorage.getItem("currentExp") || "0");
     const updatedExp = currentExp + newExp;
-
-    const actualStoredeExp = localStorage.getItem("currentExp");
-
-    if (!actualStoredeExp) {
-      localStorage.setItem("currentExp", "0");
+  
+    if (updatedExp >= EXP_PER_LEVEL) {
+      const remainingExp = updatedExp - EXP_PER_LEVEL;
+      const newLevel = parseInt(level) + 1;
+      
+      setLevel(newLevel.toString());
+      localStorage.setItem("userLevel", newLevel.toString());
+      localStorage.setItem("currentExp", remainingExp.toString());
+      setExp(remainingExp);
+    } else {
+      localStorage.setItem("currentExp", updatedExp.toString());
+      setExp(updatedExp);
     }
-
-    localStorage.setItem("currentExp", updatedExp.toString());
-
-    const storedUpdatedExp = localStorage.getItem("currentExp");
-
-
-
-    if (storedUpdatedExp) {
-      if (Number(storedUpdatedExp) >= EXP_PER_LEVEL) {
-        const newLevel = parseInt(level) + 1;
-        setLevel(newLevel.toString());
-        localStorage.setItem("userLevel", newLevel.toString());
-        localStorage.setItem(
-          "currentExp",
-          (updatedExp - EXP_PER_LEVEL).toString()
-        );
-      }
-    }
-
+  
     setDrawResults({
       task: selectedTask.label,
       packs: totalPacks,
       wonPacks,
     });
-
-    setExp(updatedExp);
   };
 
   const renderTaskInput = () => {
@@ -226,7 +228,7 @@ export default function Exp() {
   return (
     <>
       <div style={{ marginBottom: "64px" }}>
-        <LevelCard level={level} />
+        <LevelCard level={level} exp={exp} onExpChange={(newExp: number) => setExp(newExp)} />
       </div>
       <div className="generic-container">
         <TextField

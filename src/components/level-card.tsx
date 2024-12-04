@@ -90,11 +90,21 @@ function getLevelData(levelStr: string) {
   };
 }
 
-function LevelCard({ level }: { level: string }) {
+function LevelCard({ level, exp, onExpChange }: { level: string; exp: number,  onExpChange: (newExp: number) => void }) {
+  const calculateBorderLinearProgressPercantage = (exp: number) => {
+    return (exp / 500000) * 100;
+  };
+
   const [editingExp, setEditingExp] = useState<boolean>(false);
+  const [editedExp, setEditedExp] = useState<number>(0);
 
   const handleExpUpdate = () => {
-    setEditingExp(false);
+    if (!isNaN(exp)) {
+      const newExp = isNaN(editedExp) ? exp : editedExp;
+      localStorage.setItem("currentExp", newExp.toString());
+      onExpChange(newExp);
+      setEditingExp(false);
+    }
   };
 
   try {
@@ -115,8 +125,8 @@ function LevelCard({ level }: { level: string }) {
                 <TextField
                   label="Atualizar EXP"
                   type="number"
-                  value={""}
-                  onChange={() => {}}
+                  value={editedExp}
+                  onChange={(e) => setEditedExp(parseInt(e.target.value))}
                   fullWidth
                   sx={{ marginBottom: 2 }}
                 />
@@ -134,7 +144,10 @@ function LevelCard({ level }: { level: string }) {
             Patente: {levelData.name}
           </Typography>
           <div style={{ marginBottom: "16px", marginTop: "16px" }}>
-            <BorderLinearProgress variant="determinate" value={50} />
+            <BorderLinearProgress
+              variant="determinate"
+              value={calculateBorderLinearProgressPercantage(exp)}
+            />
           </div>
           <div
             style={{
@@ -145,7 +158,7 @@ function LevelCard({ level }: { level: string }) {
             }}
           >
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              250000/500000
+              {exp}/500000
             </Typography>
           </div>
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
