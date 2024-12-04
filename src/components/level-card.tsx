@@ -90,7 +90,15 @@ function getLevelData(levelStr: string) {
   };
 }
 
-function LevelCard({ level, exp, onExpChange }: { level: string; exp: number,  onExpChange: (newExp: number) => void }) {
+function LevelCard({
+  level,
+  exp,
+  onExpChange,
+}: {
+  level: string;
+  exp: number;
+  onExpChange: (newExp: number) => void;
+}) {
   const calculateBorderLinearProgressPercantage = (exp: number) => {
     return (exp / 500000) * 100;
   };
@@ -158,7 +166,7 @@ function LevelCard({ level, exp, onExpChange }: { level: string; exp: number,  o
             }}
           >
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              {exp}/500000
+              {exp.toFixed(0)}/500000
             </Typography>
           </div>
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />

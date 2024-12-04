@@ -149,7 +149,7 @@ export default function Exp() {
   };
 
   const calculateExp = (wonPacks: number) => {
-    return wonPacks * 19999;
+    return wonPacks * 19999.61092150171;
   };
 
   const drawPacks = () => {

@@ -8,6 +8,7 @@ import {
   CardContent,
   Chip,
   Divider,
+  Grid2,
   TextField,
   Typography,
 } from "@mui/material";
@@ -282,105 +283,133 @@ function Exercises() {
               DESLOGAR
             </Button>
           </div>
-          <div className="generic-container">
-            <Typography gutterBottom variant="h5" component="div">
-              Escolha o exercício
+          <Card sx={{ padding: "10px", marginBottom: 2, marginTop: 2 }}>
+            <div className="video-container">
+              <iframe
+                src="https://www.youtube.com/embed/BpIjT-LhNwg?si=8vx2lCdB12IgUrJ3"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </Card>
+          <Card sx={{ padding: "10px", marginBottom: 8 }}>
+            <div className="video-container">
+              <iframe
+                src="https://www.youtube.com/embed/Dpx9JStb1ko?si=mL6EJn61f3fJ2-Kr"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </Card>
+
+          <Grid2 sx={{ mt: 10 }}>
+            <div className="generic-container">
+              <Typography gutterBottom variant="h5" component="div">
+                Escolha o exercício
+              </Typography>
+            </div>
+            <div className="generic-container">
+              <Autocomplete
+                disablePortal
+                options={exerciseOptions}
+                value={selectedExercise}
+                onChange={onSelectedExerciseChange}
+                sx={{ width: "100%" }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Exercises" />
+                )}
+              />
+            </div>
+            <div className="generic-container">
+              <TextField
+                id="outlined-number"
+                label="Peso"
+                type="text"
+                value={weight}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Valida apenas números decimais
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    setWeight(Number(value));
+                  }
+                }}
+                sx={{ width: "100%" }}
+              />
+            </div>
+            <div className="generic-container">
+              <TextField
+                id="outlined-number"
+                label="Repetições"
+                type="text"
+                value={reps}
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    setReps(Number(e.target.value));
+                  }
+                }}
+                sx={{ width: "100%" }}
+              />
+            </div>
+            <div className="generic-container">
+              <TextField
+                id="outlined-number"
+                label="Quantas falhou ou usou negativa"
+                type="text"
+                value={fails}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    setFails(Number(e.target.value));
+                  }
+                }}
+                sx={{ width: "100%" }}
+              />
+            </div>
+            <Button
+              variant="contained"
+              onClick={saveExerciseData}
+              sx={{ width: "100%", marginY: 2 }}
+            >
+              Enviar
+            </Button>
+          </Grid2>
+          <Grid2 sx={{ mt: 10 }}>
+            <Divider sx={marginBottomAndTop4}>RECORDES</Divider>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              Para ver os 30 maiores recordes, selecione o período.
             </Typography>
-          </div>
-
-          <div className="generic-container">
-            <Autocomplete
-              disablePortal
-              options={exerciseOptions}
-              value={selectedExercise}
-              onChange={onSelectedExerciseChange}
-              sx={{ width: "100%" }}
-              renderInput={(params) => (
-                <TextField {...params} label="Exercises" />
-              )}
-            />
-          </div>
-          <div className="generic-container">
-            <TextField
-              id="outlined-number"
-              label="Peso"
-              type="text"
-              value={weight}
-              onChange={(e) => {
-                const value = e.target.value;
-                // Valida apenas números decimais
-                if (/^\d*\.?\d*$/.test(value)) {
-                  setWeight(Number(value));
-                }
-              }}
-              sx={{ width: "100%" }}
-            />
-          </div>
-          <div className="generic-container">
-            <TextField
-              id="outlined-number"
-              label="Repetições"
-              type="text"
-              value={reps}
-              onChange={(e) => {
-                const value = e.target.value;
-
-                if (/^\d*\.?\d*$/.test(value)) {
-                  setReps(Number(e.target.value));
-                }
-              }}
-              sx={{ width: "100%" }}
-            />
-          </div>
-          <div className="generic-container">
-            <TextField
-              id="outlined-number"
-              label="Quantas falhou ou usou negativa"
-              type="text"
-              value={fails}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*\.?\d*$/.test(value)) {
-                  setFails(Number(e.target.value));
-                }
-              }}
-              sx={{ width: "100%" }}
-            />
-          </div>
-          <Button
-            variant="contained"
-            onClick={saveExerciseData}
-            sx={{ width: "100%", marginY: 2 }}
-          >
-            Enviar
-          </Button>
-          <Divider sx={marginBottomAndTop4}>RECORDES</Divider>
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Para ver os 30 maiores recordes, selecione o período.
-          </Typography>
-          <LocalizationProvider
-            dateAdapter={AdapterDayjs}
-            adapterLocale="pt-br"
-          >
-            <div className="generic-container">
-              <DatePicker
-                sx={{ width: "100%" }}
-                label="Data inicial"
-                value={startDate}
-                onChange={onStartDateChange}
-                format="DD/MM/YYYY"
-              />
-            </div>
-            <div className="generic-container">
-              <DatePicker
-                sx={{ width: "100%" }}
-                label="Data final"
-                value={endDate}
-                onChange={onEndDateChange}
-                format="DD/MM/YYYY"
-              />
-            </div>
-          </LocalizationProvider>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="pt-br"
+            >
+              <div className="generic-container">
+                <DatePicker
+                  sx={{ width: "100%" }}
+                  label="Data inicial"
+                  value={startDate}
+                  onChange={onStartDateChange}
+                  format="DD/MM/YYYY"
+                />
+              </div>
+              <div className="generic-container">
+                <DatePicker
+                  sx={{ width: "100%" }}
+                  label="Data final"
+                  value={endDate}
+                  onChange={onEndDateChange}
+                  format="DD/MM/YYYY"
+                />
+              </div>
+            </LocalizationProvider>
+          </Grid2>
 
           {selectedExercise && startDate && endDate && (
             <>
@@ -470,9 +499,10 @@ function Exercises() {
                               sx={{ color: "text.secondary" }}
                             >
                               Melhora de:{" "}
-                              <strong style={{color: "green" }}>
+                              <strong style={{ color: "green" }}>
                                 {improvementPercentage?.toFixed(2)}%
-                              </strong> se comparado ao #{index + 2}
+                              </strong>{" "}
+                              se comparado ao #{index + 2}
                             </Typography>
                           )}
                           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
