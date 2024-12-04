@@ -8,12 +8,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
-import { useState, useEffect } from "react";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -91,36 +90,12 @@ function getLevelData(levelStr: string) {
   };
 }
 
-const calculateLevelProgress = (exp: number, expPerLevel: number) => {
-  const currentProgress = exp % expPerLevel;
-  const progressPercentage = (currentProgress / expPerLevel) * 100;
-  return { currentProgress, progressPercentage };
-};
-
 function LevelCard({ level }: { level: string }) {
-  const expPerLevel = 500000; // Quantidade de EXP necessária para subir de nível
-  const [currentExp, setCurrentExp] = useState<number>(0);
   const [editingExp, setEditingExp] = useState<boolean>(false);
-  const [newExp, setNewExp] = useState<string>("");
-
-  useEffect(() => {
-    const savedExp = localStorage.getItem("userExp");
-    setCurrentExp(savedExp ? Number(savedExp) : 0);
-  }, []);
 
   const handleExpUpdate = () => {
-    const exp = Number(newExp);
-    if (!isNaN(exp)) {
-      setCurrentExp(exp);
-      localStorage.setItem("userExp", exp.toString());
-      setEditingExp(false);
-    }
+    setEditingExp(false);
   };
-
-  const { currentProgress, progressPercentage } = calculateLevelProgress(
-    currentExp,
-    expPerLevel
-  );
 
   try {
     const levelData = getLevelData(level);
@@ -134,27 +109,27 @@ function LevelCard({ level }: { level: string }) {
           alt={`level ${levelData.level}`}
         />
         <CardContent>
-          {editingExp ? (
-            <div style={{ marginBottom: "12px" }}>
-              <TextField
-                label="Atualizar EXP"
-                type="number"
-                value={newExp}
-                onChange={(e) => setNewExp(e.target.value)}
-                fullWidth
-                sx={{ marginBottom: 2 }}
-              />
-              <Button variant="contained" onClick={handleExpUpdate}>
-                Salvar
-              </Button>
-            </div>
-          ) : (
-            <div style={{ marginBottom: "12px" }}>
+          <div style={{ marginBottom: "12px", marginTop: "12px" }}>
+            {editingExp ? (
+              <>
+                <TextField
+                  label="Atualizar EXP"
+                  type="number"
+                  value={""}
+                  onChange={() => {}}
+                  fullWidth
+                  sx={{ marginBottom: 2 }}
+                />
+                <Button variant="contained" onClick={handleExpUpdate}>
+                  Salvar
+                </Button>
+              </>
+            ) : (
               <Button variant="outlined" onClick={() => setEditingExp(true)}>
                 Editar EXP
               </Button>
-            </div>
-          )}
+            )}
+          </div>
           <Typography gutterBottom variant="h5" component="div">
             Patente: {levelData.name}
           </Typography>

@@ -79,7 +79,6 @@ export default function Exp() {
       case "The Exercise":
         return baseMultiplier;
       case "The Water":
-        
         return baseMultiplier;
       case "Dias de NF": {
         const daysPassed = calculateDaysSinceStart(startDate);
@@ -132,6 +131,10 @@ export default function Exp() {
     return 0;
   };
 
+  const calculateExp = (wonPacks: number) => {
+    return wonPacks * 100000;
+  };
+
   const drawPacks = () => {
     const totalPacks = calculateTotalPacks();
     let wonPacks = 0;
@@ -143,11 +146,19 @@ export default function Exp() {
       }
     }
 
+    const newExp = calculateExp(wonPacks);
+    const currentExp = parseInt(localStorage.getItem("currentExp") || "0");
+    const updatedExp = currentExp + newExp;
+    localStorage.setItem("currentExp", updatedExp.toString());
+
     setDrawResults({
       task: selectedTask.label,
       packs: totalPacks,
       wonPacks,
     });
+
+    setExp(updatedExp);
+
   };
 
   const renderTaskInput = () => {
@@ -191,7 +202,7 @@ export default function Exp() {
 
   return (
     <>
-      <div style={{marginBottom: "64px"}}>
+      <div style={{ marginBottom: "64px" }}>
         <LevelCard level={level} />
       </div>
       <div className="generic-container">
