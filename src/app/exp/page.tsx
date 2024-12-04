@@ -149,7 +149,7 @@ export default function Exp() {
   };
 
   const calculateExp = (wonPacks: number) => {
-    return wonPacks * 100000;
+    return wonPacks * 19709.25806451613;
   };
 
   const drawPacks = () => {
@@ -163,21 +163,22 @@ export default function Exp() {
     }
   
     const newExp = calculateExp(wonPacks);
-    const currentExp = parseInt(localStorage.getItem("currentExp") || "0");
-    const updatedExp = currentExp + newExp;
+    let currentExp = parseInt(localStorage.getItem("currentExp") || "0");
+    currentExp += newExp;
   
-    if (updatedExp >= EXP_PER_LEVEL) {
-      const remainingExp = updatedExp - EXP_PER_LEVEL;
-      const newLevel = parseInt(level) + 1;
-      
-      setLevel(newLevel.toString());
-      localStorage.setItem("userLevel", newLevel.toString());
-      localStorage.setItem("currentExp", remainingExp.toString());
-      setExp(remainingExp);
-    } else {
-      localStorage.setItem("currentExp", updatedExp.toString());
-      setExp(updatedExp);
+    let currentLevel = parseInt(level);
+  
+    // Loop para ajustar níveis enquanto EXP for suficiente
+    while (currentExp >= EXP_PER_LEVEL) {
+      currentExp -= EXP_PER_LEVEL;
+      currentLevel += 1;
     }
+  
+    // Atualizar estado e armazenamento local
+    setLevel(currentLevel.toString());
+    setExp(currentExp);
+    localStorage.setItem("userLevel", currentLevel.toString());
+    localStorage.setItem("currentExp", currentExp.toString());
   
     setDrawResults({
       task: selectedTask.label,
@@ -185,6 +186,7 @@ export default function Exp() {
       wonPacks,
     });
   };
+  
 
   const renderTaskInput = () => {
     if (
