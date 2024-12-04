@@ -1,12 +1,37 @@
 import {
+  Button,
   Card,
-  CardActionArea,
   CardContent,
   CardMedia,
   Chip,
+  Divider,
+  TextField,
   Typography,
 } from "@mui/material";
 import React from "react";
+import { styled } from "@mui/material/styles";
+import LinearProgress, {
+  linearProgressClasses,
+} from "@mui/material/LinearProgress";
+import { useState, useEffect } from "react";
+
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[200],
+    ...theme.applyStyles("dark", {
+      backgroundColor: theme.palette.grey[800],
+    }),
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: "#1a90ff",
+    ...theme.applyStyles("dark", {
+      backgroundColor: "#308fe8",
+    }),
+  },
+}));
 
 interface levelImage {
   level: number;
@@ -66,32 +91,97 @@ function getLevelData(levelStr: string) {
   };
 }
 
+const calculateLevelProgress = (exp: number, expPerLevel: number) => {
+  const currentProgress = exp % expPerLevel;
+  const progressPercentage = (currentProgress / expPerLevel) * 100;
+  return { currentProgress, progressPercentage };
+};
+
 function LevelCard({ level }: { level: string }) {
+  const expPerLevel = 500000; // Quantidade de EXP necessária para subir de nível
+  const [currentExp, setCurrentExp] = useState<number>(0);
+  const [editingExp, setEditingExp] = useState<boolean>(false);
+  const [newExp, setNewExp] = useState<string>("");
+
+  useEffect(() => {
+    const savedExp = localStorage.getItem("userExp");
+    setCurrentExp(savedExp ? Number(savedExp) : 0);
+  }, []);
+
+  const handleExpUpdate = () => {
+    const exp = Number(newExp);
+    if (!isNaN(exp)) {
+      setCurrentExp(exp);
+      localStorage.setItem("userExp", exp.toString());
+      setEditingExp(false);
+    }
+  };
+
+  const { currentProgress, progressPercentage } = calculateLevelProgress(
+    currentExp,
+    expPerLevel
+  );
+
   try {
     const levelData = getLevelData(level);
 
     return (
       <Card sx={{ marginBottom: 2, marginTop: 2 }}>
-        <CardActionArea>
-          <CardMedia
-            component="img"
-            height="220"
-            image={levelData.path}
-            alt={`level ${levelData.level}`}
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Patente: {levelData.name}
-            </Typography>
-            {levelData.nextLevel && (
-              <Chip
-                color="secondary"
-                label={`Próximo: ${levelData.nextName}`}
-                size="small"
+        <CardMedia
+          component="img"
+          height="220"
+          image={levelData.path}
+          alt={`level ${levelData.level}`}
+        />
+        <CardContent>
+          {editingExp ? (
+            <div style={{ marginBottom: "12px" }}>
+              <TextField
+                label="Atualizar EXP"
+                type="number"
+                value={newExp}
+                onChange={(e) => setNewExp(e.target.value)}
+                fullWidth
+                sx={{ marginBottom: 2 }}
               />
-            )}
-          </CardContent>
-        </CardActionArea>
+              <Button variant="contained" onClick={handleExpUpdate}>
+                Salvar
+              </Button>
+            </div>
+          ) : (
+            <div style={{ marginBottom: "12px" }}>
+              <Button variant="outlined" onClick={() => setEditingExp(true)}>
+                Editar EXP
+              </Button>
+            </div>
+          )}
+          <Typography gutterBottom variant="h5" component="div">
+            Patente: {levelData.name}
+          </Typography>
+          <div style={{ marginBottom: "16px", marginTop: "16px" }}>
+            <BorderLinearProgress variant="determinate" value={50} />
+          </div>
+          <div
+            style={{
+              marginBottom: "12px",
+              marginTop: "12px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              250000/500000
+            </Typography>
+          </div>
+          <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+          {levelData.nextLevel && (
+            <Chip
+              color="secondary"
+              label={`Próximo: ${levelData.nextName}`}
+              size="small"
+            />
+          )}
+        </CardContent>
       </Card>
     );
   } catch (error) {

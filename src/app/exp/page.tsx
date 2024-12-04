@@ -40,6 +40,7 @@ export default function Exp() {
   const [drawResults, setDrawResults] = useState<TaskInfo | null>(null);
   const [level, setLevel] = useState<string>("");
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [exp, setExp] = useState<number>(0);
 
   useEffect(() => {
     const savedLevel = localStorage.getItem("userLevel");
@@ -78,6 +79,7 @@ export default function Exp() {
       case "The Exercise":
         return baseMultiplier;
       case "The Water":
+        
         return baseMultiplier;
       case "Dias de NF": {
         const daysPassed = calculateDaysSinceStart(startDate);
@@ -189,7 +191,9 @@ export default function Exp() {
 
   return (
     <>
-      <LevelCard level={level} />
+      <div style={{marginBottom: "64px"}}>
+        <LevelCard level={level} />
+      </div>
       <div className="generic-container">
         <TextField
           id="outlined-number"
