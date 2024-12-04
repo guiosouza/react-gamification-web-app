@@ -41,6 +41,7 @@ export default function Exp() {
   const [level, setLevel] = useState<string>("");
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [exp, setExp] = useState<number>(0);
+  const EXP_PER_LEVEL = 500000;
 
   useEffect(() => {
     const savedLevel = localStorage.getItem("userLevel");
@@ -149,7 +150,30 @@ export default function Exp() {
     const newExp = calculateExp(wonPacks);
     const currentExp = parseInt(localStorage.getItem("currentExp") || "0");
     const updatedExp = currentExp + newExp;
+
+    const actualStoredeExp = localStorage.getItem("currentExp");
+
+    if (!actualStoredeExp) {
+      localStorage.setItem("currentExp", "0");
+    }
+
     localStorage.setItem("currentExp", updatedExp.toString());
+
+    const storedUpdatedExp = localStorage.getItem("currentExp");
+
+
+
+    if (storedUpdatedExp) {
+      if (Number(storedUpdatedExp) >= EXP_PER_LEVEL) {
+        const newLevel = parseInt(level) + 1;
+        setLevel(newLevel.toString());
+        localStorage.setItem("userLevel", newLevel.toString());
+        localStorage.setItem(
+          "currentExp",
+          (updatedExp - EXP_PER_LEVEL).toString()
+        );
+      }
+    }
 
     setDrawResults({
       task: selectedTask.label,
@@ -158,7 +182,6 @@ export default function Exp() {
     });
 
     setExp(updatedExp);
-
   };
 
   const renderTaskInput = () => {
