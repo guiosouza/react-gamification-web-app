@@ -308,7 +308,7 @@ function Exercises() {
             </div>
           </Card>
 
-          <Grid2 sx={{ mt: 10 }}>
+          <Grid2 sx={{ mt: 16 }}>
             <div className="generic-container">
               <Typography gutterBottom variant="h5" component="div">
                 Escolha o exercício
@@ -381,7 +381,7 @@ function Exercises() {
               Enviar
             </Button>
           </Grid2>
-          <Grid2 sx={{ mt: 10 }}>
+          <Grid2 sx={{ mt: 16 }}>
             <Divider sx={marginBottomAndTop4}>RECORDES</Divider>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               Para ver os 30 maiores recordes, selecione o período.
