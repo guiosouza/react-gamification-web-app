@@ -104,7 +104,7 @@ function Exercises() {
     weight: number,
     fails: number
   ) => {
-    return reps * Number(weight) - fails * (weight / 2);
+    return reps * Number(weight) - fails * (weight * 0.9);
   };
 
   const fetchRecords = useCallback(async () => {
@@ -260,6 +260,19 @@ function Exercises() {
     }
   };
 
+  const handleIncrement = (
+    field: "weight" | "reps" | "fails",
+    increment: number
+  ) => {
+    if (field === "weight") {
+      setWeight((prev) => Math.max(0, prev + increment));
+    } else if (field === "reps") {
+      setReps((prev) => Math.max(0, prev + increment));
+    } else if (field === "fails") {
+      setFails((prev) => Math.max(0, prev + increment));
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) setIsLogged(true);
@@ -326,53 +339,164 @@ function Exercises() {
                 )}
               />
             </div>
-            <div className="generic-container">
-              <TextField
-                id="outlined-number"
-                label="Peso"
-                type="text"
-                value={weight}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // Valida apenas números decimais
-                  if (/^\d*\.?\d*$/.test(value)) {
-                    setWeight(Number(value));
-                  }
-                }}
-                sx={{ width: "100%" }}
-              />
-            </div>
-            <div className="generic-container">
-              <TextField
-                id="outlined-number"
-                label="Repetições"
-                type="text"
-                value={reps}
-                onChange={(e) => {
-                  const value = e.target.value;
+            <Card sx={{ mt: 2, p: 1 }}>
+              <div className="generic-container">
+                <TextField
+                  id="outlined-number"
+                  label="Peso"
+                  type="text"
+                  value={weight}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Valida apenas números decimais
+                    if (/^\d*\.?\d*$/.test(value)) {
+                      setWeight(Number(value));
+                    }
+                  }}
+                  sx={{ width: "100%" }}
+                />
+                <Grid2
+                  sx={{
+                    mt: 2,
+                    mb: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("weight", 1)}
+                  >
+                    + 1
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("weight", -1)}
+                    color="error"
+                  >
+                    - 1
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("weight", 5)}
+                  >
+                    + 5
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("weight", -5)}
+                    color="error"
+                  >
+                    - 5
+                  </Button>
+                </Grid2>
+              </div>
+            </Card>
+            <Card sx={{ mt: 2, p: 1 }}>
+              <div className="generic-container">
+                <TextField
+                  id="outlined-number"
+                  label="Repetições"
+                  type="text"
+                  value={reps}
+                  onChange={(e) => {
+                    const value = e.target.value;
 
-                  if (/^\d*\.?\d*$/.test(value)) {
-                    setReps(Number(e.target.value));
-                  }
-                }}
-                sx={{ width: "100%" }}
-              />
-            </div>
-            <div className="generic-container">
-              <TextField
-                id="outlined-number"
-                label="Quantas falhou ou usou negativa"
-                type="text"
-                value={fails}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d*\.?\d*$/.test(value)) {
-                    setFails(Number(e.target.value));
-                  }
-                }}
-                sx={{ width: "100%" }}
-              />
-            </div>
+                    if (/^\d*\.?\d*$/.test(value)) {
+                      setReps(Number(e.target.value));
+                    }
+                  }}
+                  sx={{ width: "100%" }}
+                />
+                <Grid2
+                  sx={{
+                    mt: 2,
+                    mb: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("reps", 1)}
+                  >
+                    + 1
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("reps", -1)}
+                    color="error"
+                  >
+                    - 1
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("reps", 5)}
+                  >
+                    + 5
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("reps", -5)}
+                    color="error"
+                  >
+                    - 5
+                  </Button>
+                </Grid2>
+              </div>
+            </Card>
+            <Card sx={{ mt: 2, p: 1 }}>
+              <div className="generic-container">
+                <TextField
+                  id="outlined-number"
+                  label="Quantas falhou ou usou negativa"
+                  type="text"
+                  value={fails}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*\.?\d*$/.test(value)) {
+                      setFails(Number(e.target.value));
+                    }
+                  }}
+                  sx={{ width: "100%" }}
+                />
+                <Grid2
+                  sx={{
+                    mt: 2,
+                    mb: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("fails", 1)}
+                  >
+                    + 1
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("fails", -1)}
+                    color="error"
+                  >
+                    - 1
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("fails", 5)}
+                  >
+                    + 5
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleIncrement("fails", -5)}
+                    color="error"
+                  >
+                    - 5
+                  </Button>
+                </Grid2>
+              </div>
+            </Card>
             <Button
               variant="contained"
               onClick={saveExerciseData}
