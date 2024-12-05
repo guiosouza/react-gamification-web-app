@@ -364,26 +364,26 @@ function Exercises() {
                   }}
                 >
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("weight", 1)}
                   >
                     + 1
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("weight", -1)}
                     color="error"
                   >
                     - 1
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("weight", 5)}
                   >
                     + 5
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("weight", -5)}
                     color="error"
                   >
@@ -417,26 +417,26 @@ function Exercises() {
                   }}
                 >
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("reps", 1)}
                   >
                     + 1
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("reps", -1)}
                     color="error"
                   >
                     - 1
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("reps", 5)}
                   >
                     + 5
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("reps", -5)}
                     color="error"
                   >
@@ -469,26 +469,26 @@ function Exercises() {
                   }}
                 >
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("fails", 1)}
                   >
                     + 1
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("fails", -1)}
                     color="error"
                   >
                     - 1
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("fails", 5)}
                   >
                     + 5
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => handleIncrement("fails", -5)}
                     color="error"
                   >
