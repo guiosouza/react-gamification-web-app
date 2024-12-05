@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Autocomplete, TextField, Button } from "@mui/material";
+import { Autocomplete, TextField, Button, Alert } from "@mui/material";
 import TaskCard from "@/components/task-card";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
@@ -42,6 +42,9 @@ export default function Exp() {
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [exp, setExp] = useState<number>(0);
   const EXP_PER_LEVEL = 500000;
+  const [disableInput, setDisableInput] = useState(false);
+  const [actualTask, setActualTask] = useState<string>("");
+  const [shouldRemoveAlerts, setShouldRemoveAlerts] = useState(false);
 
   useEffect(() => {
     const savedLevel = localStorage.getItem("userLevel");
@@ -59,7 +62,7 @@ export default function Exp() {
     const savedLevel = localStorage.getItem("userLevel");
     const savedStartDate = localStorage.getItem("startDate");
     const savedExp = localStorage.getItem("currentExp");
-  
+
     if (savedLevel) {
       setLevel(savedLevel);
     }
@@ -149,51 +152,78 @@ export default function Exp() {
   };
 
   const calculateExp = (wonPacks: number) => {
-    return wonPacks * 19999.61092150171;
+    return wonPacks * 19999.6;
   };
 
   const drawPacks = () => {
+    setShouldRemoveAlerts(true);
+
     const totalPacks = calculateTotalPacks();
     let wonPacks = 0;
-  
+
     for (let i = 0; i < totalPacks; i++) {
       if (Math.random() < 0.5) {
         wonPacks++;
       }
     }
-  
+
     const newExp = calculateExp(wonPacks);
     let currentExp = parseInt(localStorage.getItem("currentExp") || "0");
     currentExp += newExp;
-  
+
     let currentLevel = parseInt(level);
-  
+
     // Loop para ajustar níveis enquanto EXP for suficiente
     while (currentExp >= EXP_PER_LEVEL) {
       currentExp -= EXP_PER_LEVEL;
       currentLevel += 1;
     }
-  
+
     // Atualizar estado e armazenamento local
     setLevel(currentLevel.toString());
     setExp(currentExp);
     localStorage.setItem("userLevel", currentLevel.toString());
     localStorage.setItem("currentExp", currentExp.toString());
-  
+
     setDrawResults({
       task: selectedTask.label,
       packs: totalPacks,
       wonPacks,
     });
+
+    setDisableInput(false);
   };
-  
+
+  const checkIfThereIsQuantityStored = (taskToCheck: TaskOption | null) => {
+    if (!taskToCheck) {
+      console.log("Nenhuma tarefa foi selecionada.");
+      return;
+    }
+
+    const taskKey = taskToCheck.label.toLowerCase().replace(" ", "");
+    setActualTask(taskKey);
+    const storedQuantity = localStorage.getItem(taskKey);
+
+    if (Number(storedQuantity) > 0) {
+      setDisableInput(true);
+      setTaskInput({ quantity: Number(storedQuantity) || 0 });
+    } else {
+      setDisableInput(false);
+    }
+  };
 
   const renderTaskInput = () => {
     if (
       selectedTask.label === "The Water" ||
       selectedTask.label === "The Nutrition"
     ) {
-      return (
+      return disableInput ? (
+        <div style={{ marginTop: "32px", marginBottom: "16px" }}>
+          <Alert variant="outlined" severity="warning">
+            Sorteie primeiro o que está abaixo para liberar o campo.
+          </Alert>
+        </div>
+      ) : (
         <TextField
           type="number"
           label={
@@ -207,30 +237,20 @@ export default function Exp() {
         />
       );
     }
-
-    if (
-      selectedTask.label === "The Exercise" ||
-      selectedTask.label === "The Grind"
-    ) {
-      return (
-        <TextField
-          type="time"
-          label="Tempo de execução"
-          value={taskInput.time || ""}
-          onChange={(e) => setTaskInput({ time: e.target.value })}
-          sx={{ width: "100%", marginTop: "24px", marginBottom: "24px" }}
-          InputLabelProps={{ shrink: true }}
-        />
-      );
-    }
-
-    return null;
   };
+
+  useEffect(() => {
+    checkIfThereIsQuantityStored({ label: actualTask });
+  }, [actualTask]);
 
   return (
     <>
-      <div style={{ marginBottom: "64px" }}>
-        <LevelCard level={level} exp={exp} onExpChange={(newExp: number) => setExp(newExp)} />
+      <div style={{ marginBottom: "96px" }}>
+        <LevelCard
+          level={level}
+          exp={exp}
+          onExpChange={(newExp: number) => setExp(newExp)}
+        />
       </div>
       <div className="generic-container">
         <TextField
@@ -251,6 +271,7 @@ export default function Exp() {
             setSelectedTask(newValue || options[0]);
             setTaskInput({});
             setDrawResults(null);
+            checkIfThereIsQuantityStored(newValue);
           }}
           sx={{ width: "100%" }}
           renderInput={(params) => <TextField {...params} label="Task" />}
@@ -300,6 +321,9 @@ export default function Exp() {
             level={level}
             packs={calculatePacksByTask(selectedTask.label, level)}
             drawResults={drawResults}
+            selectedNow={selectedTask.label}
+            shouldRemoveAlerts={shouldRemoveAlerts}
+            setShouldRemoveAlerts={setShouldRemoveAlerts}
           />
         )}
       </div>
