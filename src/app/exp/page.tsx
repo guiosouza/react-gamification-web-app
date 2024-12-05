@@ -237,6 +237,24 @@ export default function Exp() {
         />
       );
     }
+
+    if (
+      selectedTask.label === "The Exercise" ||
+      selectedTask.label === "The Grind"
+    ) {
+      return (
+        <TextField
+          type="time"
+          label="Tempo de execução"
+          value={taskInput.time || ""}
+          onChange={(e) => setTaskInput({ time: e.target.value })}
+          sx={{ width: "100%", marginTop: "24px", marginBottom: "24px" }}
+          InputLabelProps={{ shrink: true }}
+        />
+      );
+    }
+
+    return null;
   };
 
   useEffect(() => {
