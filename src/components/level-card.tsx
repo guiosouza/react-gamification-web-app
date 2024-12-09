@@ -40,21 +40,21 @@ interface levelImage {
 
 const urlImages: levelImage[] = [
   { level: 1, path: "/images/novice.png", name: "Novice" },
-  { level: 1488, path: "/images/diamond_dog.png", name: "Diamond Dog" },
-  { level: 2700, path: "/images/gnome_soldier.png", name: "Gnome Soldier" },
+  { level: 7888, path: "/images/diamond_dog.png", name: "Diamond Dog" },
+  { level: 15700, path: "/images/gnome_soldier.png", name: "Gnome Soldier" },
   {
-    level: 19122,
+    level: 27122,
     path: "/images/outer_heaven_soldier.png",
     name: "Outer Heaven Soldier",
   },
   {
-    level: 34000,
+    level: 39000,
     path: "/images/militaires_sans_frontieres.png",
     name: "Militaires Sans Frontières",
   },
-  { level: 49000, path: "/images/fox.png", name: "Fox" },
+  { level: 58000, path: "/images/fox.png", name: "Fox" },
   {
-    level: 60000,
+    level: 72000,
     path: "/images/desperado_enforcement_llc.png",
     name: "Desperado Enforcement LLC",
   },
@@ -64,12 +64,12 @@ const urlImages: levelImage[] = [
     name: "Les Enfants Terribles",
   },
   {
-    level: 120000,
+    level: 112000,
     path: "/images/fox_hound_special_forces.png",
     name: "FOX HOUND Special Forces",
   },
-  { level: 199999, path: "/images/big_boss.png", name: "BIG BOSS" },
-  { level: 235000, path: "/images/the_boss.png", name: "The Boss" },
+  { level: 249000, path: "/images/big_boss.png", name: "BIG BOSS" },
+  { level: 378196, path: "/images/the_boss.png", name: "The Boss" },
 ];
 
 function getLevelData(levelStr: string) {
