@@ -13,7 +13,7 @@ export default function Home() {
       <p>
         <em>
           Nossa nova Base-Mãe. Não sei quanto tempo vai levar, mas vou torná-la
-          maior e melhor do que antes. ―Kazuhira Miller[src]
+          maior e melhor do que antes. ―Kazuhira Miller
         </em>
       </p>
       <br />
