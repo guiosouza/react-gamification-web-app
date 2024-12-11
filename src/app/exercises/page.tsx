@@ -83,12 +83,25 @@ function Exercises() {
   const [reps, setReps] = useState<number>(0);
   const [fails, setFails] = useState<number>(0);
   const [records, setRecords] = useState<ExerciseHistory[]>([]);
+  const [actualSession, setActualSession] = useState<number>(1);
+  const [timeSessionInSeconds, setTimeSessionInSeconds] = useState<number>(10);
+  const [timeSessionInDateTime, setTimeSessionInDateTime] =
+    useState<Dayjs | null>(null);
+  const [timerStarted, setTimerStarted] = useState<boolean>(false);
+  const [timerPaused, setTimerPaused] = useState<boolean>(false);
+
 
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
     value: ExerciseOption | null
   ) => {
     setSelectedExercise(value);
+    // Reset session-related state when exercise changes
+    setActualSession(1);
+    setTimeSessionInSeconds(0);
+    setTimeSessionInDateTime(null);
+    setTimerStarted(false);
+    setTimerPaused(false);
   };
 
   const onStartDateChange = (date: Dayjs | null) => {
@@ -287,6 +300,84 @@ function Exercises() {
     }
   }, [isLogged, selectedExercise, startDate, endDate, fetchRecords]);
 
+  const handleTimeSessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTimeSessionInSeconds(Number(e.target.value));
+
+    // transform seconds from timeSessionInSeconds to datetime like this hh:mm:ss
+    const hours = Math.floor(Number(e.target.value) / 3600);
+    const minutes = Math.floor((Number(e.target.value) % 3600) / 60);
+    const seconds = Number(e.target.value) % 60;
+    setTimeSessionInDateTime(
+      dayjs().set("hour", hours).set("minute", minutes).set("second", seconds)
+    );
+  };
+
+  const handleStartTimer = () => {
+    setTimerStarted(true);
+
+    if (timeSessionInSeconds === 0) {
+      alert("Tempo da sessão não pode ser 0");
+      setTimerStarted(false);
+      return;
+    }
+  };
+
+  const handlePauseTimer = () => {
+    setTimerStarted(false);
+    setTimerPaused(true);
+  };
+
+  const handleResetAll = () => {
+    setTimeSessionInSeconds(0);
+    setTimerStarted(false);
+    setTimerPaused(false);
+    setActualSession(1);
+
+    // reset sessionInDateTime to 0
+    setTimeSessionInDateTime(
+      dayjs().set("hour", 0).set("minute", 0).set("second", 0)
+    );
+  };
+
+  useEffect(() => {
+    if (timerStarted && timeSessionInSeconds !== 0) {
+      const interval = setInterval(() => {
+        setTimeSessionInSeconds((prev) => {
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    } else {
+      setTimerPaused(false);
+      setTimerStarted(false);
+    }
+  }, [timerStarted, timeSessionInSeconds]);
+
+
+  useEffect(() => {
+    if (timerStarted && timeSessionInSeconds !== 0) {
+      const interval = setInterval(() => {
+        setTimeSessionInDateTime((prev) => {
+          if (prev?.format("HH:mm:ss") === "00:00:00") {
+            setTimerStarted(false);
+            return prev;
+          }
+          return prev ? prev.subtract(1, "second") : null;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [timerStarted, timeSessionInDateTime, timeSessionInSeconds]);
+
+  useEffect(() => {
+    if (timeSessionInSeconds === 0) {
+      console.log("O tempo da sessão atingiu 0!");
+    }
+  }, [timeSessionInSeconds]);
+  
+
   return (
     <div>
       {isLogged ? (
@@ -308,19 +399,6 @@ function Exercises() {
               ></iframe>
             </div>
           </Card>
-          <Card sx={{ padding: "10px", marginBottom: 8 }}>
-            <div className="video-container">
-              <iframe
-                src="https://www.youtube.com/embed/Dpx9JStb1ko?si=mL6EJn61f3fJ2-Kr"
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              ></iframe>
-            </div>
-          </Card>
-
           <Grid2 sx={{ mt: 16 }}>
             <div className="generic-container">
               <Typography gutterBottom variant="h5" component="div">
@@ -339,6 +417,75 @@ function Exercises() {
                 )}
               />
             </div>
+            <Card sx={{ mt: 2, p: 1 }}>
+              <div className="generic-container">
+                <TextField
+                  id="outlined-number"
+                  label="Tempo de cada sessão (segundos)"
+                  type="text"
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                  value={timeSessionInSeconds}
+                  onChange={handleTimeSessionChange}
+                  sx={{ width: "100%" }}
+                />
+              </div>
+              <Grid2
+                sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}
+              >
+                <Chip
+                  label={`Sessão # ${actualSession}`}
+                  color="success"
+                  size="small"
+                />
+              </Grid2>
+              <Grid2
+                sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}
+              >
+                <Typography variant="h3" sx={{ color: "text.secondary" }}>
+                  {timeSessionInDateTime
+                    ? timeSessionInDateTime.format("HH:mm:ss")
+                    : "00:00:00"}
+                </Typography>
+              </Grid2>
+              <Grid2
+                sx={{
+                  mt: 2,
+                  mb: 2,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                {timerStarted ? (
+                  <Button variant="contained" onClick={handlePauseTimer}>
+                    Pausar
+                  </Button>
+                ) : (
+                  <Button variant="contained" onClick={handleStartTimer}>
+                    {timerPaused ? "Continuar" : "Começar"}
+                  </Button>
+                )}
+              </Grid2>
+              <Grid2
+                sx={{
+                  mt: 2,
+                  mb: 2,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={handleResetAll}
+                >
+                  Resetar tudo
+                </Button>
+              </Grid2>
+            </Card>
             <Card sx={{ mt: 2, p: 1 }}>
               <div className="generic-container">
                 <TextField
