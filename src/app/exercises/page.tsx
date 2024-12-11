@@ -90,7 +90,6 @@ function Exercises() {
   const [timerStarted, setTimerStarted] = useState<boolean>(false);
   const [timerPaused, setTimerPaused] = useState<boolean>(false);
 
-
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
     value: ExerciseOption | null
@@ -354,7 +353,6 @@ function Exercises() {
     }
   }, [timerStarted, timeSessionInSeconds]);
 
-
   useEffect(() => {
     if (timerStarted && timeSessionInSeconds !== 0) {
       const interval = setInterval(() => {
@@ -374,9 +372,13 @@ function Exercises() {
   useEffect(() => {
     if (timeSessionInSeconds === 0) {
       console.log("O tempo da sessão atingiu 0!");
+      setActualSession((prev) => prev + 1);
+      setTimeSessionInSeconds(0);
+      setTimeSessionInDateTime(
+        dayjs().set("hour", 0).set("minute", 0).set("second", 0)
+      );
     }
   }, [timeSessionInSeconds]);
-  
 
   return (
     <div>
