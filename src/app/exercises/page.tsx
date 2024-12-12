@@ -83,24 +83,20 @@ function Exercises() {
   const [reps, setReps] = useState<number>(0);
   const [fails, setFails] = useState<number>(0);
   const [records, setRecords] = useState<ExerciseHistory[]>([]);
-  const [actualSession, setActualSession] = useState<number>(1);
-  const [timeSessionInSeconds, setTimeSessionInSeconds] = useState<number>(10);
-  const [timeSessionInDateTime, setTimeSessionInDateTime] =
-    useState<Dayjs | null>(null);
-  const [timerStarted, setTimerStarted] = useState<boolean>(false);
-  const [timerPaused, setTimerPaused] = useState<boolean>(false);
+  const [timerIsRunning, setTimerIsRunning] = useState(false); // for when timer is running
+  const [timeSessionInSeconds, setTimeSessionInSeconds] = useState(0);
+  const [timeSessionDisplayed, setTimeSessionDisplayed] = useState("00:00:00");
+  const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [actualSession, setActualSession] = useState(1);
+  const [initialSessionTime, setInitialSessionTime] = useState(0);
+  const [isTimerFinished, setIsTimerFinished] = useState(false);
+  const [shouldDelay, setShouldDelay] = useState(false);
 
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
     value: ExerciseOption | null
   ) => {
     setSelectedExercise(value);
-    // Reset session-related state when exercise changes
-    setActualSession(1);
-    setTimeSessionInSeconds(0);
-    setTimeSessionInDateTime(null);
-    setTimerStarted(false);
-    setTimerPaused(false);
   };
 
   const onStartDateChange = (date: Dayjs | null) => {
@@ -299,86 +295,87 @@ function Exercises() {
     }
   }, [isLogged, selectedExercise, startDate, endDate, fetchRecords]);
 
-  const handleTimeSessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTimeSessionInSeconds(Number(e.target.value));
-
-    // transform seconds from timeSessionInSeconds to datetime like this hh:mm:ss
-    const hours = Math.floor(Number(e.target.value) / 3600);
-    const minutes = Math.floor((Number(e.target.value) % 3600) / 60);
-    const seconds = Number(e.target.value) % 60;
-    setTimeSessionInDateTime(
-      dayjs().set("hour", hours).set("minute", minutes).set("second", seconds)
-    );
+  const handleTimeSessionInSecondsChange = (e: React.ChangeEvent) => {
+    const value = Number((e.target as HTMLInputElement).value);
+    setTimeSessionInSeconds(value);
+    setInitialSessionTime(value);
+    setIsTimerFinished(false);
   };
 
   const handleStartTimer = () => {
-    setTimerStarted(true);
+    console.log("Timer started");
+    setTimerIsRunning(true);
+    setIsTimerFinished(false);
+    setShouldDelay(false);
 
-    if (timeSessionInSeconds === 0) {
-      alert("Tempo da sessão não pode ser 0");
-      setTimerStarted(false);
-      return;
+    // clear any previous interval
+    if (intervalId) {
+      clearInterval(intervalId);
     }
+
+    const id = window.setInterval(() => {
+      setTimeSessionInSeconds((previousTime) => {
+        if (previousTime <= 1) {
+          clearInterval(id); // clear interval when time is up
+          setShouldDelay(true); // ativa o delay
+
+          // após 1 segundo, finaliza o timer
+          setTimeout(() => {
+            setIsTimerFinished(true);
+            setShouldDelay(false);
+          }, 1000);
+
+          return 0;
+        }
+
+        return previousTime - 1;
+      });
+    }, 1000);
+
+    setIntervalId(id);
   };
 
   const handlePauseTimer = () => {
-    setTimerStarted(false);
-    setTimerPaused(true);
+    setTimerIsRunning(false);
+
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
   };
 
-  const handleResetAll = () => {
-    setTimeSessionInSeconds(0);
-    setTimerStarted(false);
-    setTimerPaused(false);
+  const handleResetSessions = () => {
+    setTimerIsRunning(false);
     setActualSession(1);
-
-    // reset sessionInDateTime to 0
-    setTimeSessionInDateTime(
-      dayjs().set("hour", 0).set("minute", 0).set("second", 0)
-    );
   };
 
   useEffect(() => {
-    if (timerStarted && timeSessionInSeconds !== 0) {
-      const interval = setInterval(() => {
-        setTimeSessionInSeconds((prev) => {
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    } else {
-      setTimerPaused(false);
-      setTimerStarted(false);
-    }
-  }, [timerStarted, timeSessionInSeconds]);
+    return () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [intervalId]);
 
   useEffect(() => {
-    if (timerStarted && timeSessionInSeconds !== 0) {
-      const interval = setInterval(() => {
-        setTimeSessionInDateTime((prev) => {
-          if (prev?.format("HH:mm:ss") === "00:00:00") {
-            setTimerStarted(false);
-            return prev;
-          }
-          return prev ? prev.subtract(1, "second") : null;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [timerStarted, timeSessionInDateTime, timeSessionInSeconds]);
-
-  useEffect(() => {
-    if (timeSessionInSeconds === 0) {
-      console.log("O tempo da sessão atingiu 0!");
+    if (timeSessionInSeconds === 0 && isTimerFinished) {
+      setTimerIsRunning(false);
+      setTimeSessionInSeconds(initialSessionTime);
       setActualSession((prev) => prev + 1);
-      setTimeSessionInSeconds(0);
-      setTimeSessionInDateTime(
-        dayjs().set("hour", 0).set("minute", 0).set("second", 0)
-      );
+      setIsTimerFinished(false);
     }
-  }, [timeSessionInSeconds]);
+  }, [timeSessionInSeconds, initialSessionTime, isTimerFinished]);
+
+  const calculateProgress = () => {
+    if (initialSessionTime === 0) return 0;
+
+    // Se shouldDelay for true, mantém 100%
+    if (shouldDelay) return 100;
+
+    const progress =
+      ((initialSessionTime - timeSessionInSeconds) / initialSessionTime) * 100;
+
+    return Math.min(100, Math.max(0, progress));
+  };
 
   return (
     <div>
@@ -401,6 +398,116 @@ function Exercises() {
               ></iframe>
             </div>
           </Card>
+          {/* Card do timer */}
+          <Card
+            sx={{
+              p: 1,
+              marginBottom: 2,
+              marginTop: 2,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {/* Barra de progresso */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "100%",
+                height: `${calculateProgress()}%`,
+                backgroundColor: "#4D4D4D",
+                transition: "height 0.7s ease",
+                zIndex: 0,
+              }}
+            />
+
+            {/* Conteúdo do card - wrapping em div para ficar acima da barra de progresso */}
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div className="generic-container">
+                <TextField
+                  disabled={timerIsRunning}
+                  id="outlined-number"
+                  label="Tempo de cada sessão (segundos)"
+                  type="text"
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                  value={timeSessionInSeconds}
+                  onChange={handleTimeSessionInSecondsChange}
+                  sx={{ width: "100%" }}
+                />
+              </div>
+              <Grid2
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 4,
+                  mb: 2,
+                }}
+              >
+                <Chip
+                  label={`Sessão # ${actualSession}`}
+                  color="success"
+                  size="small"
+                />
+              </Grid2>
+              <Grid2
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 4,
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h3" sx={{ color: "text.secondary" }}>
+                  {timeSessionInSeconds ? timeSessionInSeconds : "0"}
+                </Typography>
+              </Grid2>
+              <Grid2
+                sx={{
+                  mt: 2,
+                  mb: 2,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                {!timerIsRunning && (
+                  <Button variant="contained" onClick={handleStartTimer}>
+                    Começar
+                  </Button>
+                )}
+
+                {timerIsRunning && (
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    onClick={handlePauseTimer}
+                  >
+                    Pausar
+                  </Button>
+                )}
+              </Grid2>
+              <Grid2
+                sx={{
+                  mt: 2,
+                  mb: 2,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="warning"
+                  onClick={handleResetSessions}
+                >
+                  Resetar sessões
+                </Button>
+              </Grid2>
+            </div>
+          </Card>
           <Grid2 sx={{ mt: 16 }}>
             <div className="generic-container">
               <Typography gutterBottom variant="h5" component="div">
@@ -419,75 +526,6 @@ function Exercises() {
                 )}
               />
             </div>
-            <Card sx={{ mt: 2, p: 1 }}>
-              <div className="generic-container">
-                <TextField
-                  id="outlined-number"
-                  label="Tempo de cada sessão (segundos)"
-                  type="text"
-                  slotProps={{
-                    inputLabel: {
-                      shrink: true,
-                    },
-                  }}
-                  value={timeSessionInSeconds}
-                  onChange={handleTimeSessionChange}
-                  sx={{ width: "100%" }}
-                />
-              </div>
-              <Grid2
-                sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}
-              >
-                <Chip
-                  label={`Sessão # ${actualSession}`}
-                  color="success"
-                  size="small"
-                />
-              </Grid2>
-              <Grid2
-                sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}
-              >
-                <Typography variant="h3" sx={{ color: "text.secondary" }}>
-                  {timeSessionInDateTime
-                    ? timeSessionInDateTime.format("HH:mm:ss")
-                    : "00:00:00"}
-                </Typography>
-              </Grid2>
-              <Grid2
-                sx={{
-                  mt: 2,
-                  mb: 2,
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                {timerStarted ? (
-                  <Button variant="contained" onClick={handlePauseTimer}>
-                    Pausar
-                  </Button>
-                ) : (
-                  <Button variant="contained" onClick={handleStartTimer}>
-                    {timerPaused ? "Continuar" : "Começar"}
-                  </Button>
-                )}
-              </Grid2>
-              <Grid2
-                sx={{
-                  mt: 2,
-                  mb: 2,
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={handleResetAll}
-                >
-                  Resetar tudo
-                </Button>
-              </Grid2>
-            </Card>
             <Card sx={{ mt: 2, p: 1 }}>
               <div className="generic-container">
                 <TextField
