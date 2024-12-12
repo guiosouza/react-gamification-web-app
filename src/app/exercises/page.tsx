@@ -92,6 +92,7 @@ function Exercises() {
   const [isTimerFinished, setIsTimerFinished] = useState(false);
   const [shouldDelay, setShouldDelay] = useState(false);
 
+
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
     value: ExerciseOption | null
