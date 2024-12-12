@@ -348,6 +348,23 @@ function Exercises() {
     setActualSession(1);
   };
 
+  const transformSecondsToTime = useCallback(() => {
+    const hours = Math.floor(timeSessionInSeconds / 3600);
+    const minutes = Math.floor((timeSessionInSeconds % 3600) / 60);
+    const seconds = timeSessionInSeconds % 60;
+
+    setTimeSessionDisplayed(
+      `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+        2,
+        "0"
+      )}:${String(seconds).padStart(2, "0")}`
+    );
+  }, [timeSessionInSeconds]);
+
+  useEffect(() => {
+    transformSecondsToTime();
+  }, [transformSecondsToTime]);
+
   useEffect(() => {
     return () => {
       if (intervalId !== null) {
@@ -463,7 +480,7 @@ function Exercises() {
                 }}
               >
                 <Typography variant="h3" sx={{ color: "text.secondary" }}>
-                  {timeSessionInSeconds ? timeSessionInSeconds : "0"}
+                  {timeSessionDisplayed ? timeSessionDisplayed : "00:00:00"}
                 </Typography>
               </Grid2>
               <Grid2
