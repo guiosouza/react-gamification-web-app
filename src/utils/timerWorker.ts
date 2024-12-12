@@ -1,7 +1,16 @@
 let count = 0;
+
+onmessage = (event: MessageEvent<number>) => {
+  count = event.data;
+  tick();
+};
+
 function tick() {
-  count++;
-  postMessage(count);
-  setTimeout(tick, 1000); // Simula setInterval mesmo com o navegador bloqueado
+  if (count > 0) {
+    count--;
+    postMessage(count);
+    setTimeout(tick, 1000); // Simula setInterval mesmo com o navegador bloqueado
+  } else {
+    postMessage('done');
+  }
 }
-tick();
