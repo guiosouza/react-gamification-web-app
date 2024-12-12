@@ -297,7 +297,11 @@ function Exercises() {
   }, [isLogged, selectedExercise, startDate, endDate, fetchRecords]);
 
   const handleTimeSessionInSecondsChange = (e: React.ChangeEvent) => {
+    
     const value = Number((e.target as HTMLInputElement).value);
+
+    if(isNaN(value) || value < 0) return;
+
     setTimeSessionInSeconds(value);
     setInitialSessionTime(value);
     setIsTimerFinished(false);
