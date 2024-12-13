@@ -20,7 +20,7 @@ function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
 ) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Box sx={{ display: "flex", alignItems: "center", p: 2 }}>
       <Box sx={{ width: "100%", mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
@@ -28,7 +28,7 @@ function LinearProgressWithLabel(
         <Typography
           variant="body2"
           sx={{ color: "text.secondary" }}
-        >{`${props.value.toFixed(4)}%`}</Typography>
+        >{`${props.value.toFixed(6)}%`}</Typography>
       </Box>
     </Box>
   );
@@ -62,8 +62,8 @@ export default function LinearWithValueLabel() {
     const diff = end.diff(now);
     const duration = dayjs.duration(Math.abs(diff));
     const totalHours = Math.floor(duration.asHours());
-    const minutes = String(duration.minutes()).padStart(2, '0');
-    const seconds = String(duration.seconds()).padStart(2, '0');
+    const minutes = String(duration.minutes()).padStart(2, "0");
+    const seconds = String(duration.seconds()).padStart(2, "0");
     return `${totalHours}:${minutes}:${seconds}`;
   };
 
@@ -80,8 +80,8 @@ export default function LinearWithValueLabel() {
     // Atualiza imediatamente
     updateProgress();
 
-    // Configura intervalo para atualizar a cada segundo
-    const timer = setInterval(updateProgress, 1000);
+    // Configura intervalo para atualizar a cada 50ms
+    const timer = setInterval(updateProgress, 50);
 
     return () => clearInterval(timer);
   }, [startDate, endDate]);
@@ -138,9 +138,11 @@ export default function LinearWithValueLabel() {
       <div className="generic-container">
         <LinearProgressWithLabel value={progress} />
         {endDate && (
-          <Typography variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
+          <Typography variant="body2" sx={{ mt: 1, textAlign: "center" }}>
             {dayjs().isBefore(endDate)
-              ? `Faltam ${remainingTime} para o fim do projeto.`
+              ? `Faltam ${remainingTime} horas/minutos para o fim do projeto. E faltam ${Math.ceil(
+                  dayjs.duration(endDate.diff(dayjs())).asDays()
+                )} dias.`
               : `Você passou ${remainingTime} da meta`}
           </Typography>
         )}
