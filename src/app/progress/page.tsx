@@ -11,6 +11,7 @@ import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
+import { Card } from "@mui/material";
 
 dayjs.locale("pt-br");
 dayjs.extend(relativeTime);
@@ -20,17 +21,19 @@ function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
 ) {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", p: 2 }}>
-      <Box sx={{ width: "100%", mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
+    <Card>
+      <Box sx={{ display: "flex", alignItems: "center", p: 3 }}>
+        <Box sx={{ width: "100%", mr: 1 }}>
+          <LinearProgress  variant="determinate" {...props} sx={{height: "26px", borderRadius: "4px"}} />
+        </Box>
+        <Box sx={{ minWidth: 65 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary" }}
+          >{`${props.value.toFixed(6)}%`}</Typography>
+        </Box>
       </Box>
-      <Box sx={{ minWidth: 65 }}>
-        <Typography
-          variant="body2"
-          sx={{ color: "text.secondary" }}
-        >{`${props.value.toFixed(6)}%`}</Typography>
-      </Box>
-    </Box>
+    </Card>
   );
 }
 
@@ -53,7 +56,7 @@ export default function LinearWithValueLabel() {
     if (now.isAfter(end)) {
       return 100;
     }
-    // Calcula a porcentagem
+    // Calcula a porcentagem de progresso
     return (elapsedDuration / totalDuration) * 100;
   };
 
@@ -86,7 +89,7 @@ export default function LinearWithValueLabel() {
     return () => clearInterval(timer);
   }, [startDate, endDate]);
 
-  // Carregar datas salvas
+  // Carregar datas salvas do localStorage
   useEffect(() => {
     const savedStartDate = localStorage.getItem("startDate");
     const savedEndDate = localStorage.getItem("endDate");
@@ -138,7 +141,7 @@ export default function LinearWithValueLabel() {
       <div className="generic-container">
         <LinearProgressWithLabel value={progress} />
         {endDate && (
-          <Typography variant="body2" sx={{ mt: 1, textAlign: "center" }}>
+          <Typography variant="body2" sx={{ mt: 2, textAlign: "center" }}>
             {dayjs().isBefore(endDate)
               ? `Faltam ${remainingTime} horas/minutos para o fim do projeto. E faltam ${Math.ceil(
                   dayjs.duration(endDate.diff(dayjs())).asDays()
