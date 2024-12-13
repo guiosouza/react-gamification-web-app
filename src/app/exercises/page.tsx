@@ -11,6 +11,8 @@ import {
   Grid2,
   TextField,
   Typography,
+  Modal,
+  Box,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -91,7 +93,7 @@ function Exercises() {
   const [initialSessionTime, setInitialSessionTime] = useState(0);
   const [isTimerFinished, setIsTimerFinished] = useState(false);
   const [shouldDelay, setShouldDelay] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
@@ -230,6 +232,7 @@ function Exercises() {
       // Atualiza o histórico no Firebase mantendo apenas o TOP 3
       existingData[exerciseIndex].history = topRecords;
       await set(userRef, existingData);
+      setIsModalOpen(true); // Abre o modal após salvar com sucesso
 
       // Limpa os campos após salvar
       setWeight(0);
@@ -901,6 +904,36 @@ function Exercises() {
           </Button>
         </>
       )}
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        aria-labelledby="success-modal-title"
+        aria-describedby="success-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute' as const,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 300,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography id="success-modal-title" variant="h6" component="h2">
+            Sucesso
+          </Typography>
+          <Typography id="success-modal-description" sx={{ mt: 2 }}>
+            Exercício salvo com sucesso!
+          </Typography>
+          <Button onClick={() => setIsModalOpen(false)} sx={{ mt: 2 }}>
+            Fechar
+          </Button>
+        </Box>
+      </Modal>
     </div>
   );
 }
