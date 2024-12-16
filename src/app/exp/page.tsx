@@ -102,11 +102,11 @@ export default function Exp() {
         return baseMultiplier;
       case "Dias de NF": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 782;
+        return daysPassed * 866;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 782;
+        return daysPassed * 866;
       }
       default:
         return 0;
