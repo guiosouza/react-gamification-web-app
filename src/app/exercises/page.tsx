@@ -70,6 +70,7 @@ function Exercises() {
     { label: "Costas" },
     { label: "Antebraço" },
     { label: "Nádegas" },
+    {label: "Remada unilateral neutra"}
   ];
 
   const [selectedExercise, setSelectedExercise] =
