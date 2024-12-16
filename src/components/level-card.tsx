@@ -172,7 +172,9 @@ function LevelCard({
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
           {levelData.nextLevel && (
             <Chip
-              color="secondary"
+
+              sx={{ fontSize: "12px", p: 1   }}
+              color="warning"
               label={`Próximo: ${levelData.nextName}`}
               size="small"
             />
