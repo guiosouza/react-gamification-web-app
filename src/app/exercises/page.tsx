@@ -56,9 +56,24 @@ const marginBottomAndTop4 = {
   marginBottom: 4,
 };
 
+const adjustWeightForExercise = (exercise: string, weight: number) => {
+  if (exercise === "Flexão") {
+    return weight * 0.64;
+  } else if (exercise === "Flexão declinada (30°)") {
+    return weight * 0.75;
+  }
+  return weight;
+};
+
+const formatWeight = (weight: number) => {
+  const fixedWeight = weight.toFixed(3);
+  return fixedWeight.replace('.', ',');
+};
+
 function Exercises() {
   const exerciseOptions: ExerciseOption[] = [
     { label: "Flexão" },
+    { label: "Flexão declinada (30°)" },
     { label: "Barra" },
     { label: "Abdominal" },
     { label: "Agachamento" },
@@ -70,7 +85,7 @@ function Exercises() {
     { label: "Costas" },
     { label: "Antebraço" },
     { label: "Nádegas" },
-    {label: "Remada unilateral neutra"}
+    { label: "Remada unilateral neutra" },
   ];
 
   const [selectedExercise, setSelectedExercise] =
@@ -171,7 +186,11 @@ function Exercises() {
     if (!auth.currentUser) return;
 
     const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
-    const totalWeight = calculateTotalWeight(reps, Number(weight), fails);
+    const adjustedWeight = adjustWeightForExercise(
+      selectedExercise?.label || "",
+      Number(weight)
+    );
+    const totalWeight = calculateTotalWeight(reps, adjustedWeight, fails);
 
     try {
       const snapshot = await get(userRef);
@@ -198,7 +217,7 @@ function Exercises() {
         {
           date: dayjs().format("DD/MM/YYYY - HH:mm"),
           reps,
-          weight,
+          weight: adjustedWeight,
           totalWeightLifted: totalWeight,
           failsOrNegative: fails,
         },
@@ -301,10 +320,9 @@ function Exercises() {
   }, [isLogged, selectedExercise, startDate, endDate, fetchRecords]);
 
   const handleTimeSessionInSecondsChange = (e: React.ChangeEvent) => {
-    
     const value = Number((e.target as HTMLInputElement).value);
 
-    if(isNaN(value) || value < 0) return;
+    if (isNaN(value) || value < 0) return;
 
     setTimeSessionInSeconds(value);
     setInitialSessionTime(value);
@@ -771,6 +789,13 @@ function Exercises() {
                       100
                     : null;
 
+                  const baseWeight =
+                    selectedExercise.label === "Flexão"
+                      ? formatWeight(record.weight / 0.64)
+                      : selectedExercise.label === "Flexão declinada (30°)"
+                      ? formatWeight(record.weight / 0.75)
+                      : null;
+
                   return (
                     <Card
                       key={index}
@@ -822,7 +847,10 @@ function Exercises() {
                             variant="body2"
                             sx={{ color: "text.secondary" }}
                           >
-                            Peso usado: {record.weight} KG
+                            Peso usado: {formatWeight(record.weight)} KG
+                            {baseWeight && (
+                              <> (peso base real: {baseWeight} KG)</>
+                            )}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -851,7 +879,7 @@ function Exercises() {
                             Peso total:{" "}
                             <Chip
                               color="secondary"
-                              label={`${record.totalWeightLifted}KG`}
+                              label={`${formatWeight(record.totalWeightLifted)}KG`}
                               size="small"
                             />
                             <Chip
@@ -913,13 +941,13 @@ function Exercises() {
       >
         <Box
           sx={{
-            position: 'absolute' as const,
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+            position: "absolute" as const,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 300,
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
+            bgcolor: "background.paper",
+            border: "2px solid #000",
             boxShadow: 24,
             p: 4,
           }}
