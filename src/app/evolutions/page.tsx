@@ -11,10 +11,31 @@ import { useEffect, useState } from "react";
 import { auth, onAuthStateChanged, database } from "../../lib/firebase";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { ref, get } from "firebase/database";
-import { Button, Card, TextField } from "@mui/material";
+import { Alert, Button, Card, TextField } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import { TooltipProps } from "recharts";
+
+// interface TooltipPayload {
+//   date: string;
+//   totalWeight: number;
+// }
+
+// interface CustomTooltipProps {
+//   active: boolean;
+//   payload: { payload: TooltipPayload }[];
+// }
+
+interface ExerciseHistory {
+  date: string;
+  totalWeightLifted: number;
+}
+
+interface Exercise {
+  title: string;
+  history: ExerciseHistory[];
+}
 
 function Evolutions() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,7 +45,7 @@ function Evolutions() {
     dayjs().startOf("month")
   );
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
-  const [exerciseData, setExerciseData] = useState<any[]>([]);
+  const [exerciseData, setExerciseData] = useState<Exercise[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -51,7 +72,7 @@ function Evolutions() {
     }
   };
 
-  const filterDataByDate = (history: any[]) => {
+  const filterDataByDate = (history: ExerciseHistory[]) => {
     if (!startDate || !endDate) return history;
 
     const start = startDate.startOf("day").valueOf();
@@ -82,9 +103,12 @@ function Evolutions() {
     }
   };
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
-      const { date, totalWeight } = payload[0].payload;
+      const { date, totalWeight } = payload[0].payload as {
+        date: string;
+        totalWeight: number;
+      };
       return (
         <div
           style={{
@@ -166,8 +190,15 @@ function Evolutions() {
         return (
           <Card key={index} sx={{ mb: 2, p: 2, mt: 2 }}>
             <h4>
-              {exercise.title.charAt(0).toUpperCase() + exercise.title.slice(1)}
+              {exercise.title
+                .split(" ")
+                .map(
+                  (word) =>
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                )
+                .join(" ")}
             </h4>
+
             {filteredHistory.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart
@@ -185,7 +216,7 @@ function Evolutions() {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={CustomTooltip} />
                   <Area
                     type="monotone"
                     dataKey="totalWeight"
@@ -195,7 +226,7 @@ function Evolutions() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <p>Sem dados nesse período</p>
+              <Alert color="info" variant="outlined" >Sem dados nesse período</Alert>
             )}
           </Card>
         );
