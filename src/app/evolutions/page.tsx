@@ -17,15 +17,28 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { TooltipProps } from "recharts";
 
-// interface TooltipPayload {
-//   date: string;
-//   totalWeight: number;
-// }
-
-// interface CustomTooltipProps {
-//   active: boolean;
-//   payload: { payload: TooltipPayload }[];
-// }
+const colors = [
+  "#8884d8", // Purple
+  "#82ca9d", // Green
+  "#ff7300", // Orange
+  "#ffc658", // Yellow
+  "#ff0000", // Red
+  "#00aaff", // Blue
+  "#ff6347", // Tomato
+  "#32cd32", // Lime Green
+  "#ff1493", // Deep Pink
+  "#8a2be2", // Blue Violet
+  "#a52a2a", // Brown
+  "#7fff00", // Chartreuse
+  "#d2691e", // Chocolate
+  "#c71585", // Medium Violet Red
+  "#20b2aa", // Light Sea Green
+  "#dda0dd", // Plum
+  "#ff4500", // Orange Red
+  "#6a5acd", // Slate Blue
+  "#90ee90", // Light Green
+  "#ffb6c1", // Light Pink
+];
 
 interface ExerciseHistory {
   date: string;
@@ -187,6 +200,7 @@ function Evolutions() {
 
       {exerciseData.map((exercise, index) => {
         const filteredHistory = filterDataByDate(exercise.history);
+        const color = colors[index % colors.length];
         return (
           <Card key={index} sx={{ mb: 2, p: 2, mt: 2 }}>
             <h4>
@@ -220,13 +234,15 @@ function Evolutions() {
                   <Area
                     type="monotone"
                     dataKey="totalWeight"
-                    stroke="#8884d8"
-                    fill="#8884d8"
+                    stroke={color} // Aplique a cor no gráfico
+                    fill={color} // Aplique a cor no gráfico
                   />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <Alert color="info" variant="outlined" >Sem dados nesse período</Alert>
+              <Alert color="info" variant="outlined">
+                Sem dados nesse período
+              </Alert>
             )}
           </Card>
         );
