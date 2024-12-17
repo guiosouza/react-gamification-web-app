@@ -185,6 +185,11 @@ function Exercises() {
   const saveExerciseData = async () => {
     if (!auth.currentUser) return;
 
+    if (weight <= 0 || reps <= 0) {
+      alert("Peso e/ou Repetições não podem ser zero ou negativos.");
+      return;
+    }
+
     const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
     const adjustedWeight = adjustWeightForExercise(
       selectedExercise?.label || "",
