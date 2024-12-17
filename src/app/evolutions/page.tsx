@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { auth, onAuthStateChanged, database } from "../../lib/firebase";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { ref, get } from "firebase/database";
-import { Alert, Button, Card, TextField } from "@mui/material";
+import { Alert, Button, Card, TextField, CircularProgress, Backdrop } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
@@ -52,6 +52,7 @@ interface Exercise {
 
 function Evolutions() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [startDate, setStartDate] = useState<Dayjs | null>(
@@ -64,12 +65,14 @@ function Evolutions() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
       if (user) fetchExerciseData(user.uid); // Fetch data on login
+      setIsLoading(false); // Set loading to false after auth state change
     });
     return () => unsubscribe();
   }, []);
 
   const fetchExerciseData = async (userId: string) => {
     try {
+      setIsLoading(true); // Set loading to true while fetching data
       const userRef = ref(database, `users/${userId}/data`);
       const snapshot = await get(userRef);
 
@@ -82,6 +85,8 @@ function Evolutions() {
       }
     } catch (error) {
       console.error("Error fetching data: ", error);
+    } finally {
+      setIsLoading(false); // Set loading to false after data fetch
     }
   };
 
@@ -99,10 +104,13 @@ function Evolutions() {
 
   const handleLogin = async () => {
     try {
+      setIsLoading(true); // Set loading to true while logging in
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.error("Error logging in", error);
       alert("E-mail or password incorrect.");
+    } finally {
+      setIsLoading(false); // Set loading to false after login attempt
     }
   };
 
@@ -139,6 +147,14 @@ function Evolutions() {
     }
     return null;
   };
+
+  if (isLoading) {
+    return (
+      <Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
