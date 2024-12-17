@@ -67,7 +67,7 @@ const adjustWeightForExercise = (exercise: string, weight: number) => {
 
 const formatWeight = (weight: number) => {
   const fixedWeight = weight.toFixed(3);
-  return fixedWeight.replace('.', ',');
+  return fixedWeight.replace(".", ",");
 };
 
 function Exercises() {
@@ -884,7 +884,9 @@ function Exercises() {
                             Peso total:{" "}
                             <Chip
                               color="secondary"
-                              label={`${formatWeight(record.totalWeightLifted)}KG`}
+                              label={`${formatWeight(
+                                record.totalWeightLifted
+                              )}KG`}
                               size="small"
                             />
                             <Chip
@@ -905,9 +907,7 @@ function Exercises() {
       ) : (
         <>
           <div className="generic-container">
-            <Typography gutterBottom variant="h5" component="div">
-              Logar
-            </Typography>
+            <h4>Por favor, faça login para ver os dados.</h4>
           </div>
           <div className="generic-container">
             <TextField
