@@ -14,7 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import Link from "next/link";
 
-const pages = ["Exp", "Progress", "Exercises"];
+const pages = ["Exp", "Progress", "Exercises", "Workouts"];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -87,7 +87,7 @@ function ResponsiveAppBar() {
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography sx={{ textAlign: "center" }}>
                     <Link
-                      href={`/${page.toLowerCase()}`}
+                      href={`/${page.toLowerCase().replace(/ /g, '-')}`}
                       style={{ color: "inherit", textDecoration: "none" }}
                     >
                       {page}
@@ -125,7 +125,12 @@ function ResponsiveAppBar() {
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                <Link
+                  href={`/${page.toLowerCase().replace(/ /g, '-')}`}
+                  style={{ color: "inherit", textDecoration: "none" }}
+                >
+                  {page}
+                </Link>
               </Button>
             ))}
           </Box>
