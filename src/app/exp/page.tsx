@@ -26,7 +26,7 @@ interface TaskInput {
 
 const options: TaskOption[] = [
   { label: "Todas" },
-  { label: "Dias de NF" },
+  { label: "Project " },
   { label: "Sono" },
   // { label: "The Grind" },
   { label: "The Water" },
@@ -100,7 +100,7 @@ export default function Exp() {
         return baseMultiplier;
       case "The Water":
         return baseMultiplier;
-      case "Dias de NF": {
+      case "Project": {
         const daysPassed = calculateDaysSinceStart(startDate);
         return daysPassed * 866;
       }
@@ -123,7 +123,7 @@ export default function Exp() {
   const calculateTotalPacks = (): number => {
     const basePacks = calculatePacksByTask(selectedTask.label, level);
 
-    if (selectedTask.label === "Dias de NF") {
+    if (selectedTask.label === "Project ") {
       return basePacks;
     }
 
@@ -296,7 +296,7 @@ export default function Exp() {
         />
       </div>
 
-      {(selectedTask.label === "Dias de NF" ||
+      {(selectedTask.label === "Project " ||
         selectedTask.label === "Sono") && (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
           <div style={{ marginTop: "24px", marginBottom: "24px" }}>
