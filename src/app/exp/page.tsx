@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Autocomplete, TextField, Button, Alert } from "@mui/material";
+import { Autocomplete, TextField, Button, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import TaskCard from "@/components/task-card";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
@@ -45,6 +45,8 @@ export default function Exp() {
   const [disableInput, setDisableInput] = useState(false);
   const [actualTask, setActualTask] = useState<string>("");
   const [shouldRemoveAlerts, setShouldRemoveAlerts] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [previousLevel, setPreviousLevel] = useState<string>("");
 
   useEffect(() => {
     const savedLevel = localStorage.getItem("userLevel");
@@ -173,6 +175,8 @@ export default function Exp() {
 
     let currentLevel = parseInt(level);
 
+    setPreviousLevel(level);
+
     // Loop para ajustar níveis enquanto EXP for suficiente
     while (currentExp >= EXP_PER_LEVEL) {
       currentExp -= EXP_PER_LEVEL;
@@ -192,6 +196,7 @@ export default function Exp() {
     });
 
     setDisableInput(false);
+    setOpenModal(true);
   };
 
   const checkIfThereIsQuantityStored = (taskToCheck: TaskOption | null) => {
@@ -345,6 +350,15 @@ export default function Exp() {
           />
         )}
       </div>
+      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+        <DialogTitle>Level Up!</DialogTitle>
+        <DialogContent>
+          <p>Você subiu do nível {previousLevel} para o nível {level}!</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModal(false)}>Fechar</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

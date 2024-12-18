@@ -15,7 +15,7 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
+  height: "26px",
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[200],
@@ -173,7 +173,7 @@ function LevelCard({
           {levelData.nextLevel && (
             <Chip
 
-              sx={{ fontSize: "12px", p: 1   }}
+              sx={{ fontSize: "12px", p: 1, borderRadius: "8px"   }}
               color="warning"
               label={`Próximo: ${levelData.nextName}`}
               size="small"
