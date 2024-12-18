@@ -3,7 +3,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import React, { useState, useEffect, useCallback } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { Alert, Card, CardContent, Typography, Chip } from "@mui/material";
+import { Alert, Card, CardContent, Typography, Chip, Backdrop, CircularProgress } from "@mui/material";
 import { auth, database } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { ref, get } from "firebase/database";
@@ -30,6 +30,7 @@ const Workouts = () => {
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [isLogged, setIsLogged] = useState(false);
   const [workouts, setWorkouts] = useState<WorkoutWithExerciseTitle[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleStartDateChange = (date: Dayjs | null) => {
     setStartDate(date);
@@ -42,6 +43,7 @@ const Workouts = () => {
   const fetchWorkouts = useCallback(async () => {
     if (!auth.currentUser || !startDate || !endDate) return;
 
+    setIsLoading(true);
     const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
 
     try {
@@ -66,6 +68,8 @@ const Workouts = () => {
     } catch (error) {
       console.error("Erro ao buscar treinos:", error);
       alert("Erro ao buscar os treinos.");
+    } finally {
+      setIsLoading(false);
     }
   }, [startDate, endDate]);
 
@@ -82,6 +86,14 @@ const Workouts = () => {
       fetchWorkouts();
     }
   }, [isLogged, startDate, endDate, fetchWorkouts]);
+
+  if (isLoading) {
+    return (
+      <Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   return (
     <>
@@ -155,7 +167,7 @@ const Workouts = () => {
                       variant="body2"
                       sx={{ color: "text.secondary" }}
                     >
-                      Peso usado: {workout.weight} KG
+                      Peso usado: {workout.weight.toFixed(3).replace('.', ',')} KG
                     </Typography>
                     <Typography
                       variant="body2"
@@ -167,7 +179,7 @@ const Workouts = () => {
                       variant="body2"
                       sx={{ color: "text.secondary" }}
                     >
-                      Peso total: {workout.totalWeightLifted} KG
+                      Peso total: {workout.totalWeightLifted.toFixed(3).replace('.', ',')} KG
                     </Typography>
                   </CardContent>
                 </Card>

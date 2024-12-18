@@ -13,6 +13,8 @@ import {
   Typography,
   Modal,
   Box,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -110,6 +112,7 @@ function Exercises() {
   const [isTimerFinished, setIsTimerFinished] = useState(false);
   const [shouldDelay, setShouldDelay] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
@@ -141,6 +144,7 @@ function Exercises() {
     const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
 
     try {
+      setIsLoading(true);
       const snapshot = await get(userRef);
       const data: DatabaseExerciseData = snapshot.val() || [];
 
@@ -179,6 +183,8 @@ function Exercises() {
     } catch (error) {
       console.error("Erro ao buscar recordes:", error);
       alert("Erro ao buscar os recordes.");
+    } finally {
+      setIsLoading(false);
     }
   }, [selectedExercise, startDate, endDate]);
 
@@ -274,6 +280,7 @@ function Exercises() {
 
   const handleLogin = async () => {
     try {
+      setIsLoading(true);
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -284,6 +291,8 @@ function Exercises() {
     } catch (error) {
       console.error("Error saving login data", error);
       alert("E-mail ou senha incorretos.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -312,8 +321,13 @@ function Exercises() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) setIsLogged(true);
-      else setIsLogged(false);
+      if (user) {
+        setIsLogged(true);
+        setIsLoading(false);
+      } else {
+        setIsLogged(false);
+        setIsLoading(false);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -425,6 +439,17 @@ function Exercises() {
 
     return Math.min(100, Math.max(0, progress));
   };
+
+  if (isLoading) {
+    return (
+      <Backdrop
+        open={true}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   return (
     <div>
