@@ -10,9 +10,14 @@ import { Grid2 } from "@mui/material";
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
 import { TextField, Backdrop, CircularProgress } from "@mui/material";
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { ref, get } from "firebase/database";
 import { auth, database } from "@/lib/firebase"; // Certifique-se de exportar `database` do arquivo de configuração do Firebase.
+import Link from "next/link";
 
 // Definindo a interface para as props do Bar
 interface BarProps {
@@ -65,7 +70,11 @@ export default function Tests() {
   const handleLogin = async () => {
     try {
       setIsLoading(true);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       return userCredential.user && setIsLogged(true);
     } catch (error) {
       console.error("Error saving login data", error);
@@ -141,7 +150,9 @@ export default function Tests() {
           <Grid2 container spacing={2} mt={6}>
             {exercises.map((exercise, index) => {
               const totalBars = exercise.tests.length;
-              const filledBars = exercise.tests.filter((test) => test.completed).length;
+              const filledBars = exercise.tests.filter(
+                (test) => test.completed
+              ).length;
               return (
                 <Grid2 size={6} key={index}>
                   <Card>
@@ -150,19 +161,31 @@ export default function Tests() {
                       component="img"
                       alt={exercise.title}
                       height="160"
-                      image={exercise.exerciseImage || "/images/placeholder.jpg"}
+                      image={
+                        exercise.exerciseImage || "/images/placeholder.jpg"
+                      }
                     />
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
                         {exercise.title}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
                         {`Pregresso de testes: ${filledBars}/${totalBars}`}
                       </Typography>
-                      <ProgressSignal totalBars={totalBars} filledBars={filledBars} />
+                      <ProgressSignal
+                        totalBars={totalBars}
+                        filledBars={filledBars}
+                      />
                     </CardContent>
                     <CardActions>
-                      <Button size="small">Ver</Button>
+                      <Link
+                        href={`/tests/${index}`}
+                      >
+                        <Button size="small">Ver</Button>
+                      </Link>
                     </CardActions>
                   </Card>
                 </Grid2>
