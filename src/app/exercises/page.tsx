@@ -177,7 +177,7 @@ function Exercises() {
           const dateB = dayjs(b.date, "DD/MM/YYYY - HH:mm");
           return dateB.diff(dateA);
         })
-        .slice(0, 30);
+        .slice(0, 36);
 
       setRecords(filteredRecords);
     } catch (error) {
@@ -244,16 +244,16 @@ function Exercises() {
           const dateB = dayjs(b.date, "DD/MM/YYYY - HH:mm");
           return dateB.diff(dateA);
         })
-        .slice(0, 30);
+        .slice(0, 36);
 
       // Verifica se o novo registro está no TOP 3
-      const isInTop30 = topRecords.some(
+      const isInTop36 = topRecords.some(
         (record) =>
           record.date === dayjs().format("DD/MM/YYYY - HH:mm") &&
           record.totalWeightLifted === totalWeight
       );
 
-      if (!isInTop30) {
+      if (!isInTop36) {
         alert(
           "Obrigado por tentar, mas como não bateu nenhum dos da lista, seus dados não serão gravados na base."
         );
@@ -769,7 +769,7 @@ function Exercises() {
           <Grid2 sx={{ mt: 16 }}>
             <Divider sx={marginBottomAndTop4}>RECORDES</Divider>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              Para ver os 30 maiores recordes, selecione o período.
+              Para ver os 36 maiores recordes, selecione o período.
             </Typography>
             <LocalizationProvider
               dateAdapter={AdapterDayjs}
