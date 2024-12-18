@@ -122,11 +122,38 @@ function LevelCard({
       <Card sx={{ marginBottom: 2, marginTop: 2 }}>
         <CardMedia
           component="img"
+          sx={{ padding: 2, borderRadius: 2 }}
           height="220"
           image={levelData.path}
           alt={`level ${levelData.level}`}
         />
         <CardContent>
+          <div>
+            <Typography gutterBottom variant="h5" component="div">
+              LV {level}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              {levelData.name.toUpperCase()}
+            </Typography>
+          </div>
+          <div style={{ marginBottom: "16px", marginTop: "32px" }}>
+            <BorderLinearProgress
+              variant="determinate"
+              value={calculateBorderLinearProgressPercantage(exp)}
+            />
+          </div>
+          <div
+            style={{
+              marginBottom: "12px",
+              marginTop: "12px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              {exp.toFixed(0)}/500000
+            </Typography>
+          </div>
           <div style={{ marginBottom: "12px", marginTop: "12px" }}>
             {editingExp ? (
               <>
@@ -148,32 +175,11 @@ function LevelCard({
               </Button>
             )}
           </div>
-          <Typography gutterBottom variant="h5" component="div">
-            Patente: {levelData.name}
-          </Typography>
-          <div style={{ marginBottom: "16px", marginTop: "16px" }}>
-            <BorderLinearProgress
-              variant="determinate"
-              value={calculateBorderLinearProgressPercantage(exp)}
-            />
-          </div>
-          <div
-            style={{
-              marginBottom: "12px",
-              marginTop: "12px",
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              {exp.toFixed(0)}/500000
-            </Typography>
-          </div>
+
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
           {levelData.nextLevel && (
             <Chip
-
-              sx={{ fontSize: "12px", p: 1, borderRadius: "8px"   }}
+              sx={{ fontSize: "12px", p: 1, borderRadius: "4px" }}
               color="warning"
               label={`Próximo: ${levelData.nextName}`}
               size="small"
