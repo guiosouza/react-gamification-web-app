@@ -26,7 +26,7 @@ interface TaskInput {
 
 const options: TaskOption[] = [
   { label: "Todas" },
-  { label: "Project " },
+  { label: "Project" },
   { label: "Sono" },
   // { label: "The Grind" },
   { label: "The Water" },
@@ -125,7 +125,7 @@ export default function Exp() {
   const calculateTotalPacks = (): number => {
     const basePacks = calculatePacksByTask(selectedTask.label, level);
 
-    if (selectedTask.label === "Project ") {
+    if (selectedTask.label === "Project") {
       return basePacks;
     }
 
@@ -301,7 +301,7 @@ export default function Exp() {
         />
       </div>
 
-      {(selectedTask.label === "Project " ||
+      {(selectedTask.label === "Project" ||
         selectedTask.label === "Sono") && (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
           <div style={{ marginTop: "24px", marginBottom: "24px" }}>
