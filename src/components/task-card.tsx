@@ -3,7 +3,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Add, Remove } from "@mui/icons-material";
-import { Alert, IconButton } from "@mui/material";
+import { Alert, Chip, Divider, IconButton } from "@mui/material";
 
 interface TaskCardProps {
   taskName: string;
@@ -26,7 +26,7 @@ export default function TaskCard({
   drawResults,
   selectedNow,
   shouldRemoveAlerts,
-  setShouldRemoveAlerts
+  setShouldRemoveAlerts,
 }: TaskCardProps) {
   const [alerts, setAlerts] = React.useState<string[]>([]);
 
@@ -58,7 +58,6 @@ export default function TaskCard({
     localStorage.setItem(`${taskKey}_alerts`, JSON.stringify(updatedAlerts));
 
     setAlerts(updatedAlerts);
-
   };
 
   const handleRemoveLastAlert = () => {
@@ -89,47 +88,60 @@ export default function TaskCard({
   React.useEffect(() => {
     if (shouldRemoveAlerts) {
       handleRemoveAllAlerts();
-  
+
       // Resetar o estado após a execução
       if (setShouldRemoveAlerts) {
         setShouldRemoveAlerts(false);
       }
     }
   }, [shouldRemoveAlerts, handleRemoveAllAlerts, setShouldRemoveAlerts]);
-  
 
   return (
     <Card sx={{ marginBottom: 2 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {taskName}
+          {taskName} ({"LV " + level})
         </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Seu nível atual: {level}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Packs que tem direito pelo nível: {packs}
+        <Divider sx={{ mb: 4 }} />
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", mb: 1 }}
+          component="div"
+        >
+          Pelo nível pode sortear:{" "}
+          <Chip
+            label={packs + " por execução"}
+            sx={{
+              borderRadius: "6px",
+            }}
+          />
         </Typography>
         {drawResults && (
           <>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", marginTop: 2 }}
-            >
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
               Total de packs sorteados: {drawResults.packs}
             </Typography>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              Packs ganhos:{" "}
-              <strong style={{ color: "#ADD8E6" }}>
-                {drawResults.wonPacks}
-              </strong>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", mb: 1 }}
+              component="div"
+            >
+              Packs ganhos: {""}
+              <Chip
+                variant="filled"
+                label={drawResults.wonPacks}
+                color="warning"
+                sx={{
+                  borderRadius: "6px",
+                }}
+              />
             </Typography>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              Porcentagem de ganho: {calculateWinPercentage()}%
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+              Do total sorteado, ganhou: {calculateWinPercentage()}%
             </Typography>
           </>
         )}
-        {taskName === "The Water" || taskName === "The Nutrition" ? (
+        {taskName === "Água" || taskName === "Nutrição" ? (
           <>
             {!selectedNow ? (
               <div style={{ marginTop: "16px" }}>

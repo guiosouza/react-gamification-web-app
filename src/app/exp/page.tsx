@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Autocomplete, TextField, Button, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import {
+  Autocomplete,
+  TextField,
+  Button,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import TaskCard from "@/components/task-card";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
@@ -26,12 +35,12 @@ interface TaskInput {
 
 const options: TaskOption[] = [
   { label: "Todas" },
-  { label: "Project" },
+  { label: "Projeto" },
   { label: "Sono" },
   // { label: "The Grind" },
-  { label: "The Water" },
-  { label: "The Exercise" },
-  { label: "The Nutrition" },
+  { label: "Água" },
+  { label: "Exercícios" },
+  { label: "Nutrição" },
 ];
 
 export default function Exp() {
@@ -96,13 +105,13 @@ export default function Exp() {
     switch (taskName) {
       case "The Grind":
         return Math.floor(levelNumber / 40);
-      case "The Nutrition":
+      case "Nutrição":
         return baseMultiplier * 9;
-      case "The Exercise":
+      case "Exercícios":
         return baseMultiplier;
-      case "The Water":
+      case "Água":
         return baseMultiplier;
-      case "Project": {
+      case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
         return daysPassed * 866;
       }
@@ -125,7 +134,7 @@ export default function Exp() {
   const calculateTotalPacks = (): number => {
     const basePacks = calculatePacksByTask(selectedTask.label, level);
 
-    if (selectedTask.label === "Project") {
+    if (selectedTask.label === "Projeto") {
       return basePacks;
     }
 
@@ -133,15 +142,12 @@ export default function Exp() {
       return basePacks;
     }
 
-    if (
-      selectedTask.label === "The Water" ||
-      selectedTask.label === "The Nutrition"
-    ) {
+    if (selectedTask.label === "Água" || selectedTask.label === "Nutrição") {
       return basePacks * (taskInput.quantity || 0);
     }
 
     if (
-      selectedTask.label === "The Exercise" ||
+      selectedTask.label === "Exercícios" ||
       selectedTask.label === "The Grind"
     ) {
       if (!taskInput.time) return 0;
@@ -218,10 +224,7 @@ export default function Exp() {
   };
 
   const renderTaskInput = () => {
-    if (
-      selectedTask.label === "The Water" ||
-      selectedTask.label === "The Nutrition"
-    ) {
+    if (selectedTask.label === "Água" || selectedTask.label === "Nutrição") {
       return disableInput ? (
         <div style={{ marginTop: "32px", marginBottom: "16px" }}>
           <Alert variant="outlined" severity="warning">
@@ -232,7 +235,7 @@ export default function Exp() {
         <TextField
           type="number"
           label={
-            selectedTask.label === "The Water"
+            selectedTask.label === "Água"
               ? "Quantidade de copos"
               : "Vezes que se alimentou"
           }
@@ -244,7 +247,7 @@ export default function Exp() {
     }
 
     if (
-      selectedTask.label === "The Exercise" ||
+      selectedTask.label === "Exercícios" ||
       selectedTask.label === "The Grind"
     ) {
       return (
@@ -301,8 +304,7 @@ export default function Exp() {
         />
       </div>
 
-      {(selectedTask.label === "Project" ||
-        selectedTask.label === "Sono") && (
+      {(selectedTask.label === "Projeto" || selectedTask.label === "Sono") && (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
           <div style={{ marginTop: "24px", marginBottom: "24px" }}>
             <DatePicker
@@ -353,7 +355,9 @@ export default function Exp() {
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogTitle>Level Up!</DialogTitle>
         <DialogContent>
-          <p>Você subiu do nível {previousLevel} para o nível {level}!</p>
+          <p>
+            Você subiu do nível {previousLevel} para o nível {level}!
+          </p>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenModal(false)}>Fechar</Button>
