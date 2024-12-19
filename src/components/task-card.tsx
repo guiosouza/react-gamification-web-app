@@ -111,7 +111,7 @@ export default function TaskCard({
           sx={{ color: "text.secondary", mb: 1 }}
           component="div"
         >
-          Pelo nível pode sortear:{" "}
+          Pode sortear:{" "}
           <Chip
             label={packs + " por execução"}
             sx={{
