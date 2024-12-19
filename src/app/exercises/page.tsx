@@ -144,7 +144,6 @@ function Exercises() {
     const userRef = ref(database, `users/${auth.currentUser.uid}/data`);
 
     try {
-      setIsLoading(true);
       const snapshot = await get(userRef);
       const data: DatabaseExerciseData = snapshot.val() || [];
 
@@ -183,9 +182,7 @@ function Exercises() {
     } catch (error) {
       console.error("Erro ao buscar recordes:", error);
       alert("Erro ao buscar os recordes.");
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   }, [selectedExercise, startDate, endDate]);
 
   const saveExerciseData = async () => {
