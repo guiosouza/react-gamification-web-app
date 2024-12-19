@@ -100,9 +100,12 @@ export default function TaskCard({
     <Card sx={{ marginBottom: 2 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {taskName} ({"LV " + level})
+          {taskName}
         </Typography>
         <Divider sx={{ mb: 4 }} />
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
+          Nível: {level}
+        </Typography>
         <Typography
           variant="body2"
           sx={{ color: "text.secondary", mb: 1 }}
