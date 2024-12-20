@@ -82,8 +82,14 @@ function Exercises() {
     { label: "Agachamento (1 perna)" },
     { label: "Levantamento lateral (1 perna)" },
     { label: "Bícepes" },
+    { label: "Rosca" },
+    { label: "Rosca direta" },
+    { label: "Rosca concentrada" },
+    { label: "Rosca martelo" },
     { label: "Trícepes" },
     { label: "Ombro" },
+    { label: "Elevação frontal (pronada)" },
+    { label: "Elevação frontal (neutra)" },
     { label: "Costas" },
     { label: "Antebraço" },
     { label: "Nádegas" },
@@ -182,7 +188,7 @@ function Exercises() {
     } catch (error) {
       console.error("Erro ao buscar recordes:", error);
       alert("Erro ao buscar os recordes.");
-    } 
+    }
   }, [selectedExercise, startDate, endDate]);
 
   const saveExerciseData = async () => {
