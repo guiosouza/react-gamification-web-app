@@ -69,7 +69,7 @@ const urlImages: levelImage[] = [
     name: "FOX HOUND Special Forces",
   },
   { level: 378196, path: "/images/big_boss.png", name: "BIG BOSS" },
-  { level: 714500, path: "/images/the_boss.png", name: "The Boss" },
+  { level: 739500, path: "/images/the_boss.png", name: "The Boss" },
 ];
 
 function getLevelData(levelStr: string) {
