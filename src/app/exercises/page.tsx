@@ -88,11 +88,12 @@ function Exercises() {
     { label: "Rosca martelo" },
     { label: "Trícepes" },
     { label: "Ombro" },
-    { label: "Elevação frontal (pronada)" },
-    { label: "Elevação frontal (neutra)" },
+    { label: "Ombro - Elevação frontal (pronada)" },
+    { label: "Ombro - Elevação frontal (neutra)" },
     { label: "Costas" },
     { label: "Antebraço" },
     { label: "Nádegas" },
+    { label: "Elevação pélvica" },
     { label: "Remada unilateral neutra" },
   ];
 
