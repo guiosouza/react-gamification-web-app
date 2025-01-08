@@ -101,7 +101,6 @@ function Exercises() {
   const [selectedExercise, setSelectedExercise] =
     useState<ExerciseOption | null>(exerciseOptions[0]);
   const [startDate, setStartDate] = useState<Dayjs | null>(dayjs("2024-12-01"));
-
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
   const [isLogged, setIsLogged] = useState(false);
   const [password, setPassword] = useState("");

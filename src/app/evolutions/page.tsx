@@ -11,7 +11,14 @@ import { useEffect, useState } from "react";
 import { auth, onAuthStateChanged, database } from "../../lib/firebase";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { ref, get } from "firebase/database";
-import { Alert, Button, Card, TextField, CircularProgress, Backdrop } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Card,
+  TextField,
+  CircularProgress,
+  Backdrop,
+} from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
@@ -55,9 +62,7 @@ function Evolutions() {
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [startDate, setStartDate] = useState<Dayjs | null>(
-    dayjs().startOf("month")
-  );
+  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs("2024-12-01"));
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
   const [exerciseData, setExerciseData] = useState<Exercise[]>([]);
 
@@ -150,7 +155,10 @@ function Evolutions() {
 
   if (isLoading) {
     return (
-      <Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Backdrop
+        open={true}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
     );
