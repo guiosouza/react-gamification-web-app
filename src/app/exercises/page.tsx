@@ -119,6 +119,7 @@ function Exercises() {
   const [shouldDelay, setShouldDelay] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
   const onSelectedExerciseChange = (
     _: React.SyntheticEvent,
@@ -190,6 +191,11 @@ function Exercises() {
       alert("Erro ao buscar os recordes.");
     }
   }, [selectedExercise, startDate, endDate]);
+
+  const handleSendClick = () => {
+    // Mostra o modal de confirmação
+    setIsConfirmationModalOpen(true);
+  };
 
   const saveExerciseData = async () => {
     if (!auth.currentUser) return;
@@ -763,7 +769,7 @@ function Exercises() {
             </Card>
             <Button
               variant="contained"
-              onClick={saveExerciseData}
+              onClick={handleSendClick}
               sx={{ width: "100%", marginY: 2 }}
             >
               Enviar
@@ -966,6 +972,58 @@ function Exercises() {
           </Button>
         </>
       )}
+
+      {/* Modal de Confirmação */}
+      <Modal
+        open={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        aria-labelledby="confirmation-modal-title"
+        aria-describedby="confirmation-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute" as const,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 300,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography id="confirmation-modal-title" variant="h6" component="h2">
+            Confirmar envio
+          </Typography>
+          <Typography id="confirmation-modal-description" sx={{ mt: 2 }}>
+            Você deseja realmente enviar os dados do exercício?
+          </Typography>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <Button
+              onClick={() => {
+                setIsConfirmationModalOpen(false);
+                saveExerciseData(); // Chama a função de salvar se confirmar
+              }}
+              sx={{ mt: 2 }}
+              color="success"
+              variant="outlined"
+            >
+              Sim
+            </Button>
+            <Button
+              onClick={() => setIsConfirmationModalOpen(false)}
+              sx={{ mt: 2 }}
+              color="error"
+              variant="contained"
+            >
+              Cancelar
+            </Button>
+          </div>
+        </Box>
+      </Modal>
+
+      {/* Modal de confirmação */}
       <Modal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
