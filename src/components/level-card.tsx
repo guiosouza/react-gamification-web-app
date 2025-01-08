@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import LinearProgress, {
   linearProgressClasses,
@@ -105,6 +105,10 @@ function LevelCard({
 
   const [editingExp, setEditingExp] = useState<boolean>(false);
   const [editedExp, setEditedExp] = useState<number>(0);
+
+  useEffect(() => {
+    setEditedExp(exp);
+  }, [exp]);
 
   const handleExpUpdate = () => {
     if (!isNaN(exp)) {
