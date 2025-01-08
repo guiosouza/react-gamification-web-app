@@ -83,6 +83,7 @@ function Exercises() {
     { label: "Levantamento lateral (1 perna)" },
     { label: "Bícepes" },
     { label: "Rosca" },
+    { label: "Rosca alternada" },
     { label: "Rosca direta" },
     { label: "Rosca concentrada" },
     { label: "Rosca martelo" },
