@@ -18,11 +18,13 @@ import {
   TextField,
   CircularProgress,
   Backdrop,
+  Autocomplete,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { TooltipProps } from "recharts";
+import { SyntheticEvent } from "react";
 
 const colors = [
   "#8884d8", // Purple
@@ -65,6 +67,7 @@ function Evolutions() {
   const [startDate, setStartDate] = useState<Dayjs | null>(dayjs("2024-12-01"));
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
   const [exerciseData, setExerciseData] = useState<Exercise[]>([]);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -193,6 +196,13 @@ function Evolutions() {
     );
   }
 
+  const handleExerciseSelection = (
+    event: SyntheticEvent<Element, Event>, // Tipo do evento
+    value: string | null // Tipo do valor selecionado
+  ) => {
+    setSelectedExercise(value);
+  };
+
   return (
     <div style={{ width: "100%" }}>
       <div className="generic-container">
@@ -221,56 +231,85 @@ function Evolutions() {
           />
         </div>
       </LocalizationProvider>
+      <div className="generic-container" style={{ marginBottom: "32px" }}>
+        <Autocomplete
+          id="tags-standard"
+          options={exerciseData.map((exercise) => {
+            // Formatar a primeira letra para maiúscula
+            const formattedTitle =
+              exercise.title.charAt(0).toUpperCase() + exercise.title.slice(1);
+            return formattedTitle;
+          })}
+          value={selectedExercise}
+          onChange={handleExerciseSelection} // Atualize o estado ao selecionar
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="standard"
+              label="Todos os exercícios"
+              placeholder="Selecione os exercícios"
+            />
+          )}
+        />
+      </div>
 
-      {exerciseData.map((exercise, index) => {
-        const filteredHistory = filterDataByDate(exercise.history);
-        const color = colors[index % colors.length];
-        return (
-          <Card key={index} sx={{ mb: 2, p: 2, mt: 2 }}>
-            <h4>
-              {exercise.title
-                .split(" ")
-                .map(
-                  (word) =>
-                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                )
-                .join(" ")}
-            </h4>
+      {exerciseData
+        .filter((exercise) => {
+          // Exibir todos se nenhum exercício estiver selecionado, ou filtrar pelo selecionado
+          if (!selectedExercise) return true;
+          return (
+            exercise.title.toLowerCase() === selectedExercise.toLowerCase()
+          );
+        })
+        .map((exercise, index) => {
+          const filteredHistory = filterDataByDate(exercise.history);
+          const color = colors[index % colors.length];
+          return (
+            <Card key={index} sx={{ mb: 2, p: 2, mt: 2 }}>
+              <h4>
+                {exercise.title
+                  .split(" ")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")}
+              </h4>
 
-            {filteredHistory.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart
-                  data={filteredHistory
-                    .sort(
-                      (a, b) =>
-                        dayjs(a.date, "DD/MM/YYYY - HH:mm").valueOf() -
-                        dayjs(b.date, "DD/MM/YYYY - HH:mm").valueOf()
-                    )
-                    .map((item) => ({
-                      date: item.date,
-                      totalWeight: item.totalWeightLifted,
-                    }))}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <YAxis />
-                  <Tooltip content={CustomTooltip} />
-                  <Area
-                    type="monotone"
-                    dataKey="totalWeight"
-                    stroke={color} // Aplique a cor no gráfico
-                    fill={color} // Aplique a cor no gráfico
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <Alert color="info" variant="outlined">
-                Sem dados nesse período
-              </Alert>
-            )}
-          </Card>
-        );
-      })}
+              {filteredHistory.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart
+                    data={filteredHistory
+                      .sort(
+                        (a, b) =>
+                          dayjs(a.date, "DD/MM/YYYY - HH:mm").valueOf() -
+                          dayjs(b.date, "DD/MM/YYYY - HH:mm").valueOf()
+                      )
+                      .map((item) => ({
+                        date: item.date,
+                        totalWeight: item.totalWeightLifted,
+                      }))}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <YAxis />
+                    <Tooltip content={CustomTooltip} />
+                    <Area
+                      type="monotone"
+                      dataKey="totalWeight"
+                      stroke={color} // Aplique a cor no gráfico
+                      fill={color} // Aplique a cor no gráfico
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <Alert color="info" variant="outlined">
+                  Sem dados nesse período
+                </Alert>
+              )}
+            </Card>
+          );
+        })}
     </div>
   );
 }
