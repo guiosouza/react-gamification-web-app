@@ -25,9 +25,11 @@ type WorkoutWithExerciseTitle = ExerciseHistory & { title: string };
 
 type DatabaseExerciseData = Exercise[];
 
+const twoDaysAgo = dayjs().subtract(2, 'day');
+
 const Workouts = () => {
-  const [startDate, setStartDate] = useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [startDate, setStartDate] = useState<Dayjs | null>(twoDaysAgo);
+  const [endDate, setEndDate] = useState<Dayjs | null>(twoDaysAgo);
   const [isLogged, setIsLogged] = useState(false);
   const [workouts, setWorkouts] = useState<WorkoutWithExerciseTitle[]>([]);
   const [isLoading, setIsLoading] = useState(false);
