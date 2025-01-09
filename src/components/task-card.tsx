@@ -105,7 +105,7 @@ export default function TaskCard({
         <Divider sx={{ mb: 4 }} />
         {taskName === "Sem Álcool" ? (
           <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-            Ficar sem beber álcool nos dias que costuma beber
+            Ficar sem beber álcool nos dias que costuma beber, ou trocar a bebica por algo que gosta de comer.
           </Typography>
         ) : null}
         <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
