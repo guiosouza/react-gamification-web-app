@@ -597,7 +597,49 @@ function Exercises() {
                 records.map((record, index) => {
                   const recordDate = record.date.split(" - ")[0];
                   const today = dayjs().format("DD/MM/YYYY");
+                  const twoDaysAgo = dayjs()
+                    .subtract(2, "days")
+                    .format("DD/MM/YYYY");
+
                   const isToday = recordDate === today;
+                  let isNearestPast = false;
+
+                  // Encontrar o registro de 2 dias atrás ou o mais próximo
+                  if (!isToday) {
+                    const twoDaysAgoDate = dayjs(twoDaysAgo, "DD/MM/YYYY");
+                    const nearestPastRecord = records
+                      .filter((r) =>
+                        dayjs(r.date.split(" - ")[0], "DD/MM/YYYY").isBefore(
+                          today
+                        )
+                      )
+                      .reduce(
+                        (closest, current) => {
+                          const currentDate = dayjs(
+                            current.date.split(" - ")[0],
+                            "DD/MM/YYYY"
+                          );
+                          const closestDate = dayjs(
+                            closest.date.split(" - ")[0],
+                            "DD/MM/YYYY"
+                          );
+                          const targetDate = twoDaysAgoDate;
+
+                          // Comparar proximidade com 2 dias atrás
+                          if (
+                            Math.abs(currentDate.diff(targetDate)) <
+                            Math.abs(closestDate.diff(targetDate))
+                          ) {
+                            return current;
+                          }
+                          return closest;
+                        },
+                        { date: "01/01/1900 - 00:00" }
+                      );
+
+                    isNearestPast =
+                      nearestPastRecord.date === record.date && !isToday;
+                  }
 
                   // Calcula a melhora em relação ao próximo registro, se existir
                   const nextRecord = records[index + 1];
@@ -623,7 +665,11 @@ function Exercises() {
                         marginTop: 4,
                         backgroundColor: isToday ? "secondary" : "inherit",
                         transition: "background-color 0.3s ease",
-                        border: isToday ? "2px solid #2196f3" : "none",
+                        border: isToday
+                          ? "2px solid #2196f3"
+                          : isNearestPast
+                          ? "2px solid #F15A24"
+                          : "none",
                       }}
                     >
                       <CardActionArea>
@@ -646,6 +692,16 @@ function Exercises() {
                               <Chip
                                 label="Registro de hoje"
                                 color="primary"
+                                size="small"
+                              />
+                            )}
+                            {isNearestPast && (
+                              <Chip
+                                label="Última gravação"
+                                sx={{
+                                  backgroundColor: "#F15A24",
+                                  color: "#fff",
+                                }}
                                 size="small"
                               />
                             )}
