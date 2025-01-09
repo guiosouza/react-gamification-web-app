@@ -41,6 +41,7 @@ const options: TaskOption[] = [
   { label: "Água" },
   { label: "Exercícios" },
   { label: "Nutrição" },
+  { label: "Sem Álcool" },
 ];
 
 export default function Exp() {
@@ -107,6 +108,8 @@ export default function Exp() {
         return Math.floor(levelNumber / 40);
       case "Nutrição":
         return baseMultiplier * 9;
+      case "Sem Álcool":
+        return baseMultiplier * 16;
       case "Exercícios":
         return baseMultiplier;
       case "Água":
@@ -142,7 +145,7 @@ export default function Exp() {
       return basePacks;
     }
 
-    if (selectedTask.label === "Água" || selectedTask.label === "Nutrição") {
+    if (selectedTask.label === "Água" || selectedTask.label === "Nutrição" || selectedTask.label === "Sem Álcool") {
       return basePacks * (taskInput.quantity || 0);
     }
 

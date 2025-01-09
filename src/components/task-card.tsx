@@ -103,6 +103,11 @@ export default function TaskCard({
           {taskName}
         </Typography>
         <Divider sx={{ mb: 4 }} />
+        {taskName === "Sem Álcool" ? (
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
+            Ficar sem beber álcool nos dias que costuma beber
+          </Typography>
+        ) : null}
         <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
           Nível: {level}
         </Typography>
@@ -144,7 +149,7 @@ export default function TaskCard({
             </Typography>
           </>
         )}
-        {taskName === "Água" || taskName === "Nutrição" ? (
+        {taskName === "Água" || taskName === "Nutrição" || taskName === "Sem Álcool" ? (
           <>
             {!selectedNow ? (
               <div style={{ marginTop: "16px" }}>
