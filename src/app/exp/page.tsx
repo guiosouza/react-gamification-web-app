@@ -145,7 +145,11 @@ export default function Exp() {
       return basePacks;
     }
 
-    if (selectedTask.label === "Água" || selectedTask.label === "Nutrição" || selectedTask.label === "Sem Álcool") {
+    if (
+      selectedTask.label === "Água" ||
+      selectedTask.label === "Nutrição" ||
+      selectedTask.label === "Sem Álcool"
+    ) {
       return basePacks * (taskInput.quantity || 0);
     }
 
@@ -227,7 +231,11 @@ export default function Exp() {
   };
 
   const renderTaskInput = () => {
-    if (selectedTask.label === "Água" || selectedTask.label === "Nutrição") {
+    if (
+      selectedTask.label === "Água" ||
+      selectedTask.label === "Nutrição" ||
+      selectedTask.label === "Sem Álcool"
+    ) {
       return disableInput ? (
         <div style={{ marginTop: "32px", marginBottom: "16px" }}>
           <Alert variant="outlined" severity="warning">
@@ -237,11 +245,18 @@ export default function Exp() {
       ) : (
         <TextField
           type="number"
-          label={
-            selectedTask.label === "Água"
-              ? "Quantidade de copos"
-              : "Vezes que se alimentou"
-          }
+          label={(() => {
+            switch (selectedTask.label) {
+              case "Água":
+                return "Quantidade de copos";
+              case "Nutrição":
+                return "Vezes que se alimentou";
+              case "Sem Álcool":
+                return "Vezes que não bebeu";
+              default:
+                return "Quantidade";
+            }
+          })()}
           value={taskInput.quantity || ""}
           onChange={(e) => setTaskInput({ quantity: Number(e.target.value) })}
           sx={{ width: "100%", marginTop: "24px", marginBottom: "24px" }}
