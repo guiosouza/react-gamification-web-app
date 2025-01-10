@@ -100,7 +100,12 @@ export default function TaskCard({
     <Card sx={{ marginBottom: 2 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {taskName}
+          {taskName} {taskName === "Sem Álcool" ? "🚫" : ""}{" "}
+          {taskName === "Água" ? "💧" : ""}{" "}
+          {taskName === "Nutrição" ? "🍎" : ""}
+          {taskName === "Exercícios" ? "🏋️" : ""}
+          {taskName === "Sono" ? "😴" : ""}
+          {taskName === "Projeto" ? "🍆" : ""}
         </Typography>
         <Divider sx={{ mb: 4 }} />
         {taskName === "Sem Álcool" ? (
