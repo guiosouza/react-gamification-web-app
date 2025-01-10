@@ -105,37 +105,6 @@ function LevelCard({
 
   const [editingExp, setEditingExp] = useState<boolean>(false);
   const [editedExp, setEditedExp] = useState<number>(0);
-  const [gameplayTime, setGameplayTime] = useState(0);
-
-  useEffect(() => {
-    const savedTime = parseInt(localStorage.getItem("gameplayTime") || "0", 10);
-    setGameplayTime(savedTime);
-  
-    const startTime = Date.now();
-  
-    const interval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const updatedTime = savedTime + elapsed;
-      setGameplayTime(updatedTime);
-  
-      // Gravar no localStorage a cada segundo
-      localStorage.setItem("gameplayTime", updatedTime.toString());
-    }, 1000);
-  
-    // Limpar o intervalo ao desmontar o componente
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs.toString().padStart(2, "0")}:${mins
-      .toString()
-      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
 
   useEffect(() => {
     setEditedExp(exp);
@@ -169,9 +138,6 @@ function LevelCard({
             </Typography>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {levelData.name.toUpperCase()}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "text.secondary", mt: 2 }}>
-              Gameplay time: {formatTime(gameplayTime)}
             </Typography>
           </div>
           <div style={{ marginBottom: "16px", marginTop: "32px" }}>
