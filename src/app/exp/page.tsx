@@ -287,6 +287,16 @@ export default function Exp() {
     checkIfThereIsQuantityStored({ label: actualTask });
   }, [actualTask]);
 
+  const handleCardClick = (taskName: string) => {
+    const matchedOption = options.find(option => option.label === taskName);
+    if (matchedOption) {
+      setSelectedTask(matchedOption);
+      setTaskInput({});
+      setDrawResults(null);
+      checkIfThereIsQuantityStored(matchedOption);
+    }
+  };
+
   return (
     <>
       <div style={{ marginBottom: "96px" }}>
@@ -306,7 +316,7 @@ export default function Exp() {
           sx={{ width: "100%" }}
         />
       </div>
-      <div className="generic-container">
+      <div className="generic-container" style={{ marginBottom: "48px" }}>
         <Autocomplete
           disablePortal
           options={options}
@@ -356,6 +366,7 @@ export default function Exp() {
                 taskName={option.label}
                 level={level}
                 packs={calculatePacksByTask(option.label, level)}
+                onCardClick={handleCardClick}
               />
             ))
         ) : (
@@ -367,6 +378,7 @@ export default function Exp() {
             selectedNow={selectedTask.label}
             shouldRemoveAlerts={shouldRemoveAlerts}
             setShouldRemoveAlerts={setShouldRemoveAlerts}
+            onCardClick={handleCardClick}
           />
         )}
       </div>

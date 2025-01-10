@@ -3,7 +3,13 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Add, Remove } from "@mui/icons-material";
-import { Alert, Chip, Divider, IconButton } from "@mui/material";
+import {
+  Alert,
+  CardActionArea,
+  Chip,
+  Divider,
+  IconButton,
+} from "@mui/material";
 
 interface TaskCardProps {
   taskName: string;
@@ -17,6 +23,7 @@ interface TaskCardProps {
     packs: number;
     wonPacks: number;
   } | null;
+  onCardClick: (taskName: string) => void; 
 }
 
 export default function TaskCard({
@@ -27,6 +34,7 @@ export default function TaskCard({
   selectedNow,
   shouldRemoveAlerts,
   setShouldRemoveAlerts,
+  onCardClick,
 }: TaskCardProps) {
   const [alerts, setAlerts] = React.useState<string[]>([]);
 
@@ -98,73 +106,84 @@ export default function TaskCard({
 
   return (
     <Card sx={{ marginBottom: 2 }}>
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {taskName} {taskName === "Sem Álcool" ? "🚫" : ""}{" "}
-          {taskName === "Água" ? "💧" : ""}{" "}
-          {taskName === "Nutrição" ? "🍎" : ""}
-          {taskName === "Exercícios" ? "🏋️" : ""}
-          {taskName === "Sono" ? "😴" : ""}
-          {taskName === "Projeto" ? "🍆" : ""}
-        </Typography>
-        <Divider sx={{ mb: 4 }} />
-        {taskName === "Sem Álcool" ? (
-          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-            Ficar sem beber álcool nos dias que costuma beber, ou trocar a
-            bebica por algo que gosta de comer.
+      <CardActionArea onClick={() => onCardClick(taskName)}>
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            {taskName} {taskName === "Sem Álcool" ? "🚫" : ""}{" "}
+            {taskName === "Água" ? "💧" : ""}{" "}
+            {taskName === "Nutrição" ? "🍎" : ""}
+            {taskName === "Exercícios" ? "🏋️" : ""}
+            {taskName === "Sono" ? "😴" : ""}
+            {taskName === "Projeto" ? "🍆" : ""}
           </Typography>
-        ) : null}
-        <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-          Nível: {level}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{ color: "text.secondary", mb: 1 }}
-          component="div"
-        >
-          Pode sortear:{" "}
-          <Chip
-            label={packs + " por execução"}
-            sx={{
-              borderRadius: "6px",
-            }}
-          />
-        </Typography>
-        {drawResults && (
-          <>
+          <Divider sx={{ mb: 4 }} />
+          {taskName === "Sem Álcool" ? (
             <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-              Total de packs sorteados: {drawResults.packs}
+              Ficar sem beber álcool nos dias que costuma beber, ou trocar a
+              bebica por algo que gosta de comer.
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", mb: 1 }}
-              component="div"
-            >
-              Packs ganhos: {""}
-              <Chip
-                variant="filled"
-                label={drawResults.wonPacks}
-                color="warning"
-                sx={{
-                  borderRadius: "6px",
-                }}
-              />
-            </Typography>
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
-              Do total sorteado, ganhou: {calculateWinPercentage()}%
-            </Typography>
-          </>
-        )}
+          ) : null}
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
+            Nível: {level}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", mb: 1 }}
+            component="div"
+          >
+            Pode sortear:{" "}
+            <Chip
+              label={packs + " por execução"}
+              sx={{
+                borderRadius: "6px",
+              }}
+            />
+          </Typography>
+          {drawResults && (
+            <>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", mb: 1 }}
+              >
+                Total de packs sorteados: {drawResults.packs}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", mb: 1 }}
+                component="div"
+              >
+                Packs ganhos: {""}
+                <Chip
+                  variant="filled"
+                  label={drawResults.wonPacks}
+                  color="warning"
+                  sx={{
+                    borderRadius: "6px",
+                  }}
+                />
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", mb: 4 }}
+              >
+                Do total sorteado, ganhou: {calculateWinPercentage()}%
+              </Typography>
+            </>
+          )}
+        </CardContent>
+      </CardActionArea>
+      <div style={{ padding: "16px" }}>
         {taskName === "Água" ||
         taskName === "Nutrição" ||
         taskName === "Sem Álcool" ? (
           <>
             {!selectedNow ? (
-              <div style={{ marginTop: "16px" }}>
+              <div style={{ marginTop: "16px", display: "flex", justifyContent: "space-evenly" }}>
                 <IconButton
                   color="success"
                   aria-label="add"
                   onClick={() => handleAddTask(taskName)}
+                  sx={{border: "1px solid #4caf50", borderRadius: "6px"}}
                 >
                   <Add />
                 </IconButton>
@@ -172,6 +191,7 @@ export default function TaskCard({
                   color="error"
                   aria-label="remove"
                   onClick={handleRemoveLastAlert}
+                  sx={{border: "1px solid #f44336", borderRadius: "6px"}}
                 >
                   <Remove />
                 </IconButton>
@@ -194,7 +214,7 @@ export default function TaskCard({
             </div>
           </>
         ) : null}
-      </CardContent>
+      </div>
     </Card>
   );
 }
