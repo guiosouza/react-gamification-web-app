@@ -107,7 +107,7 @@ export default function Exp() {
       case "The Grind":
         return Math.floor(levelNumber / 40);
       case "Nutrição":
-        return baseMultiplier * 14;
+        return baseMultiplier * 11;
       case "Sem Álcool":
         return baseMultiplier * 19;
       case "Exercícios":
