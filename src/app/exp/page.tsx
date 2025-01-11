@@ -107,20 +107,20 @@ export default function Exp() {
       case "The Grind":
         return Math.floor(levelNumber / 40);
       case "Nutrição":
-        return baseMultiplier * 9;
+        return baseMultiplier * 14;
       case "Sem Álcool":
-        return baseMultiplier * 16;
+        return baseMultiplier * 19;
       case "Exercícios":
         return baseMultiplier;
       case "Água":
         return baseMultiplier;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 988;
+        return daysPassed * 861;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 988;
+        return daysPassed * 861;
       }
       default:
         return 0;
