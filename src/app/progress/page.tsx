@@ -11,7 +11,7 @@ import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
-import { Card } from "@mui/material";
+import { Alert, Card } from "@mui/material";
 
 dayjs.locale("pt-br");
 dayjs.extend(relativeTime);
@@ -24,7 +24,11 @@ function LinearProgressWithLabel(
     <Card>
       <Box sx={{ display: "flex", alignItems: "center", p: 3 }}>
         <Box sx={{ width: "100%", mr: 1 }}>
-          <LinearProgress  variant="determinate" {...props} sx={{height: "26px", borderRadius: "4px"}} />
+          <LinearProgress
+            variant="determinate"
+            {...props}
+            sx={{ height: "26px", borderRadius: "4px" }}
+          />
         </Box>
         <Box sx={{ minWidth: 65 }}>
           <Typography
@@ -151,13 +155,13 @@ export default function LinearWithValueLabel() {
         )}
       </div>
       <div className="generic-container">
-        <Alert
-            variant="outlined"
-            severity="warning"
-            sx={{ marginTop: 1 }}
-         >
-            Caiu dia 12/01/2025. Quedas fazem parte do processo, porém devemos ter disciplina. Sendo assim, só foi perdoado porque resolveu não cair mais vezes neste mesmo dia provando ter MUITA FORÇA DE VONTADE. Essa chance é única, portanto não haverão mais perdões. Projeto ainda continua. Orgulhe-se 😎
-         </Alert>
+        <Alert variant="outlined" severity="warning" sx={{ marginTop: 1 }}>
+          Caiu dia 12/01/2025. Quedas fazem parte do processo, porém devemos ter
+          disciplina. Sendo assim, só foi perdoado porque resolveu não cair mais
+          vezes neste mesmo dia provando ter MUITA FORÇA DE VONTADE. Essa chance
+          é única, portanto não haverão mais perdões. Projeto ainda continua.
+          Orgulhe-se 😎
+        </Alert>
       </div>
     </Box>
   );
