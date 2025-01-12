@@ -156,10 +156,9 @@ export default function LinearWithValueLabel() {
       </div>
       <div className="generic-container">
         <Alert variant="outlined" severity="warning" sx={{ marginTop: 1 }}>
-          Caiu dia 12/01/2025. Quedas fazem parte do processo, porém só foi
-          perdoado porque resolveu não cair mais vezes neste mesmo dia provando
-          ter MUITA FORÇA DE VONTADE. Essa chance é única, portanto não haverão
-          mais perdões. Projeto ainda continua. Orgulhe-se 😎
+          Caiu em 12/01/2025. Foi perdoado por não cair novamente no mesmo dia,
+          mostrando muita força de vontade. Chance única, sem mais perdões.
+          Projeto continua. Orgulhe-se 😎
         </Alert>
       </div>
     </Box>
