@@ -155,10 +155,7 @@ export default function LinearWithValueLabel() {
         )}
       </div>
       <div className="generic-container">
-        <Alert variant="outlined" severity="warning" sx={{ marginTop: 1 }}>
-          Caiu em 12/01/2025. Foi perdoado por não cair novamente no mesmo dia,
-          mostrando muita força de vontade. Chance única, sem mais perdões.
-          Projeto continua. Orgulhe-se 😎
+        <Alert variant="outlined" severity="warning" sx={{ marginTop: 1 }}> 12/01/2025 😎
         </Alert>
       </div>
     </Box>
