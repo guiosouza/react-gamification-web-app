@@ -150,6 +150,15 @@ export default function LinearWithValueLabel() {
           </Typography>
         )}
       </div>
+      <div className="generic-container">
+        <Alert
+            variant="outlined"
+            severity="warning"
+            sx={{ marginTop: 1 }}
+         >
+            Caiu dia 12/01/2025. Quedas fazem parte do processo, porém devemos ter disciplina. Sendo assim, só foi perdoado porque resolveu não cair mais vezes neste mesmo dia provando ter MUITA FORÇA DE VONTADE. Essa chance é única, portanto não haverão mais perdões. Projeto ainda continua. Orgulhe-se 😎
+         </Alert>
+      </div>
     </Box>
   );
 }
