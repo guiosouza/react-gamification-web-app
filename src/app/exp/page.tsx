@@ -116,11 +116,11 @@ export default function Exp() {
         return baseMultiplier;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 891;
+        return daysPassed * 801;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 891;
+        return daysPassed * 801;
       }
       default:
         return 0;
