@@ -96,6 +96,29 @@ export default function Exp() {
     }
   }, []);
 
+  useEffect(() => {
+    // Inicializar o histórico se não existir
+    const historyKey = "drawHistory";
+    if (!localStorage.getItem(historyKey)) {
+      localStorage.setItem(historyKey, JSON.stringify([]));
+    }
+  
+    const savedLevel = localStorage.getItem("userLevel");
+    const savedStartDate = localStorage.getItem("startDate");
+    const savedExp = localStorage.getItem("currentExp");
+  
+    if (savedLevel) {
+      setLevel(savedLevel);
+    }
+    if (savedStartDate) {
+      setStartDate(dayjs(savedStartDate));
+    }
+    if (savedExp) {
+      setExp(parseInt(savedExp));
+    }
+  }, []);
+  
+
   const handleLevelChange = (newLevel: string) => {
     setLevel(newLevel);
     localStorage.setItem("userLevel", newLevel);
@@ -255,6 +278,7 @@ export default function Exp() {
     // Atualiza o localStorage com o histórico recente
     localStorage.setItem(historyKey, JSON.stringify(recentHistory));
   };
+  
   
   const checkIfThereIsQuantityStored = (taskToCheck: TaskOption | null) => {
     if (!taskToCheck) {
