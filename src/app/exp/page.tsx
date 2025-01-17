@@ -19,6 +19,9 @@ import dayjs from "dayjs";
 import LevelCard from "@/components/level-card";
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 dayjs.extend(isSameOrAfter);
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
+
 
 interface TaskOption {
   label: string;
@@ -270,14 +273,17 @@ export default function Exp() {
   
     // Filtra para manter apenas os sorteios dos últimos 7 dias
     const sevenDaysAgo = dayjs().subtract(7, 'days').startOf('day');
+    const today = dayjs().endOf('day'); // Considera até o final do dia de hoje
     const recentHistory = drawHistory.filter(draw => {
       const drawDate = dayjs(draw.date, "DD/MM/YYYY HH:mm:ss");
-      return drawDate.isSameOrAfter(sevenDaysAgo);
+      return drawDate.isBetween(sevenDaysAgo, today, null, '[]');
     });
   
     // Atualiza o localStorage com o histórico recente
     localStorage.setItem(historyKey, JSON.stringify(recentHistory));
   };
+  
+  
   
   
   const checkIfThereIsQuantityStored = (taskToCheck: TaskOption | null) => {
