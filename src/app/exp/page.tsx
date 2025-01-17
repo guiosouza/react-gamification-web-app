@@ -17,6 +17,8 @@ import { Dayjs } from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import LevelCard from "@/components/level-card";
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+dayjs.extend(isSameOrAfter);
 
 interface TaskOption {
   label: string;
@@ -31,6 +33,14 @@ interface TaskInfo {
 interface TaskInput {
   quantity?: number;
   time?: string;
+}
+
+interface Draw {
+  id: string; // Adicione este campo
+  date: string;
+  task: string;
+  totalDraws: number;
+  wonDraws: number;
 }
 
 const options: TaskOption[] = [
@@ -202,6 +212,16 @@ export default function Exp() {
     localStorage.setItem("userLevel", currentLevel.toString());
     localStorage.setItem("currentExp", currentExp.toString());
 
+    const newDrawResult = {
+      date: dayjs().format("DD/MM/YYYY HH:mm:ss"),
+      task: selectedTask.label,
+      totalDraws: totalPacks,
+      wonDraws: wonPacks,
+    };
+
+    // Atualizar o histórico no localStorage
+    updateDrawHistory(newDrawResult);
+
     setDrawResults({
       task: selectedTask.label,
       packs: totalPacks,
@@ -212,6 +232,30 @@ export default function Exp() {
     setOpenModal(true);
   };
 
+  // Função para atualizar o histórico
+  const updateDrawHistory = (newDraw: Omit<Draw, 'id'>) => {
+    const historyKey = "drawHistory";
+  
+    // Adiciona um ID único ao novo sorteio
+    const newDrawWithId = { ...newDraw, id: Date.now().toString() };
+  
+    const storedHistory = localStorage.getItem(historyKey);
+    const drawHistory: Draw[] = storedHistory ? JSON.parse(storedHistory) : [];
+  
+    // Adiciona o novo sorteio ao histórico
+    drawHistory.push(newDrawWithId);
+  
+    // Filtra para manter apenas os sorteios dos últimos 7 dias
+    const sevenDaysAgo = dayjs().subtract(7, 'days').startOf('day');
+    const recentHistory = drawHistory.filter(draw => {
+      const drawDate = dayjs(draw.date, "DD/MM/YYYY HH:mm:ss");
+      return drawDate.isSameOrAfter(sevenDaysAgo);
+    });
+  
+    // Atualiza o localStorage com o histórico recente
+    localStorage.setItem(historyKey, JSON.stringify(recentHistory));
+  };
+  
   const checkIfThereIsQuantityStored = (taskToCheck: TaskOption | null) => {
     if (!taskToCheck) {
       console.log("Nenhuma tarefa foi selecionada.");
@@ -288,7 +332,7 @@ export default function Exp() {
   }, [actualTask]);
 
   const handleCardClick = (taskName: string) => {
-    const matchedOption = options.find(option => option.label === taskName);
+    const matchedOption = options.find((option) => option.label === taskName);
     if (matchedOption) {
       setSelectedTask(matchedOption);
       setTaskInput({});
