@@ -137,11 +137,11 @@ export default function Exp() {
     const levelNumber = Number(level);
     if (!levelNumber) return 0;
 
-    const baseMultiplier = Math.floor(levelNumber / 14);
+    const baseMultiplier = Math.floor(levelNumber / 7);
 
     switch (taskName) {
       case "The Grind":
-        return Math.floor(levelNumber / 40);
+        return Math.floor(levelNumber / 20);
       case "Nutrição":
         return baseMultiplier * 11;
       case "Sem Álcool":
@@ -152,11 +152,11 @@ export default function Exp() {
         return baseMultiplier;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 801;
+        return daysPassed * 422;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 801;
+        return daysPassed * 422;
       }
       default:
         return 0;
