@@ -11,7 +11,7 @@ import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
-import { Alert, Card } from "@mui/material";
+import { Card } from "@mui/material";
 
 dayjs.locale("pt-br");
 dayjs.extend(relativeTime);
