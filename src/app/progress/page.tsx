@@ -154,10 +154,6 @@ export default function LinearWithValueLabel() {
           </Typography>
         )}
       </div>
-      <div className="generic-container">
-        <Alert variant="outlined" severity="warning" sx={{ marginTop: 1 }}> 12/01/2025
-        </Alert>
-      </div>
     </Box>
   );
 }
