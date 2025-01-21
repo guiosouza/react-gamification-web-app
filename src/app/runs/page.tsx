@@ -14,7 +14,7 @@ interface Step {
   title: string;
   description: string;
   muscles: string;
-  time: number;
+  time: number; // Tempo em segundos
 }
 
 // Mocked data
@@ -106,7 +106,8 @@ const generateRandomExercises = (room: number) => {
     throw new Error(`Sala ${room} não tem regras definidas.`);
   }
 
-  const numExercises = Math.floor(Math.random() * (rule.max - rule.min + 1)) + rule.min;
+  const numExercises =
+    Math.floor(Math.random() * (rule.max - rule.min + 1)) + rule.min;
   const selectedExercises = [];
   const usedIds = new Set();
 
@@ -117,7 +118,7 @@ const generateRandomExercises = (room: number) => {
     if (!usedIds.has(exercise.id)) {
       selectedExercises.push({
         ...exercise,
-        time: Math.floor(Math.random() * 5) + 1, // Tempo entre 1 e 5 minutos
+        time: Math.floor(Math.random() * 5) + 1, // Tempo entre 1 e 5 segundos para testes
       });
       usedIds.add(exercise.id);
     }
@@ -129,25 +130,48 @@ const generateRandomExercises = (room: number) => {
 function Runs() {
   const [activeStep, setActiveStep] = useState(0);
   const [steps, setSteps] = useState<Step[]>([]);
+  const [timer, setTimer] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
 
   const room = 1; // Número da sala atual (exemplo)
 
   useEffect(() => {
-    // Gerar os steps dinamicamente no cliente
     const generatedSteps = generateRandomExercises(room);
     setSteps(generatedSteps);
   }, [room]);
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+
+    if (timer !== null && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => (prev !== null ? prev - 1 : 0));
+      }, 1000);
+    }
+
+    if (timer === 0) {
+      clearInterval(interval);
+      setShowResult(true);
+    }
+
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  const handleStart = () => {
+    setTimer(steps[activeStep]?.time || 0);
+    setShowResult(false);
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  const handleNext = () => {
+    setActiveStep((prev) => prev + 1);
+    setTimer(null);
+    setShowResult(false);
   };
 
   const handleReset = () => {
     setActiveStep(0);
+    setTimer(null);
+    setShowResult(false);
   };
 
   return (
@@ -172,24 +196,34 @@ function Runs() {
                 <StepContent>
                   <Typography>{step.description}</Typography>
                   <Typography variant="body2" sx={{ mt: 1 }}>
-                    Tempo: {step.time} minutos
+                    Tempo: {step.time} segundos
                   </Typography>
-                  <Box sx={{ mb: 2 }}>
+                  {timer === null && !showResult && (
                     <Button
                       variant="contained"
-                      onClick={handleNext}
+                      onClick={handleStart}
                       sx={{ mt: 1, mr: 1 }}
                     >
-                      {index === steps.length - 1 ? "Finalizar" : "Continuar"}
+                      {index === 0 ? "Iniciar" : "Continuar"}
                     </Button>
-                    <Button
-                      disabled={index === 0}
-                      onClick={handleBack}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      Voltar
-                    </Button>
-                  </Box>
+                  )}
+                  {timer !== null && (
+                    <Typography>Tempo restante: {timer} segundos</Typography>
+                  )}
+                  {showResult && (
+                    <>
+                      <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        sx={{ mt: 1, mr: 1 }}
+                      >
+                        Continuar
+                      </Button>
+                      <Button variant="outlined" color="error" sx={{ mt: 1 }}>
+                        Falha
+                      </Button>
+                    </>
+                  )}
                 </StepContent>
               </Step>
             ))}
