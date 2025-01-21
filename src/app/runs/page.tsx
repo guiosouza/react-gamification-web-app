@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -8,6 +8,14 @@ import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+
+interface Step {
+  id: number;
+  title: string;
+  description: string;
+  muscles: string;
+  time: number;
+}
 
 // Mocked data
 const mockedExercises = [
@@ -87,7 +95,7 @@ const roomExerciseRules: Record<number, { min: number; max: number }> = {
   14: { min: 14, max: 20 },
 };
 
-// Função para gerar exercícios aleatórios com base no range
+// Função para gerar exercícios aleatórios
 const generateRandomExercises = (room: number) => {
   if (restRooms.includes(room)) {
     return []; // Salas de descanso não geram exercícios
@@ -120,8 +128,15 @@ const generateRandomExercises = (room: number) => {
 
 function Runs() {
   const [activeStep, setActiveStep] = useState(0);
-  const room = 4; // Número da sala atual (exemplo)
-  const steps = generateRandomExercises(room); // Gerar os steps para a sala atual
+  const [steps, setSteps] = useState<Step[]>([]);
+
+  const room = 1; // Número da sala atual (exemplo)
+
+  useEffect(() => {
+    // Gerar os steps dinamicamente no cliente
+    const generatedSteps = generateRandomExercises(room);
+    setSteps(generatedSteps);
+  }, [room]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
