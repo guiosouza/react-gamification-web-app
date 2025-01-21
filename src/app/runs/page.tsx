@@ -154,15 +154,17 @@ function CircularProgressWithLabel(
 }
 
 
-
 function Runs() {
   const [currentRoom, setCurrentRoom] = useState<number>(1);
   const [lives, setLives] = useState<number>(3); // Estado para rastrear as vidas
+  const [timers, setTimers] = useState<number>(3); // Quantidade de timers
+  const [drops, setDrops] = useState<number>(0); // Quantidade de gotas
   const [generatedSteps, setGeneratedSteps] = useState<StepType[]>([]);
   const [progress, setProgress] = useState<number[]>([]);
   const [timeLeft, setTimeLeft] = useState<number[]>([]);
   const [isRunning, setIsRunning] = useState<boolean[]>([]);
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [showChoiceCard, setShowChoiceCard] = useState<boolean>(false); // Exibe o card de escolha
 
   useEffect(() => {
     const steps = generateSteps(currentRoom);
@@ -171,6 +173,7 @@ function Runs() {
     setTimeLeft(steps.map((step) => step.timeToComplete));
     setIsRunning(new Array(steps.length).fill(false));
     setActiveStep(0);
+    setShowChoiceCard(false); // Reinicia a exibição do card especial
   }, [currentRoom]);
 
   useEffect(() => {
@@ -181,7 +184,8 @@ function Runs() {
             const newProgress = [...prev];
             if (newProgress[index] < 100) {
               newProgress[index] = Math.min(
-                newProgress[index] + 100 / generatedSteps[index].timeToComplete,
+                newProgress[index] +
+                  100 / generatedSteps[index].timeToComplete,
                 100
               );
             }
@@ -223,7 +227,19 @@ function Runs() {
       newRunning[index] = false;
       return newRunning;
     });
-    setActiveStep((prev) => prev + 1); // Avança para o próximo passo
+
+    // Adiciona gotas com 45% de chance (12 a 18 gotas)
+    if (Math.random() < 0.45) {
+      const gainedDrops = Math.floor(Math.random() * (18 - 12 + 1)) + 12;
+      setDrops((prev) => prev + gainedDrops);
+    }
+
+    // Verifica se o card de escolha deve aparecer (40% de chance)
+    if (Math.random() < 0.4) {
+      setShowChoiceCard(true); // Exibe o card de escolha
+    } else {
+      setActiveStep((prev) => prev + 1); // Avança para o próximo passo
+    }
   };
 
   const handleFail = (index: number) => {
@@ -233,18 +249,27 @@ function Runs() {
       return newRunning;
     });
 
-    // Marca o passo como completo
-    setActiveStep((prev) => prev + 1);
+    setActiveStep((prev) => prev + 1); // Marca o passo como completo
 
-    // Decrementa uma vida
-    setLives((prev) => Math.max(prev - 1, 0));
+    setLives((prev) => Math.max(prev - 1, 0)); // Reduz uma vida
 
-    // Verifica se acabou as vidas
     if (lives <= 1) {
       alert("GAME OVER! Você perdeu todas as suas vidas.");
       setCurrentRoom(1); // Reinicia o jogo
       setLives(3); // Restaura as vidas
+      setDrops(0); // Restaura as gotas
+      setTimers(3); // Restaura os timers
     }
+  };
+
+  const handleChoice = (choice: "timer" | "life") => {
+    if (choice === "life") {
+      setLives((prev) => prev + 1); // Adiciona uma vida
+    } else if (choice === "timer") {
+      setTimers((prev) => prev + 1); // Adiciona um timer
+    }
+    setShowChoiceCard(false); // Fecha o card de escolha
+    setActiveStep((prev) => prev + 1); // Avança para o próximo passo
   };
 
   return (
@@ -254,74 +279,110 @@ function Runs() {
           Sala - {currentRoom}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Vidas {lives}
+          Vidas: {lives}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Gotas {1}
+          Gotas: {drops}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Timers: {timers}
         </Typography>
       </div>
       <div className="generic-container">
-        <Box sx={{ maxWidth: 400 }}>
-          <Stepper activeStep={activeStep} orientation="vertical">
-            {generatedSteps.map((step, index) => (
-              <Step key={index}>
-                <StepLabel>{step.title}</StepLabel>
-                <StepContent>
-                  <Card>
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {step.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                      >
-                        Dificuldade: {step.difficulty}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                      >
-                        Repetições: {step.reps}
-                      </Typography>
-                      <div className="generic-container">
-                        <CircularProgressWithLabel
-                          value={progress[index]}
-                          timeLeft={timeLeft[index]}
-                        />
-                      </div>
-                    </CardContent>
-                    <CardActions>
-                      {!isRunning[index] && timeLeft[index] > 0 && (
-                        <Button size="small" onClick={() => handleStart(index)}>
-                          INICIAR
-                        </Button>
-                      )}
-                      {timeLeft[index] === 0 && (
-                        <>
+        {showChoiceCard ? (
+          <Card>
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                Escolha uma Recompensa!
+              </Typography>
+              <div style={{ display: "flex", gap: "16px" }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => handleChoice("life")}
+                >
+                  Vida +1
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleChoice("timer")}
+                >
+                  Timer +1
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Box sx={{ maxWidth: 400 }}>
+            <Stepper activeStep={activeStep} orientation="vertical">
+              {generatedSteps.map((step, index) => (
+                <Step key={index}>
+                  <StepLabel>{step.title}</StepLabel>
+                  <StepContent>
+                    <Card>
+                      <CardContent>
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="div"
+                        >
+                          {step.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Dificuldade: {step.difficulty}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: "text.secondary" }}
+                        >
+                          Repetições: {step.reps}
+                        </Typography>
+                        <div className="generic-container">
+                          <CircularProgressWithLabel
+                            value={progress[index]}
+                            timeLeft={timeLeft[index]}
+                          />
+                        </div>
+                      </CardContent>
+                      <CardActions>
+                        {!isRunning[index] && timeLeft[index] > 0 && (
                           <Button
                             size="small"
-                            color="success"
-                            onClick={() => handleSuccess(index)}
+                            onClick={() => handleStart(index)}
                           >
-                            SUCESSO
+                            INICIAR
                           </Button>
-                          <Button
-                            size="small"
-                            color="error"
-                            onClick={() => handleFail(index)}
-                          >
-                            FALHA
-                          </Button>
-                        </>
-                      )}
-                    </CardActions>
-                  </Card>
-                </StepContent>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
+                        )}
+                        {timeLeft[index] === 0 && (
+                          <>
+                            <Button
+                              size="small"
+                              color="success"
+                              onClick={() => handleSuccess(index)}
+                            >
+                              SUCESSO
+                            </Button>
+                            <Button
+                              size="small"
+                              color="error"
+                              onClick={() => handleFail(index)}
+                            >
+                              FALHA
+                            </Button>
+                          </>
+                        )}
+                      </CardActions>
+                    </Card>
+                  </StepContent>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
+        )}
       </div>
       <div className="generic-container">
         <Button
@@ -336,4 +397,6 @@ function Runs() {
 }
 
 export default Runs;
+
+
 
