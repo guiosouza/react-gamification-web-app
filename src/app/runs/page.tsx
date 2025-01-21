@@ -164,6 +164,7 @@ function Runs() {
   const [isRunning, setIsRunning] = useState<boolean[]>([]);
   const [activeStep, setActiveStep] = useState<number>(0);
   const [showChoiceCard, setShowChoiceCard] = useState<boolean>(false); // Exibe o card de escolha
+  const [isRestRoom, setIsRestRoom] = useState<boolean>(false);
 
   useEffect(() => {
     const steps = generateSteps(currentRoom);
@@ -210,6 +211,12 @@ function Runs() {
       });
     };
   }, [isRunning, generatedSteps]);
+
+  useEffect(() => {
+    const steps = generateSteps(currentRoom);
+    setGeneratedSteps(steps);
+    setIsRestRoom(steps.length === 0); // Define se é uma sala de descanso
+  }, [currentRoom]);
 
   const handleStart = (index: number) => {
     setIsRunning((prev) => {
@@ -278,98 +285,121 @@ function Runs() {
         <Typography variant="body2">Gotas: {drops}</Typography>
         <Typography variant="body2">Timers: {timers}</Typography>
       </div>
-      <div className="generic-container">
-        {showChoiceCard ? (
+      {isRestRoom ? (
+        <div className="generic-container">
           <Card>
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
-                Escolha uma Recompensa!
+                Sala de Descanso
               </Typography>
-              <div style={{ display: "flex", gap: "16px" }}>
+              <Typography variant="body2">
+                Relaxe antes de continuar para a próxima sala!
+              </Typography>
+              <CardActions>
                 <Button
                   variant="contained"
-                  color="success"
-                  onClick={() => handleChoice("life")}
+                  onClick={() => setCurrentRoom((prev) => prev + 1)}
                 >
-                  Vida +1
+                  Avançar
                 </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleChoice("timer")}
-                >
-                  Timer +1
-                </Button>
-              </div>
+              </CardActions>
             </CardContent>
           </Card>
-        ) : (
-          <Box sx={{ maxWidth: 400 }}>
-            <Stepper activeStep={activeStep} orientation="vertical">
-              {generatedSteps.map((step, index) => (
-                <Step key={index}>
-                  <StepLabel>{step.title}</StepLabel>
-                  <StepContent>
-                    <Card>
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {step.title}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Dificuldade: {step.difficulty}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          Repetições: {step.reps}
-                        </Typography>
-                        <div className="generic-container">
-                          <CircularProgressWithLabel
-                            value={progress[index]}
-                            timeLeft={timeLeft[index]}
-                          />
-                        </div>
-                      </CardContent>
-                      <CardActions>
-                        {!isRunning[index] && timeLeft[index] > 0 && (
-                          <Button
-                            size="small"
-                            onClick={() => handleStart(index)}
+        </div>
+      ) : (
+        <div className="generic-container">
+          {showChoiceCard ? (
+            <Card>
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  Escolha uma Recompensa!
+                </Typography>
+                <div style={{ display: "flex", gap: "16px" }}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={() => handleChoice("life")}
+                  >
+                    Vida +1
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleChoice("timer")}
+                  >
+                    Timer +1
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Box sx={{ maxWidth: 400 }}>
+              <Stepper activeStep={activeStep} orientation="vertical">
+                {generatedSteps.map((step, index) => (
+                  <Step key={index}>
+                    <StepLabel>{step.title}</StepLabel>
+                    <StepContent>
+                      <Card>
+                        <CardContent>
+                          <Typography gutterBottom variant="h5" component="div">
+                            {step.title}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
                           >
-                            INICIAR
-                          </Button>
-                        )}
-                        {timeLeft[index] === 0 && (
-                          <>
+                            Dificuldade: {step.difficulty}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: "text.secondary" }}
+                          >
+                            Repetições: {step.reps}
+                          </Typography>
+                          <div className="generic-container">
+                            <CircularProgressWithLabel
+                              value={progress[index]}
+                              timeLeft={timeLeft[index]}
+                            />
+                          </div>
+                        </CardContent>
+                        <CardActions>
+                          {!isRunning[index] && timeLeft[index] > 0 && (
                             <Button
                               size="small"
-                              color="success"
-                              onClick={() => handleSuccess(index)}
+                              onClick={() => handleStart(index)}
                             >
-                              SUCESSO
+                              INICIAR
                             </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleFail(index)}
-                            >
-                              FALHA
-                            </Button>
-                          </>
-                        )}
-                      </CardActions>
-                    </Card>
-                  </StepContent>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
-        )}
-      </div>
+                          )}
+                          {timeLeft[index] === 0 && (
+                            <>
+                              <Button
+                                size="small"
+                                color="success"
+                                onClick={() => handleSuccess(index)}
+                              >
+                                SUCESSO
+                              </Button>
+                              <Button
+                                size="small"
+                                color="error"
+                                onClick={() => handleFail(index)}
+                              >
+                                FALHA
+                              </Button>
+                            </>
+                          )}
+                        </CardActions>
+                      </Card>
+                    </StepContent>
+                  </Step>
+                ))}
+              </Stepper>
+            </Box>
+          )}
+        </div>
+      )}
       <div className="generic-container">
         <Button
           variant="contained"
