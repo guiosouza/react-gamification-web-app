@@ -17,19 +17,16 @@ import CircularProgress, {
 } from "@mui/material/CircularProgress";
 
 type StepType = {
-  label: string;
   title: string;
   difficulty: number;
-  time: number; // Tempo total do progresso em segundos
+  timeToComplete: number; // Tempo total do progresso em segundos
   reps: number; // Quantidade de repetições
 };
 
 // Passos base
 const steps: StepType[] = [
-  { label: "Passo 1", title: "Task 1", difficulty: 1, time: 2, reps: 1 },
-  { label: "Passo 2", title: "Task 2", difficulty: 1, time: 2, reps: 1 },
-  { label: "Passo 3", title: "Task 3", difficulty: 2, time: 4, reps: 2 },
-  { label: "Passo 4", title: "Task 4", difficulty: 2, time: 4, reps: 2 },
+  { title: "Agachamento", difficulty: 1, timeToComplete: 2, reps: 1 },
+  { title: "Flexão", difficulty: 2, timeToComplete: 4, reps: 2 },
 ];
 
 // Função para gerar passos com ajustes de reps e time
@@ -47,6 +44,15 @@ const generateSteps = (room: number): StepType[] => {
     case 4:
     case 5:
       count = Math.floor(Math.random() * 3) + 4; // 4 a 6
+      break;
+    case 6:
+      count = Math.floor(Math.random() * 2) + 5; // 5 a 6
+      break;
+    case 8:
+      count = Math.floor(Math.random() * 2) + 7; // 7 a 8
+      break;
+    case 9:
+      count = Math.floor(Math.random() * 9) + 1; // 1 a 9
       break;
     case 10:
       count = Math.floor(Math.random() * 8) + 3; // 3 a 10
@@ -67,16 +73,19 @@ const generateSteps = (room: number): StepType[] => {
       return [];
   }
 
-  // Geração de passos com tempo e reps ajustados
+  // Geração de passos com multiplicadores aleatórios
   const generatedSteps: StepType[] = [];
   for (let i = 0; i < count; i++) {
     const randomStep = steps[Math.floor(Math.random() * steps.length)];
 
-    // Multiplicação do tempo e das repetições
+    // Multiplicadores aleatórios
+    const timeMultiplier = Math.random() * (3 - 2) + 2; // Entre 2 e 3
+    const repsMultiplier = Math.random() * (4 - 3) + 3; // Entre 3 e 4
+
     generatedSteps.push({
       ...randomStep,
-      time: randomStep.time * Math.pow(2, room - 1), // Tempo dobra a cada sala
-      reps: randomStep.reps * Math.pow(3, room - 1), // Reps triplicam a cada sala
+      timeToComplete: Math.round(randomStep.timeToComplete * timeMultiplier), // Tempo ajustado (arredondado)
+      reps: Math.round(randomStep.reps * repsMultiplier), // Reps ajustados (arredondados)
     });
   }
 
@@ -86,14 +95,40 @@ const generateSteps = (room: number): StepType[] => {
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number; timeLeft: number }
 ) {
-  const { timeLeft, ...circularProgressProps } = props;
+  const { value, timeLeft, ...circularProgressProps } = props;
+
   return (
-    <Box sx={{ position: "relative", display: "inline-flex", width: 90, height: 90 }}>
+    <Box
+      sx={{
+        position: "relative",
+        display: "inline-flex",
+        width: 90,
+        height: 90,
+      }}
+    >
+      {/* Fundo (parte não preenchida) */}
       <CircularProgress
         variant="determinate"
-        {...circularProgressProps}
-        sx={{ width: "100% !important", height: "100% !important" }}
+        value={100} // Fundo sempre completo
+        sx={{
+          color: "grey", // Cor do fundo
+          opacity: 0.3, // Controle de opacidade para suavizar
+          width: "100% !important",
+          height: "100% !important",
+          position: "absolute", // Fica atrás do progresso real
+        }}
       />
+      {/* Progresso real */}
+      <CircularProgress
+        variant="determinate"
+        value={value}
+        {...circularProgressProps}
+        sx={{
+          width: "100% !important",
+          height: "100% !important",
+        }}
+      />
+      {/* Texto no centro */}
       <Box
         sx={{
           top: 0,
@@ -119,6 +154,7 @@ function CircularProgressWithLabel(
 }
 
 
+
 function Runs() {
   const [currentRoom, setCurrentRoom] = useState<number>(1);
   const [generatedSteps, setGeneratedSteps] = useState<StepType[]>([]);
@@ -131,7 +167,7 @@ function Runs() {
     const steps = generateSteps(currentRoom);
     setGeneratedSteps(steps);
     setProgress(new Array(steps.length).fill(0));
-    setTimeLeft(steps.map((step) => step.time));
+    setTimeLeft(steps.map((step) => step.timeToComplete));
     setIsRunning(new Array(steps.length).fill(false));
     setActiveStep(0);
   }, [currentRoom]);
@@ -144,7 +180,7 @@ function Runs() {
             const newProgress = [...prev];
             if (newProgress[index] < 100) {
               newProgress[index] = Math.min(
-                newProgress[index] + 100 / generatedSteps[index].time,
+                newProgress[index] + 100 / generatedSteps[index].timeToComplete,
                 100
               );
             }
@@ -191,9 +227,15 @@ function Runs() {
 
   return (
     <div>
-      <div className="generic-container">
-        <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-          Sala {currentRoom}
+      <div className="generic-container" style={{ display: "flex", gap: 16 }}>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Sala - {currentRoom}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Vidas {1}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Gotas {1}
         </Typography>
       </div>
       <div className="generic-container">
@@ -201,7 +243,7 @@ function Runs() {
           <Stepper activeStep={activeStep} orientation="vertical">
             {generatedSteps.map((step, index) => (
               <Step key={index}>
-                <StepLabel>{step.label}</StepLabel>
+                <StepLabel>{step.title}</StepLabel>
                 <StepContent>
                   <Card>
                     <CardContent>
