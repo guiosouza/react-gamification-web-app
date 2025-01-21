@@ -157,6 +157,7 @@ function CircularProgressWithLabel(
 
 function Runs() {
   const [currentRoom, setCurrentRoom] = useState<number>(1);
+  const [lives, setLives] = useState<number>(3); // Estado para rastrear as vidas
   const [generatedSteps, setGeneratedSteps] = useState<StepType[]>([]);
   const [progress, setProgress] = useState<number[]>([]);
   const [timeLeft, setTimeLeft] = useState<number[]>([]);
@@ -225,6 +226,27 @@ function Runs() {
     setActiveStep((prev) => prev + 1); // Avança para o próximo passo
   };
 
+  const handleFail = (index: number) => {
+    setIsRunning((prev) => {
+      const newRunning = [...prev];
+      newRunning[index] = false;
+      return newRunning;
+    });
+
+    // Marca o passo como completo
+    setActiveStep((prev) => prev + 1);
+
+    // Decrementa uma vida
+    setLives((prev) => Math.max(prev - 1, 0));
+
+    // Verifica se acabou as vidas
+    if (lives <= 1) {
+      alert("GAME OVER! Você perdeu todas as suas vidas.");
+      setCurrentRoom(1); // Reinicia o jogo
+      setLives(3); // Restaura as vidas
+    }
+  };
+
   return (
     <div>
       <div className="generic-container" style={{ display: "flex", gap: 16 }}>
@@ -232,7 +254,7 @@ function Runs() {
           Sala - {currentRoom}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Vidas {1}
+          Vidas {lives}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Gotas {1}
@@ -284,7 +306,11 @@ function Runs() {
                           >
                             SUCESSO
                           </Button>
-                          <Button size="small" color="error">
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleFail(index)}
+                          >
                             FALHA
                           </Button>
                         </>
@@ -310,3 +336,4 @@ function Runs() {
 }
 
 export default Runs;
+
