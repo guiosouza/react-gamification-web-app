@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import {
@@ -27,15 +26,17 @@ type StepType = {
 
 // Passos base
 const steps: StepType[] = [
-  { label: "Passo 1", title: "Task 1", difficulty: 1, time: 10, reps: 1 },
-  { label: "Passo 2", title: "Task 2", difficulty: 1, time: 20, reps: 2 },
-  { label: "Passo 3", title: "Task 3", difficulty: 2, time: 30, reps: 2 },
+  { label: "Passo 1", title: "Task 1", difficulty: 1, time: 2, reps: 1 },
+  { label: "Passo 2", title: "Task 2", difficulty: 1, time: 2, reps: 1 },
+  { label: "Passo 3", title: "Task 3", difficulty: 2, time: 4, reps: 2 },
+  { label: "Passo 4", title: "Task 4", difficulty: 2, time: 4, reps: 2 },
 ];
 
-// Função para gerar passos
+// Função para gerar passos com ajustes de reps e time
 const generateSteps = (room: number): StepType[] => {
   let count = 0;
 
+  // Definição da quantidade de passos com base na sala
   switch (room) {
     case 1:
       count = Math.floor(Math.random() * 2) + 1; // 1 a 2
@@ -66,11 +67,17 @@ const generateSteps = (room: number): StepType[] => {
       return [];
   }
 
-  // Geração de passos aleatórios (com repetição)
+  // Geração de passos com tempo e reps ajustados
   const generatedSteps: StepType[] = [];
   for (let i = 0; i < count; i++) {
     const randomStep = steps[Math.floor(Math.random() * steps.length)];
-    generatedSteps.push(randomStep);
+
+    // Multiplicação do tempo e das repetições
+    generatedSteps.push({
+      ...randomStep,
+      time: randomStep.time * Math.pow(2, room - 1), // Tempo dobra a cada sala
+      reps: randomStep.reps * Math.pow(3, room - 1), // Reps triplicam a cada sala
+    });
   }
 
   return generatedSteps;
@@ -81,8 +88,12 @@ function CircularProgressWithLabel(
 ) {
   const { timeLeft, ...circularProgressProps } = props;
   return (
-    <Box sx={{ position: "relative", display: "inline-flex" }}>
-      <CircularProgress variant="determinate" {...circularProgressProps} />
+    <Box sx={{ position: "relative", display: "inline-flex", width: 90, height: 90 }}>
+      <CircularProgress
+        variant="determinate"
+        {...circularProgressProps}
+        sx={{ width: "100% !important", height: "100% !important" }}
+      />
       <Box
         sx={{
           top: 0,
@@ -98,7 +109,7 @@ function CircularProgressWithLabel(
         <Typography
           variant="caption"
           component="div"
-          sx={{ color: "text.secondary" }}
+          sx={{ fontSize: "1rem", color: "text.secondary" }}
         >
           {timeLeft > 0 ? `${timeLeft}s` : "0s"}
         </Typography>
@@ -107,13 +118,14 @@ function CircularProgressWithLabel(
   );
 }
 
+
 function Runs() {
-  const [currentRoom, setCurrentRoom] = useState<number>(1); // Estado para a sala atual
+  const [currentRoom, setCurrentRoom] = useState<number>(1);
   const [generatedSteps, setGeneratedSteps] = useState<StepType[]>([]);
   const [progress, setProgress] = useState<number[]>([]);
   const [timeLeft, setTimeLeft] = useState<number[]>([]);
-  const [isRunning, setIsRunning] = useState<boolean[]>([]); // Controle do timer de cada passo
-  const [activeStep, setActiveStep] = useState<number>(0); // Passo atual no Stepper
+  const [isRunning, setIsRunning] = useState<boolean[]>([]);
+  const [activeStep, setActiveStep] = useState<number>(0);
 
   useEffect(() => {
     const steps = generateSteps(currentRoom);
@@ -125,27 +137,33 @@ function Runs() {
   }, [currentRoom]);
 
   useEffect(() => {
-    const timers = isRunning.map((running, index) =>
-      running
-        ? setInterval(() => {
-            setProgress((prev) => {
-              const newProgress = [...prev];
-              if (newProgress[index] < 100) {
-                newProgress[index] += 100 / generatedSteps[index].time;
-              }
-              return newProgress;
-            });
+    const timers = isRunning.map((running, index) => {
+      if (running) {
+        return setInterval(() => {
+          setProgress((prev) => {
+            const newProgress = [...prev];
+            if (newProgress[index] < 100) {
+              newProgress[index] = Math.min(
+                newProgress[index] + 100 / generatedSteps[index].time,
+                100
+              );
+            }
+            return newProgress;
+          });
 
-            setTimeLeft((prev) => {
-              const newTimeLeft = [...prev];
-              if (newTimeLeft[index] > 0) {
-                newTimeLeft[index] -= 1;
-              }
-              return newTimeLeft;
-            });
-          }, 1000)
-        : null
-    );
+          setTimeLeft((prev) => {
+            const newTimeLeft = [...prev];
+            if (newTimeLeft[index] > 0) {
+              newTimeLeft[index] -= 1;
+            } else {
+              newTimeLeft[index] = 0;
+            }
+            return newTimeLeft;
+          });
+        }, 1000);
+      }
+      return null;
+    });
 
     return () => {
       timers.forEach((timer) => {
@@ -195,6 +213,12 @@ function Runs() {
                         sx={{ color: "text.secondary" }}
                       >
                         Dificuldade: {step.difficulty}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Repetições: {step.reps}
                       </Typography>
                       <div className="generic-container">
                         <CircularProgressWithLabel
