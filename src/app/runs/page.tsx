@@ -179,32 +179,36 @@ function Runs() {
   useEffect(() => {
     const timers = isRunning.map((running, index) => {
       if (running) {
+        const startTime = Date.now(); // Marca o início do timer
         return setInterval(() => {
           setProgress((prev) => {
             const newProgress = [...prev];
-            if (newProgress[index] < 100) {
-              newProgress[index] = Math.min(
-                newProgress[index] + 100 / generatedSteps[index].timeToComplete,
-                100
-              );
+            const elapsed = (Date.now() - startTime) / 1000; // Tempo decorrido em segundos
+            const stepTime = generatedSteps[index].timeToComplete;
+            
+            if (elapsed <= stepTime) {
+              newProgress[index] = Math.min((elapsed / stepTime) * 100, 100); // Progresso proporcional
+            } else {
+              newProgress[index] = 100; // Garante que o progresso não passe de 100%
             }
             return newProgress;
           });
-
+  
           setTimeLeft((prev) => {
             const newTimeLeft = [...prev];
-            if (newTimeLeft[index] > 0) {
-              newTimeLeft[index] -= 1;
-            } else {
-              newTimeLeft[index] = 0;
-            }
+            const elapsed = (Date.now() - startTime) / 1000; // Tempo decorrido em segundos
+            const remaining = Math.max(
+              Math.round(generatedSteps[index].timeToComplete - elapsed),
+              0
+            );
+            newTimeLeft[index] = remaining;
             return newTimeLeft;
           });
-        }, 1000);
+        }, 100); // Atualiza a cada 100ms para maior precisão
       }
       return null;
     });
-
+  
     return () => {
       timers.forEach((timer) => {
         if (timer) clearInterval(timer);
