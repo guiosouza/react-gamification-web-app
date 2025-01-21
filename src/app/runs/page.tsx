@@ -153,7 +153,6 @@ function CircularProgressWithLabel(
   );
 }
 
-
 function Runs() {
   const [currentRoom, setCurrentRoom] = useState<number>(1);
   const [lives, setLives] = useState<number>(3); // Estado para rastrear as vidas
@@ -184,8 +183,7 @@ function Runs() {
             const newProgress = [...prev];
             if (newProgress[index] < 100) {
               newProgress[index] = Math.min(
-                newProgress[index] +
-                  100 / generatedSteps[index].timeToComplete,
+                newProgress[index] + 100 / generatedSteps[index].timeToComplete,
                 100
               );
             }
@@ -275,18 +273,10 @@ function Runs() {
   return (
     <div>
       <div className="generic-container" style={{ display: "flex", gap: 16 }}>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Sala - {currentRoom}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Vidas: {lives}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Gotas: {drops}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Timers: {timers}
-        </Typography>
+        <Typography variant="body2">Sala - {currentRoom}</Typography>
+        <Typography variant="body2">Vidas: {lives}</Typography>
+        <Typography variant="body2">Gotas: {drops}</Typography>
+        <Typography variant="body2">Timers: {timers}</Typography>
       </div>
       <div className="generic-container">
         {showChoiceCard ? (
@@ -322,11 +312,7 @@ function Runs() {
                   <StepContent>
                     <Card>
                       <CardContent>
-                        <Typography
-                          gutterBottom
-                          variant="h5"
-                          component="div"
-                        >
+                        <Typography gutterBottom variant="h5" component="div">
                           {step.title}
                         </Typography>
                         <Typography
@@ -397,6 +383,3 @@ function Runs() {
 }
 
 export default Runs;
-
-
-
