@@ -11,7 +11,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 
 // types
@@ -39,10 +39,24 @@ const baseExercises: Exercise[] = [
     duration: 4,
     repetitions: 1,
   },
+  {
+    id: 3,
+    name: "Tarefa 3",
+    description: "Descrição tarefa 3",
+    duration: 6,
+    repetitions: 1,
+  },
+  {
+    id: 4,
+    name: "Tarefa 4",
+    description: "Descrição tarefa 4",
+    duration: 6,
+    repetitions: 1,
+  },
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(1);
+  const [room, setRoom] = useState(2);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -61,6 +75,32 @@ function Runs() {
       repetitions: exercise.repetitions + repetitionsDifficultyMultiplier,
     }));
   };
+
+  const generatePageExercises = useCallback((room: number) => {
+    const exercises = calculateDifficulty(room);
+
+    if (room === 1) {
+      // do something
+      // Sorteio de 1 ou 2 exercícios aleatórios
+      const selectedCount = Math.random() < 0.5 ? 1 : 2; // 50% chance para 1 ou 2 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5); // Embaralha os exercícios
+      const selectedExercises = shuffledExercises.slice(0, selectedCount); // Seleciona a quantidade desejada
+
+      console.log("Rom 1 - selectedExercises", selectedExercises);
+
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 2) {
+      // do something
+      const selectedCount = Math.random() < 0.5 ? 3 : 4; // 50% chance para 3 ou 4 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5); // Embaralha os exercícios
+      const selectedExercises = shuffledExercises.slice(0, selectedCount); // Seleciona a quantidade desejada
+      setCalculatedExercises(selectedExercises);
+
+      console.log("Rom 2 - selectedExercises", selectedExercises);
+    }
+  }, []);
 
   // all useEffects
   useEffect(() => {
@@ -81,11 +121,10 @@ function Runs() {
 
   // Update calculated exercises when room changes
   useEffect(() => {
-    const updatedExercises = calculateDifficulty(room);
-    setCalculatedExercises(updatedExercises);
-  }, [room]);
+    generatePageExercises(room);
+  }, [room, generatePageExercises]);
 
-  // functions to handle the exercise
+  // functions to handle the page main logic
   const handleSucess = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setIsExerciseStarted(false);
