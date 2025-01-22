@@ -20,6 +20,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+// import LinearProgress, {
+//   LinearProgressProps,
+// } from "@mui/material/LinearProgress";
 
 // types
 interface Exercise {
@@ -62,6 +65,39 @@ const baseExercises: Exercise[] = [
   },
 ];
 
+// const upgrades = [
+//   {
+//     id: 1,
+//     name: "Bonus Chance 1",
+//     description: "Adiciona aumenta em 50% a chance de sair com um bônus",
+//     completed: false,
+//   },
+//   {
+//     id: 2,
+//     name: "Timer Extra 1",
+//     description: "+ 3 segundos de duração do timer",
+//     completed: false,
+//   },
+// ];
+
+// function LinearProgressWithLabel(
+//   props: LinearProgressProps & { value: number }
+// ) {
+//   return (
+//     <Box sx={{ display: "flex", alignItems: "center" }}>
+//       <Box sx={{ width: "100%", mr: 1 }}>
+//         <LinearProgress variant="determinate" {...props} />
+//       </Box>
+//       <Box sx={{ minWidth: 35 }}>
+//         <Typography
+//           variant="body2"
+//           sx={{ color: "text.secondary" }}
+//         >{`${Math.round(props.value)}%`}</Typography>
+//       </Box>
+//     </Box>
+//   );
+// }
+
 function Runs() {
   const [room, setRoom] = useState(1);
   const [activeStep, setActiveStep] = React.useState(0);
@@ -73,6 +109,7 @@ function Runs() {
   const [extraStepActive, setExtraStepActive] = useState(false);
   const [extraChoice, setExtraChoice] = useState<"TIMER" | "VIDA" | null>(null);
   const [timers, setTimers] = useState(3);
+  const [timeValueInSeconds] = useState(4);
   const [lives, setLives] = useState(3);
   const [drops, setDrops] = useState(3); // Estado inicial com 3 gotas
   const [open, setOpen] = React.useState(false);
@@ -172,6 +209,22 @@ function Runs() {
     setLives((prevLives) => prevLives - 1);
   };
 
+  const handleAddTimerToExercise = () => {
+    if (timers > 0) {
+      // Atualiza o tempo do exercício no estado calculatedExercises
+      setCalculatedExercises((prevExercises) =>
+        prevExercises.map((exercise, index) =>
+          index === activeStep
+            ? { ...exercise, duration: exercise.duration + timeValueInSeconds }
+            : exercise
+        )
+      );
+      setTimers((prevTimers) => prevTimers - 1); // Reduz o número de timers disponíveis
+    } else {
+      console.log("Sem timers disponíveis!");
+    }
+  };
+
   const handleExtraChoice = (choice: "TIMER" | "VIDA") => {
     setExtraChoice(choice);
     console.log("Escolha extra:", extraChoice);
@@ -198,8 +251,6 @@ function Runs() {
     setTimeLeft(null);
     setActiveStep(0);
   };
-
-  const allExercisesCompleted = activeStep >= calculatedExercises.length;
 
   // modal functions
   const handleGiveUp = () => {
@@ -228,6 +279,8 @@ function Runs() {
     // Mostra feedback
     setSnackbarOpen(true);
   };
+
+  const allExercisesCompleted = activeStep >= calculatedExercises.length;
 
   return (
     <div>
@@ -274,6 +327,13 @@ function Runs() {
                           ? `Tempo restante: ${timeLeft}s`
                           : `Tempo restante: ${exercise.duration}s`}
                       </Typography>
+                      <Button
+                        variant="outlined"
+                        sx={{ marginTop: 2 }}
+                        onClick={handleAddTimerToExercise}
+                      >
+                        Usar timer ({timers} disponíveis)
+                      </Button>
                     </CardContent>
                     <CardActions>
                       {isExerciseStarted && activeStep === index ? (
