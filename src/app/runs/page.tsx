@@ -20,9 +20,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-// import LinearProgress, {
-//   LinearProgressProps,
-// } from "@mui/material/LinearProgress";
+import LinearProgress, {
+  LinearProgressProps,
+} from "@mui/material/LinearProgress";
 
 // types
 interface Exercise {
@@ -31,6 +31,17 @@ interface Exercise {
   description: string;
   duration: number;
   repetitions: number;
+}
+
+interface Upgrade {
+  id: number;
+  name: string;
+  description: string;
+  completed: boolean;
+  dropsNeededToUpgrade: number;
+  aditionalPercentage?: number;
+  aditionalSeconds?: number;
+  dropsUsedToUpgrade: number;
 }
 
 // mockedExerciseData
@@ -65,41 +76,51 @@ const baseExercises: Exercise[] = [
   },
 ];
 
-// const upgrades = [
-//   {
-//     id: 1,
-//     name: "Bonus Chance 1",
-//     description: "Adiciona aumenta em 50% a chance de sair com um bônus",
-//     completed: false,
-//   },
-//   {
-//     id: 2,
-//     name: "Timer Extra 1",
-//     description: "+ 3 segundos de duração do timer",
-//     completed: false,
-//   },
-// ];
+const upgrades = [
+  {
+    id: 1,
+    name: "Bonus Chance 1",
+    description: "Adiciona aumenta em 50% a chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 10,
+    aditionalPercentage: 0.5,
+  },
+  {
+    id: 2,
+    name: "Timer Extra 1",
+    description: "+ 3 segundos de duração do timer",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 10,
+    aditionalSeconds: 3,
+  },
+];
 
-// function LinearProgressWithLabel(
-//   props: LinearProgressProps & { value: number }
-// ) {
-//   return (
-//     <Box sx={{ display: "flex", alignItems: "center" }}>
-//       <Box sx={{ width: "100%", mr: 1 }}>
-//         <LinearProgress variant="determinate" {...props} />
-//       </Box>
-//       <Box sx={{ minWidth: 35 }}>
-//         <Typography
-//           variant="body2"
-//           sx={{ color: "text.secondary" }}
-//         >{`${Math.round(props.value)}%`}</Typography>
-//       </Box>
-//     </Box>
-//   );
-// }
+function LinearProgressWithLabel(
+  props: LinearProgressProps & { value: number }
+) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box sx={{ width: "100%", mr: 1 }}>
+        <LinearProgress
+          variant="determinate"
+          {...props}
+          sx={{ height: 22, borderRadius: 1 }}
+        />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary" }}
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
 
 function Runs() {
-  const [room, setRoom] = useState(1);
+  const [room, setRoom] = useState(3);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -180,10 +201,19 @@ function Runs() {
     generatePageExercises(room);
   }, [room, generatePageExercises]);
 
+  useEffect(() => {
+    if (room === 3) {
+      const upgradesKey = "upgradesData";
+      if (!localStorage.getItem(upgradesKey)) {
+        localStorage.setItem(upgradesKey, JSON.stringify(upgrades));
+      }
+    }
+  }, [room]);
+
   // ------------------------------ functions to handle the page main logic ------------------------------
   const handleSucess = () => {
     if (!extraStepActive) {
-      // 60% chance de ativar um extra step
+      // 30% chance de ativar um extra step
       if (Math.random() < 0.3) {
         setExtraStepActive(true);
         return;
@@ -278,6 +308,36 @@ function Runs() {
 
     // Mostra feedback
     setSnackbarOpen(true);
+  };
+
+  // const getUpradesData = () => {
+  //   const data = JSON.parse(localStorage.getItem("upgradesData")!);
+  //   console.log(data);
+  // };
+
+  const handleUpgrade = (upgradeId: number) => {
+    const upgradesKey = "upgradesData";
+    const currentUpgrades = JSON.parse(
+      localStorage.getItem(upgradesKey) || "[]"
+    );
+
+    const updatedUpgrades = currentUpgrades.map((upgrade: Upgrade) => {
+      if (upgrade.id === upgradeId && !upgrade.completed) {
+        // Reduzir gotas e marcar upgrade como completo
+        setDrops((prevDrops) => prevDrops - drops); // Subtrai as gotas necessárias para o upgrade
+
+        return {
+          ...upgrade,
+          dropsUsedToUpgrade: upgrade.dropsUsedToUpgrade + drops, // Soma as gotas gastas
+          completed: true, // Marca o upgrade como completo
+        };
+      }
+      return upgrade;
+    });
+
+    // Atualiza o LocalStorage com os upgrades modificados
+    localStorage.setItem(upgradesKey, JSON.stringify(updatedUpgrades));
+    console.log("Upgrades atualizados:", updatedUpgrades);
   };
 
   const allExercisesCompleted = activeStep >= calculatedExercises.length;
@@ -389,7 +449,55 @@ function Runs() {
             </div>
           )}
           {calculatedExercises.length === 0 && (
-            <div className="generic-container">Sala de descanso</div>
+            <>
+              <div className="generic-container">Sala de descanso</div>
+              <div className="generic-container" style={{}}>
+                {upgrades.map((upgrade) => {
+                  const upgradesData = JSON.parse(
+                    localStorage.getItem("upgradesData") || "[]"
+                  );
+                  const storedUpgrade = upgradesData.find(
+                    (u: Upgrade) => u.id === upgrade.id
+                  );
+
+                  console.log("storedUpgrade", storedUpgrade);
+
+                  return (
+                    <Card
+                      sx={{ maxWidth: 400, padding: 2, mb: 2 }}
+                      key={upgrade.id}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{ display: "flex", flexDirection: "column", mb: 2 }}
+                      >
+                        {storedUpgrade?.description || upgrade.description}: {" "}
+                        {storedUpgrade?.dropsUsedToUpgrade}/
+                        {storedUpgrade?.dropsNeededToUpgrade ||
+                          upgrade.dropsNeededToUpgrade}
+                      </Typography>
+                      <div style={{ marginBottom: "16px" }}>
+                        <LinearProgressWithLabel
+                          value={
+                            storedUpgrade
+                              ? (storedUpgrade.dropsUsedToUpgrade /
+                                  storedUpgrade.dropsNeededToUpgrade) *
+                                100
+                              : 0
+                          }
+                        />
+                      </div>
+                      <Button
+                        variant="outlined"
+                        onClick={() => handleUpgrade(upgrade.id)}
+                      >
+                        Comprar upgrade
+                      </Button>
+                    </Card>
+                  );
+                })}
+              </div>
+            </>
           )}
           {allExercisesCompleted && (
             <div className="generic-container">
