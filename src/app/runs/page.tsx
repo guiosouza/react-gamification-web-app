@@ -107,7 +107,21 @@ function Runs() {
 
   return (
     <div>
-      <div className="genertic-container">
+      <div className="generic-container">
+        <Typography variant="h6">Sala {room}</Typography>
+      </div>
+      <div className="generic-container">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Vidas: {3}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Gotas: {3}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Timers: {3}
+        </Typography>
+      </div>
+      <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>
           <Stepper activeStep={activeStep} orientation="vertical">
             {calculatedExercises.map((exercise, index) => (
@@ -163,7 +177,7 @@ function Runs() {
             ))}
           </Stepper>
           {allExercisesCompleted && (
-            <div className="genertic-container">
+            <div className="generic-container">
               <Box mt={2}>
                 <Button variant="contained" onClick={handleNextRoom}>
                   Próxima sala
