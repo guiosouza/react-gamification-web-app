@@ -13,6 +13,13 @@ import {
 } from "@mui/material";
 import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 // types
 interface Exercise {
@@ -68,6 +75,8 @@ function Runs() {
   const [timers, setTimers] = useState(3);
   const [lives, setLives] = useState(3);
   const [drops, setDrops] = useState(3); // Estado inicial com 3 gotas
+  const [open, setOpen] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   // generation functions
   const calculateDifficulty = (room: number) => {
@@ -82,6 +91,7 @@ function Runs() {
   };
 
   const generatePageExercises = useCallback((room: number) => {
+    console.log("Gerando exercícios para a sala:", room);
     const exercises = calculateDifficulty(room);
 
     if (room === 1) {
@@ -191,11 +201,41 @@ function Runs() {
 
   const allExercisesCompleted = activeStep >= calculatedExercises.length;
 
+  // modal functions
+  const handleGiveUp = () => {
+    setOpen(true);
+  };
+
+  const handleDoNotGiveUp = () => {
+    setOpen(false);
+  };
+
+  // Após o reset
+  const giveUp = () => {
+    setRoom(1);
+    setLives(3);
+    setDrops(3);
+    setTimers(3);
+    setActiveStep(0);
+    setIsExerciseStarted(false);
+    setExtraStepActive(false);
+    setExtraChoice(null);
+    setTimeLeft(null);
+    setOpen(false);
+
+    generatePageExercises(1);
+
+    // Mostra feedback
+    setSnackbarOpen(true);
+  };
+
   return (
     <div>
+      {/* Room */}
       <div className="generic-container">
         <Typography variant="h6">Sala {room}</Typography>
       </div>
+      {/* Top itens */}
       <div className="generic-container">
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Vidas: {lives}
@@ -207,6 +247,7 @@ function Runs() {
           Timers: {timers}
         </Typography>
       </div>
+      {/* Main content */}
       <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>
           <Stepper activeStep={activeStep} orientation="vertical">
@@ -301,6 +342,52 @@ function Runs() {
           )}
         </Box>
       </div>
+      {/* botão de desistir e voltar desde o início */}
+      <div className="generic-container">
+        <Button variant="outlined" color="warning" onClick={handleGiveUp}>
+          Desistir
+        </Button>
+      </div>
+      {/* Dialog */}
+      <div>
+        <Dialog
+          open={open}
+          onClose={handleDoNotGiveUp}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Desistir da RUN?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Ao desistir da RUN, você perderá todo o progresso feito até agora.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button color="error" onClick={giveUp}>
+              Sim
+            </Button>
+            <Button onClick={handleDoNotGiveUp} autoFocus>
+              Não
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+      {/* Snack bar feedback when give up */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="info"
+          sx={{ width: "100%" }}
+        >
+          Você desistiu e voltou ao início!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
