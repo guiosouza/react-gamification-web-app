@@ -120,7 +120,7 @@ function LinearProgressWithLabel(
 }
 
 function Runs() {
-  const [room, setRoom] = useState(3);
+  const [room, setRoom] = useState(1);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -132,7 +132,7 @@ function Runs() {
   const [timers, setTimers] = useState(3);
   const [timeValueInSeconds] = useState(4);
   const [lives, setLives] = useState(3);
-  const [drops, setDrops] = useState(3); // Estado inicial com 3 gotas
+  const [drops, setDrops] = useState(11); // Estado inicial com 3 gotas
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -212,9 +212,28 @@ function Runs() {
 
   // ------------------------------ functions to handle the page main logic ------------------------------
   const handleSucess = () => {
+    const upgradesKey = "upgradesData";
+    const currentUpgrades = JSON.parse(
+      localStorage.getItem(upgradesKey) || "[]"
+    );
+
+    // Obtém a chance adicional a partir dos upgrades completados
+    const bonusUpgrade = currentUpgrades.find(
+      (upgrade: Upgrade) =>
+        upgrade.name === "Bonus Chance 1" && upgrade.completed
+    );
+
+    let defaultChance = 0.3;
+
+    if (bonusUpgrade?.aditionalPercentage) {
+      defaultChance += bonusUpgrade.aditionalPercentage;
+    }
+
+    console.log(`Chance de ativar extra step: ${defaultChance * 100}%`);
+
     if (!extraStepActive) {
       // 30% chance de ativar um extra step
-      if (Math.random() < 0.3) {
+      if (Math.random() < defaultChance) {
         setExtraStepActive(true);
         return;
       }
@@ -233,6 +252,11 @@ function Runs() {
     setExtraStepActive(false); // Reseta o estado do passo extra
     setExtraChoice(null); // Reseta a escolha do passo extra
   };
+
+  // const getUpradesData = () => {
+  //   const data = JSON.parse(localStorage.getItem("upgradesData")!);
+  //   console.log(data);
+  // };
 
   const handleFail = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -310,11 +334,6 @@ function Runs() {
     setSnackbarOpen(true);
   };
 
-  // const getUpradesData = () => {
-  //   const data = JSON.parse(localStorage.getItem("upgradesData")!);
-  //   console.log(data);
-  // };
-
   const handleUpgrade = (upgradeId: number) => {
     const upgradesKey = "upgradesData";
     const currentUpgrades = JSON.parse(
@@ -323,14 +342,26 @@ function Runs() {
 
     const updatedUpgrades = currentUpgrades.map((upgrade: Upgrade) => {
       if (upgrade.id === upgradeId && !upgrade.completed) {
-        // Reduzir gotas e marcar upgrade como completo
-        setDrops((prevDrops) => prevDrops - drops); // Subtrai as gotas necessárias para o upgrade
+        const remainingDropsNeeded =
+          upgrade.dropsNeededToUpgrade - upgrade.dropsUsedToUpgrade;
 
-        return {
-          ...upgrade,
-          dropsUsedToUpgrade: upgrade.dropsUsedToUpgrade + drops, // Soma as gotas gastas
-          completed: true, // Marca o upgrade como completo
-        };
+        // Verifica se o jogador tem gotas suficientes para completar o upgrade
+        if (drops >= remainingDropsNeeded) {
+          setDrops((prevDrops) => prevDrops - remainingDropsNeeded); // Usa apenas o necessário
+          return {
+            ...upgrade,
+            dropsUsedToUpgrade: upgrade.dropsNeededToUpgrade, // Completa o upgrade
+            completed: true,
+          };
+        } else {
+          // Caso não tenha gotas suficientes, gasta o que for possível
+          const newDropsUsedToUpgrade = upgrade.dropsUsedToUpgrade + drops;
+          setDrops(0); // Usa todas as gotas disponíveis
+          return {
+            ...upgrade,
+            dropsUsedToUpgrade: newDropsUsedToUpgrade,
+          };
+        }
       }
       return upgrade;
     });
@@ -471,7 +502,7 @@ function Runs() {
                         variant="body1"
                         sx={{ display: "flex", flexDirection: "column", mb: 2 }}
                       >
-                        {storedUpgrade?.description || upgrade.description}: {" "}
+                        {storedUpgrade?.description || upgrade.description}:{" "}
                         {storedUpgrade?.dropsUsedToUpgrade}/
                         {storedUpgrade?.dropsNeededToUpgrade ||
                           upgrade.dropsNeededToUpgrade}
