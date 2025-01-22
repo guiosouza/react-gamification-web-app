@@ -130,7 +130,7 @@ function Runs() {
   const [extraStepActive, setExtraStepActive] = useState(false);
   const [extraChoice, setExtraChoice] = useState<"TIMER" | "VIDA" | null>(null);
   const [timers, setTimers] = useState(3);
-  const [timeValueInSeconds] = useState(4);
+  const [timeValueInSeconds, setTimeValueInSeconds] = useState(4);
   const [lives, setLives] = useState(3);
   const [drops, setDrops] = useState(11); // Estado inicial com 3 gotas
   const [open, setOpen] = React.useState(false);
@@ -210,6 +210,28 @@ function Runs() {
       }
     }
   }, [room]);
+
+  useEffect(() => {
+    const bonusTimer = () => {
+      const upgradesKey = "upgradesData";
+      const currentUpgrades = JSON.parse(
+        localStorage.getItem(upgradesKey) || "[]"
+      );
+
+      const bonusUpgrade = currentUpgrades.find(
+        (upgrade: Upgrade) =>
+          upgrade.name === "Timer Extra 1" && upgrade.completed
+      );
+
+      if (bonusUpgrade?.aditionalSeconds) {
+        setTimeValueInSeconds(
+          (prevSeconds) => prevSeconds + bonusUpgrade?.aditionalSeconds
+        );
+      }
+    };
+
+    bonusTimer();
+  }, []);
 
   // ------------------------------ functions to handle the page main logic ------------------------------
   const handleSucess = () => {
@@ -400,7 +422,10 @@ function Runs() {
         <Typography variant="h5">Sala {room}</Typography>
       </div>
       {/* Top itens */}
-      <div className="generic-container" style={{display: 'flex', justifyContent: 'space-evenly'}}>
+      <div
+        className="generic-container"
+        style={{ display: "flex", justifyContent: "space-evenly" }}
+      >
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Vidas: {lives}
         </Typography>
@@ -408,7 +433,7 @@ function Runs() {
           Gotas: {drops}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Timers: {timers}
+          Timers: {timers} {"(" + timeValueInSeconds + "s)"}
         </Typography>
       </div>
       {/* Main content */}
@@ -460,6 +485,7 @@ function Runs() {
                             size="small"
                             disabled={timeLeft !== 0}
                             onClick={handleFail}
+                            color="error"
                           >
                             Falha
                           </Button>
