@@ -135,6 +135,7 @@ function Runs() {
   const [drops, setDrops] = useState(11); // Estado inicial com 3 gotas
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [gameOverMessage, setGameOverMessage] = useState("");
 
   // generation functions
   const calculateDifficulty = (room: number) => {
@@ -260,7 +261,30 @@ function Runs() {
 
   const handleFail = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setLives((prevLives) => prevLives - 1);
+    setLives((prevLives) => {
+      const newLives = prevLives - 1;
+
+      if (newLives < 0) {
+        // Reinicia o jogo
+        setRoom(1);
+        setLives(3);
+        setDrops(3);
+        setTimers(3);
+        setActiveStep(0);
+        setIsExerciseStarted(false);
+        setExtraStepActive(false);
+        setExtraChoice(null);
+        setTimeLeft(null);
+
+        generatePageExercises(1);
+
+        // Mostra feedback de reinício
+        setSnackbarOpen(true);
+        setGameOverMessage("Você perdeu todas as vidas e voltou ao início!");
+      }
+
+      return newLives;
+    });
   };
 
   const handleAddTimerToExercise = () => {
@@ -332,6 +356,7 @@ function Runs() {
 
     // Mostra feedback
     setSnackbarOpen(true);
+    setGameOverMessage("Você desistiu e voltou ao início!");
   };
 
   const handleUpgrade = (upgradeId: number) => {
@@ -376,11 +401,11 @@ function Runs() {
   return (
     <div>
       {/* Room */}
-      <div className="generic-container">
-        <Typography variant="h6">Sala {room}</Typography>
+      <div className="generic-container" style={{ textAlign: "center" }}>
+        <Typography variant="h5">Sala {room}</Typography>
       </div>
       {/* Top itens */}
-      <div className="generic-container">
+      <div className="generic-container" style={{display: 'flex', justifyContent: 'space-evenly'}}>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Vidas: {lives}
         </Typography>
@@ -584,7 +609,7 @@ function Runs() {
           severity="info"
           sx={{ width: "100%" }}
         >
-          Você desistiu e voltou ao início!
+          {gameOverMessage}
         </Alert>
       </Snackbar>
     </div>
