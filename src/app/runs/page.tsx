@@ -56,13 +56,18 @@ const baseExercises: Exercise[] = [
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(2);
+  const [room, setRoom] = useState(1);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [calculatedExercises, setCalculatedExercises] = useState<Exercise[]>(
     []
   );
+  const [extraStepActive, setExtraStepActive] = useState(false);
+  const [extraChoice, setExtraChoice] = useState<"TIMER" | "VIDA" | null>(null);
+  const [timers, setTimers] = useState(3);
+  const [lives, setLives] = useState(3);
+  const [drops, setDrops] = useState(3); // Estado inicial com 3 gotas
 
   // generation functions
   const calculateDifficulty = (room: number) => {
@@ -100,9 +105,13 @@ function Runs() {
 
       console.log("Rom 2 - selectedExercises", selectedExercises);
     }
+
+    if (room === 3) {
+      setCalculatedExercises([]);
+    }
   }, []);
 
-  // all useEffects
+  // ------------------------------ all useEffects ------------------------------
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
 
@@ -124,9 +133,47 @@ function Runs() {
     generatePageExercises(room);
   }, [room, generatePageExercises]);
 
-  // functions to handle the page main logic
+  // ------------------------------ functions to handle the page main logic ------------------------------
   const handleSucess = () => {
+    if (!extraStepActive) {
+      // 60% chance de ativar um extra step
+      if (Math.random() < 0.3) {
+        setExtraStepActive(true);
+        return;
+      }
+    }
+
+    // 50% chance de ganhar entre 10 e 20 gotas
+    if (Math.random() < 0.5) {
+      const earnedDrops = Math.floor(Math.random() * 11) + 10; // Valor aleatório entre 10 e 20
+      setDrops((prevDrops) => prevDrops + earnedDrops); // Incrementa as gotas
+      console.log(`Você ganhou ${earnedDrops} gotas!`);
+    }
+
+    // Se não houver passo extra ou ele já foi resolvido, avança para o próximo passo
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setIsExerciseStarted(false);
+    setExtraStepActive(false); // Reseta o estado do passo extra
+    setExtraChoice(null); // Reseta a escolha do passo extra
+  };
+
+  const handleFail = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setLives((prevLives) => prevLives - 1);
+  };
+
+  const handleExtraChoice = (choice: "TIMER" | "VIDA") => {
+    setExtraChoice(choice);
+    console.log("Escolha extra:", extraChoice);
+    if (choice === "TIMER") {
+      setTimers((prevTimers) => prevTimers + 1);
+    } else if (choice === "VIDA") {
+      setLives((prevLives) => prevLives + 1);
+    }
+
+    // Avança para o próximo passo após a escolha
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setExtraStepActive(false);
     setIsExerciseStarted(false);
   };
 
@@ -151,13 +198,13 @@ function Runs() {
       </div>
       <div className="generic-container">
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Vidas: {3}
+          Vidas: {lives}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Gotas: {3}
+          Gotas: {drops}
         </Typography>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Timers: {3}
+          Timers: {timers}
         </Typography>
       </div>
       <div className="generic-container">
@@ -197,7 +244,11 @@ function Runs() {
                           >
                             Sucesso
                           </Button>
-                          <Button size="small" disabled={timeLeft !== 0}>
+                          <Button
+                            size="small"
+                            disabled={timeLeft !== 0}
+                            onClick={handleFail}
+                          >
                             Falha
                           </Button>
                         </>
@@ -215,6 +266,30 @@ function Runs() {
               </Step>
             ))}
           </Stepper>
+          {extraStepActive && (
+            <div className="generic-container">
+              <Typography variant="body1" sx={{ marginBottom: 2 }}>
+                Escolha uma recompensa:
+              </Typography>
+              <Box display="flex" gap={2}>
+                <Button
+                  variant="outlined"
+                  onClick={() => handleExtraChoice("TIMER")}
+                >
+                  Adicionar TIMER
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => handleExtraChoice("VIDA")}
+                >
+                  Adicionar VIDA
+                </Button>
+              </Box>
+            </div>
+          )}
+          {calculatedExercises.length === 0 && (
+            <div className="generic-container">Sala de descanso</div>
+          )}
           {allExercisesCompleted && (
             <div className="generic-container">
               <Box mt={2}>
