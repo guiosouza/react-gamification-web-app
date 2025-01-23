@@ -4,13 +4,14 @@ import {
   Card,
   CardActions,
   CardContent,
+  Divider,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 interface Draw {
   id: string;
-  date: string;
+  date: string; // Data no formato "DD/MM/AAAA"
   task: string;
   totalDraws: number;
   wonDraws: number;
@@ -28,22 +29,42 @@ function Statistics() {
   }, []);
 
   const handleDelete = (id: string) => {
-    console.log("Deleting entry with ID:", id);
     const updatedHistory = history.filter((entry) => entry.id !== id);
-    console.log("Updated history after deletion:", updatedHistory);
     setHistory(updatedHistory);
     localStorage.setItem("drawHistory", JSON.stringify(updatedHistory));
   };
 
   const handleDeleteAll = () => {
-    console.log("Deleting all entries.");
     setHistory([]);
     localStorage.removeItem("drawHistory");
   };
 
+  // Agrupa os sorteios por data
+  const drawsByDate = history.reduce((acc: Record<string, number>, entry) => {
+    const date = entry.date.split(" ")[0]; // Obtém apenas a parte da data
+    acc[date] = (acc[date] || 0) + entry.totalDraws;
+    return acc;
+  }, {});
+
   return (
     <div>
       <div className="generic-container">
+        {/* Exibe as somas agrupadas por data */}
+        {Object.entries(drawsByDate).map(([date, totalDraws]) => (
+          <Card key={date} sx={{ mb: 2, border: "1px solid orange" }}>
+            <CardContent>
+              <Typography variant="h6" component="div">
+                Soma de todos os sorteios de {date}
+              </Typography>
+              <Divider sx={{ mb: 2, mt: 1 }} />
+              <Typography variant="body1" color="textSecondary">
+                Total de sorteios: {totalDraws}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))}
+
+        {/* Lista de entradas individuais */}
         {history.length === 0 ? (
           <Typography variant="body1" color="textSecondary">
             Não há dados para exibir.
