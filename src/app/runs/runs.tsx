@@ -16,42 +16,41 @@ import { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { motion } from "framer-motion";
-import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import TimerIcon from "@mui/icons-material/Timer";
 import { Exercise, Upgrade } from "../types/run-types";
 import GiveRunDialog from "@/components/give-run-dialog";
 import LinearProgressWithLabel from "@/components/linear-progress-with-label";
+import HeaderItensRuns from "@/components/header-itens-runs";
 
 // mockedExerciseData
 const baseExercises: Exercise[] = [
   {
     id: 1,
-    name: "Tarefa 1",
+    name: "Flexão",
     description: "Descrição tarefa 1",
-    duration: 2,
+    duration: 15,
     repetitions: 1,
   },
   {
     id: 2,
-    name: "Tarefa 2",
+    name: "Polichinelo",
     description: "Descrição tarefa 2",
-    duration: 4,
-    repetitions: 1,
+    duration: 15,
+    repetitions: 3,
   },
   {
     id: 3,
-    name: "Tarefa 3",
+    name: "Corrida estacionária",
     description: "Descrição tarefa 3",
-    duration: 6,
-    repetitions: 1,
+    duration: 15,
+    repetitions: 3,
   },
   {
     id: 4,
-    name: "Tarefa 4",
+    name: "Agachamento",
     description: "Descrição tarefa 4",
-    duration: 6,
-    repetitions: 1,
+    duration: 15,
+    repetitions: 3,
   },
 ];
 
@@ -59,11 +58,11 @@ const upgrades = [
   {
     id: 1,
     name: "Bonus Chance 1",
-    description: "Adiciona aumenta em 50% a chance de sair com um bônus",
+    description: "Aumenta em 8% a chance de sair com um bônus",
     dropsUsedToUpgrade: 0,
     completed: false,
     dropsNeededToUpgrade: 10,
-    aditionalPercentage: 0.5,
+    aditionalPercentage: 0.08,
   },
   {
     id: 2,
@@ -74,11 +73,37 @@ const upgrades = [
     dropsNeededToUpgrade: 10,
     aditionalSeconds: 3,
   },
+  {
+    id: 3,
+    name: "Timer Extra 2",
+    description: "+ 4 segundos de duração do timer",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 20,
+    aditionalSeconds: 4,
+  },
+  {
+    id: 4,
+    name: "Timer Extra 3",
+    description: "+ 5 segundos de duração do timer",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 200,
+    aditionalSeconds: 5,
+  },
+  {
+    id: 5,
+    name: "Bonus Chance 2",
+    description: "Aumenta em 12% a chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 10,
+    aditionalPercentage: 0.12,
+  },
 ];
 
-
 function Runs() {
-  const [room, setRoom] = useState(2);
+  const [room, setRoom] = useState(3);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -88,7 +113,7 @@ function Runs() {
   const [extraStepActive, setExtraStepActive] = useState(false);
   const [extraChoice, setExtraChoice] = useState<"TIMER" | "VIDA" | null>(null);
   const [timers, setTimers] = useState(3);
-  const [timeValueInSeconds, setTimeValueInSeconds] = useState(4);
+  const [timeValueInSeconds, setTimeValueInSeconds] = useState(5);
   const [lives, setLives] = useState(3);
   const [drops, setDrops] = useState(11); // Estado inicial com 3 gotas
   const [open, setOpen] = React.useState(false);
@@ -101,7 +126,7 @@ function Runs() {
 
   // generation functions
   const calculateDifficulty = (room: number) => {
-    const durationDifficultyMultiplier = room * 2;
+    const durationDifficultyMultiplier = room * 5;
     const repetitionsDifficultyMultiplier = room * 2;
 
     return baseExercises.map((exercise) => ({
@@ -112,23 +137,45 @@ function Runs() {
   };
 
   const generatePageExercises = useCallback((room: number) => {
-    console.log("Gerando exercícios para a sala:", room);
     const exercises = calculateDifficulty(room); // Calcula os exercícios com base na dificuldade da sala
+
+    // Função auxiliar para garantir a quantidade necessária de exercícios
+    const ensureExerciseCount = (
+      selectedCount: number,
+      exercises: Exercise[]
+    ): Exercise[] => {
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      let selectedExercises = shuffledExercises.slice(0, selectedCount);
+
+      if (selectedExercises.length < selectedCount) {
+        const extraExercises: Exercise[] = [];
+        const totalExercises = exercises.length;
+        let nextId = Math.max(...exercises.map((e) => e.id)) + 1;
+
+        while (
+          selectedExercises.length + extraExercises.length <
+          selectedCount
+        ) {
+          const originalExercise: Exercise =
+            exercises[extraExercises.length % totalExercises];
+          const newExercise: Exercise = { ...originalExercise, id: nextId++ };
+          extraExercises.push(newExercise);
+        }
+
+        selectedExercises = [...selectedExercises, ...extraExercises];
+      }
+
+      return selectedExercises;
+    };
 
     if (room === 1) {
       const selectedCount = Math.random() < 0.5 ? 1 : 2; // 50% chance para 1 ou 2 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 1 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 2) {
-      const selectedCount = Math.floor(Math.random() * 3) + 2; // Entre 2 a 4 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 2 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      const selectedCount = Math.floor(Math.random() * 3) + 2; // Entre 2 e 4 exercícios
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 3) {
@@ -138,18 +185,12 @@ function Runs() {
 
     if (room === 4) {
       const selectedCount = Math.floor(Math.random() * 7) + 3; // Entre 3 e 9 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 4 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 5) {
       const selectedCount = Math.floor(Math.random() * 4) + 3; // Entre 3 e 6 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 5 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 6) {
@@ -159,26 +200,17 @@ function Runs() {
 
     if (room === 7) {
       const selectedCount = Math.floor(Math.random() * 5) + 4; // Entre 4 e 8 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 7 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 8) {
       const selectedCount = Math.floor(Math.random() * 6) + 5; // Entre 5 e 10 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 8 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 9) {
       const selectedCount = Math.floor(Math.random() * 6) + 6; // Entre 6 e 11 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 9 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 10) {
@@ -188,18 +220,12 @@ function Runs() {
 
     if (room === 11) {
       const selectedCount = Math.floor(Math.random() * 7) + 7; // Entre 7 e 13 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 11 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 12) {
       const selectedCount = Math.floor(Math.random() * 8) + 8; // Entre 8 e 15 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 12 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
 
     if (room === 13) {
@@ -208,11 +234,8 @@ function Runs() {
     }
 
     if (room === 14) {
-      const selectedCount = Math.floor(Math.random() * 9) + 9; // Entre 9 e 17 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      const selectedExercises = shuffledExercises.slice(0, selectedCount);
-      console.log("Room 14 - selectedExercises", selectedExercises);
-      setCalculatedExercises(selectedExercises);
+      const selectedCount = Math.floor(Math.random() * (20 - 15 + 1)) + 15; // Entre 15 e 20
+      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
     }
   }, []);
 
@@ -248,25 +271,30 @@ function Runs() {
   }, [room]);
 
   useEffect(() => {
-    const bonusTimer = () => {
+    // Função para calcular o valor final de timeValueInSeconds
+    const bonusTimerChecker = () => {
       const upgradesKey = "upgradesData";
       const currentUpgrades = JSON.parse(
         localStorage.getItem(upgradesKey) || "[]"
       );
 
-      const bonusUpgrade = currentUpgrades.find(
-        (upgrade: Upgrade) =>
-          upgrade.name === "Timer Extra 1" && upgrade.completed
+      // Filtrar upgrades completos que adicionam tempo
+      const completedUpgrades = currentUpgrades.filter(
+        (upgrade: Upgrade) => upgrade.completed && upgrade.aditionalSeconds
       );
 
-      if (bonusUpgrade?.aditionalSeconds) {
-        setTimeValueInSeconds(
-          (prevSeconds) => prevSeconds + bonusUpgrade?.aditionalSeconds
-        );
-      }
+      // Calcular os segundos extras de todos os upgrades
+      const extraSeconds = completedUpgrades.reduce(
+        (total: number, upgrade: Upgrade) =>
+          total + (upgrade.aditionalSeconds || 0),
+        0
+      );
+
+      // Atualizar o estado de timeValueInSeconds
+      setTimeValueInSeconds(5 + extraSeconds); // Começa com o valor inicial de 4 segundos
     };
 
-    bonusTimer();
+    bonusTimerChecker();
   }, []);
 
   // ------------------------------ functions to handle the page main logic ------------------------------
@@ -276,17 +304,23 @@ function Runs() {
       localStorage.getItem(upgradesKey) || "[]"
     );
 
-    // Obtém a chance adicional a partir dos upgrades completados
-    const bonusUpgrade = currentUpgrades.find(
-      (upgrade: Upgrade) =>
-        upgrade.name === "Bonus Chance 1" && upgrade.completed
+    // Obtém a chance adicional de todos os upgrades completados que aumentam a chance de bônus
+    const bonusUpgrades = currentUpgrades.filter(
+      (upgrade: Upgrade) => upgrade.completed && upgrade.aditionalPercentage
     );
 
-    let defaultChance = 0.3;
+    // Soma as porcentagens adicionais de todos os upgrades completados
+    const additionalBonusChance = bonusUpgrades.reduce(
+      (total: number, upgrade: Upgrade) =>
+        total + (upgrade.aditionalPercentage || 0),
+      0
+    );
 
-    if (bonusUpgrade?.aditionalPercentage) {
-      defaultChance += bonusUpgrade.aditionalPercentage;
-    }
+    // Define a chance padrão
+    let defaultChance = 0.18;
+
+    // Adiciona a chance extra acumulada
+    defaultChance += additionalBonusChance;
 
     console.log(`Chance de ativar extra step: ${defaultChance * 100}%`);
 
@@ -474,65 +508,15 @@ function Runs() {
         <Typography variant="h5">Sala {room}</Typography>
       </div>
       {/* Top itens */}
-      <div
-        className="generic-container"
-        style={{ display: "flex", justifyContent: "space-evenly" }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            flexDirection: "column",
-          }}
-        >
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {lives}
-          </Typography>
-          <motion.div
-            animate={isHeartAnimating ? { scale: [1, 1.5, 1] } : {}}
-            transition={{ duration: 0.3 }}
-          >
-            <FavoriteIcon color="error" />
-          </motion.div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            flexDirection: "column",
-          }}
-        >
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {drops}
-          </Typography>
-          <motion.div
-            animate={isDropAnimating ? { scale: [1, 1.5, 1] } : {}}
-            transition={{ duration: 0.3 }}
-          >
-            <WaterDropIcon sx={{ color: "#90CAF9" }} />
-          </motion.div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            flexDirection: "column",
-          }}
-        >
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {timers} {"(" + timeValueInSeconds + "s)"}
-          </Typography>
-          <motion.div
-            animate={isTimerAnimating ? { scale: [1, 1.5, 1] } : {}}
-            transition={{ duration: 0.3 }}
-          >
-            <TimerIcon />
-          </motion.div>
-        </div>
-      </div>
+      <HeaderItensRuns
+        lives={lives}
+        isHeartAnimating={isHeartAnimating}
+        isDropAnimating={isDropAnimating}
+        drops={timeValueInSeconds}
+        timeValueInSeconds={timeValueInSeconds}
+        timers={timers}
+        isTimerAnimating={isTimerAnimating}
+      />
       {/* Main content */}
       <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>
@@ -645,11 +629,14 @@ function Runs() {
                     (u: Upgrade) => u.id === upgrade.id
                   );
 
-                  console.log("storedUpgrade", storedUpgrade);
-
                   return (
                     <Card
-                      sx={{ maxWidth: 400, padding: 2, mb: 2 }}
+                      sx={{
+                        maxWidth: 400,
+                        padding: 2,
+                        mb: 2,
+                        border: "1px solid #cecece",
+                      }}
                       key={upgrade.id}
                     >
                       <Typography
