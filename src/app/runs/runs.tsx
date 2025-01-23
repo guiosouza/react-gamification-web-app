@@ -28,7 +28,7 @@ const baseExercises: Exercise[] = [
     id: 1,
     name: "Flexão",
     description: "Descrição tarefa 1",
-    duration: 15,
+    duration: 23,
     repetitions: 1,
   },
   {
@@ -349,7 +349,7 @@ function Runs() {
     );
 
     // Define a chance padrão
-    let defaultChance = 0.90;
+    let defaultChance = 0.19;
 
     // Adiciona a chance extra acumulada
     defaultChance += additionalBonusChance;
@@ -365,9 +365,16 @@ function Runs() {
       }
     }
 
+    const minDropChance = 0.42;
+    const maxDropChance = 0.6;
+    const dropChance =
+      Math.random() * (maxDropChance - minDropChance) + minDropChance;
+
+    console.log(`Chance de ganhar gotas: ${dropChance * 100}%`);
+
     // 50% chance de ganhar entre 10 e 20 gotas
-    if (Math.random() < 0.5) {
-      const earnedDrops = Math.floor(Math.random() * 11) + 10; // Valor aleatório entre 10 e 20
+    if (Math.random() < dropChance) {
+      const earnedDrops = Math.floor(Math.random() * 10) + 11; // Valor aleatório entre 10 e 20
       setDrops((prevDrops) => prevDrops + earnedDrops); // Incrementa as gotas
 
       setIsDroptAnimating(true);
@@ -395,7 +402,7 @@ function Runs() {
         // Reinicia o jogo
         setRoom(1);
         setLives(3);
-        setDrops(500);
+        setDrops(0);
         setTimers(3);
         setActiveStep(0);
         setIsExerciseStarted(false);
@@ -429,7 +436,7 @@ function Runs() {
       setTimeout(() => setIsTimerAnimating(false), 300);
     } else {
       console.log("Sem timers disponíveis!");
-      window.alert("Sem timers disponíveis! ")
+      window.alert("Sem timers disponíveis! ");
     }
   };
 
@@ -479,7 +486,7 @@ function Runs() {
   const giveUp = () => {
     setRoom(1);
     setLives(3);
-    setDrops(500);
+    setDrops(0);
     setTimers(3);
     setActiveStep(0);
     setIsExerciseStarted(false);
@@ -549,6 +556,27 @@ function Runs() {
         timers={timers}
         isTimerAnimating={isTimerAnimating}
       />
+      {extraStepActive && (
+        <div className="generic-container">
+          <Typography variant="body1" sx={{ marginBottom: 2 }}>
+            Escolha uma recompensa:
+          </Typography>
+          <Box display="flex" gap={2}>
+            <Button
+              variant="outlined"
+              onClick={() => handleExtraChoice("TIMER")}
+            >
+              + (1) <TimerIcon sx={{ ml: 1 }} />
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => handleExtraChoice("VIDA")}
+            >
+              + (1) <FavoriteIcon sx={{ ml: 1 }} />
+            </Button>
+          </Box>
+        </div>
+      )}
       {/* Main content */}
       <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>
@@ -628,27 +656,6 @@ function Runs() {
               </Step>
             ))}
           </Stepper>
-          {extraStepActive && (
-            <div className="generic-container">
-              <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                Escolha uma recompensa:
-              </Typography>
-              <Box display="flex" gap={2}>
-                <Button
-                  variant="outlined"
-                  onClick={() => handleExtraChoice("TIMER")}
-                >
-                  + (1) <TimerIcon sx={{ ml: 1 }} />
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => handleExtraChoice("VIDA")}
-                >
-                  + (1) <FavoriteIcon sx={{ ml: 1 }} />
-                </Button>
-              </Box>
-            </div>
-          )}
           {calculatedExercises.length === 0 && (
             <>
               <div className="generic-container">Sala de descanso</div>
