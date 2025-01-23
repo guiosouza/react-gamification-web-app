@@ -25,7 +25,6 @@ import TimerIcon from "@mui/icons-material/Timer";
 import { Exercise, Upgrade } from "../types/run-types";
 import GiveRunDialog from "@/components/give-run-dialog";
 
-
 // mockedExerciseData
 const baseExercises: Exercise[] = [
   {
@@ -121,6 +120,7 @@ function Runs() {
   const [isHeartAnimating, setIsHeartAnimating] = useState(false);
   const [isTimerAnimating, setIsTimerAnimating] = useState(false);
   const [isDropAnimating, setIsDroptAnimating] = useState(false);
+  const [isBonusActive, setIsBonusActive] = useState(false)
 
   // generation functions
   const calculateDifficulty = (room: number) => {
@@ -243,6 +243,7 @@ function Runs() {
       // 30% chance de ativar um extra step
       if (Math.random() < defaultChance) {
         setExtraStepActive(true);
+        setIsBonusActive(true)
         return;
       }
     }
@@ -263,6 +264,7 @@ function Runs() {
     setIsExerciseStarted(false);
     setExtraStepActive(false); // Reseta o estado do passo extra
     setExtraChoice(null); // Reseta a escolha do passo extra
+    setIsBonusActive(false);
   };
 
   const handleFail = () => {
@@ -480,8 +482,14 @@ function Runs() {
         </div>
       </div>
       {/* Main content */}
-      <div className="generic-container">
-        <Box sx={{ maxWidth: 400 }}>
+      <div
+        className="generic-container"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Box sx={{ width: 400 }}>
           <Stepper activeStep={activeStep} orientation="vertical">
             {calculatedExercises.map((exercise, index) => (
               <Step key={exercise.id}>
@@ -531,13 +539,13 @@ function Runs() {
                           <Button
                             size="small"
                             onClick={handleSuccess}
-                            disabled={timeLeft !== 0}
+                            disabled={timeLeft !== 0 || isBonusActive}
                           >
                             Sucesso
                           </Button>
                           <Button
                             size="small"
-                            disabled={timeLeft !== 0}
+                            disabled={timeLeft !== 0 || isBonusActive}
                             onClick={handleFail}
                             color="error"
                           >
@@ -568,13 +576,13 @@ function Runs() {
                   variant="outlined"
                   onClick={() => handleExtraChoice("TIMER")}
                 >
-                  Adicionar (1) <TimerIcon sx={{ ml: 1 }} />
+                  + (1) <TimerIcon sx={{ ml: 1 }} />
                 </Button>
                 <Button
                   variant="outlined"
                   onClick={() => handleExtraChoice("VIDA")}
                 >
-                  Adicionar (1) <FavoriteIcon sx={{ ml: 1 }} />
+                  + (1) <FavoriteIcon sx={{ ml: 1 }} />
                 </Button>
               </Box>
             </div>
@@ -648,7 +656,11 @@ function Runs() {
         </Button>
       </div>
       {/* Give Up  Dialog */}
-      <GiveRunDialog open={open} giveUp={giveUp} handleDoNotGiveUp={handleDoNotGiveUp}/> 
+      <GiveRunDialog
+        open={open}
+        giveUp={giveUp}
+        handleDoNotGiveUp={handleDoNotGiveUp}
+      />
       {/* Snack bar feedback when give up */}
       <Snackbar
         open={snackbarOpen}
