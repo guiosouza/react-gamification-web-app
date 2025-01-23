@@ -15,15 +15,13 @@ import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import LinearProgress, {
-  LinearProgressProps,
-} from "@mui/material/LinearProgress";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { motion } from "framer-motion";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import TimerIcon from "@mui/icons-material/Timer";
 import { Exercise, Upgrade } from "../types/run-types";
 import GiveRunDialog from "@/components/give-run-dialog";
+import LinearProgressWithLabel from "@/components/linear-progress-with-label";
 
 // mockedExerciseData
 const baseExercises: Exercise[] = [
@@ -78,27 +76,6 @@ const upgrades = [
   },
 ];
 
-function LinearProgressWithLabel(
-  props: LinearProgressProps & { value: number }
-) {
-  return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "100%", mr: 1 }}>
-        <LinearProgress
-          variant="determinate"
-          {...props}
-          sx={{ height: 22, borderRadius: 1 }}
-        />
-      </Box>
-      <Box sx={{ minWidth: 35 }}>
-        <Typography
-          variant="body2"
-          sx={{ color: "text.secondary" }}
-        >{`${Math.round(props.value)}%`}</Typography>
-      </Box>
-    </Box>
-  );
-}
 
 function Runs() {
   const [room, setRoom] = useState(2);
