@@ -58,10 +58,10 @@ const upgrades = [
   {
     id: 1,
     name: "Bonus Chance 1",
-    description: "Aumenta em 8% a chance de sair com um bônus",
+    description: "+ 8% de chance de sair com um bônus",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 10,
+    dropsNeededToUpgrade: 1200,
     aditionalPercentage: 0.08,
   },
   {
@@ -70,7 +70,7 @@ const upgrades = [
     description: "+ 3 segundos de duração do timer",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 10,
+    dropsNeededToUpgrade: 330,
     aditionalSeconds: 3,
   },
   {
@@ -79,7 +79,7 @@ const upgrades = [
     description: "+ 4 segundos de duração do timer",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 20,
+    dropsNeededToUpgrade: 775,
     aditionalSeconds: 4,
   },
   {
@@ -88,22 +88,58 @@ const upgrades = [
     description: "+ 5 segundos de duração do timer",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 200,
+    dropsNeededToUpgrade: 5200,
     aditionalSeconds: 5,
   },
   {
     id: 5,
     name: "Bonus Chance 2",
-    description: "Aumenta em 12% a chance de sair com um bônus",
+    description: "+ 12% de chance de sair com um bônus",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 10,
+    dropsNeededToUpgrade: 2000,
     aditionalPercentage: 0.12,
+  },
+  {
+    id: 6,
+    name: "Bonus Chance 3",
+    description: "+ 16% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 5000,
+    aditionalPercentage: 0.16,
+  },
+  {
+    id: 7,
+    name: "Timer Extra 4",
+    description: "+ 6 segundos de duração do timer",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 8000,
+    aditionalSeconds: 6,
+  },
+  {
+    id: 8,
+    name: "Bonus Chance 4",
+    description: "+ 17% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 9000,
+    aditionalPercentage: 0.17,
+  },
+  {
+    id: 9,
+    name: "Timer Extra 5",
+    description: "+ 9 segundos de duração do timer",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 9000,
+    aditionalSeconds: 6,
   },
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(3);
+  const [room, setRoom] = useState(1);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -112,10 +148,10 @@ function Runs() {
   );
   const [extraStepActive, setExtraStepActive] = useState(false);
   const [extraChoice, setExtraChoice] = useState<"TIMER" | "VIDA" | null>(null);
-  const [timers, setTimers] = useState(3);
-  const [timeValueInSeconds, setTimeValueInSeconds] = useState(5);
-  const [lives, setLives] = useState(3);
-  const [drops, setDrops] = useState(11); // Estado inicial com 3 gotas
+  const [timers, setTimers] = useState(0);
+  const [timeValueInSeconds, setTimeValueInSeconds] = useState(10);
+  const [lives, setLives] = useState(1);
+  const [drops, setDrops] = useState(0); // Estado inicial com 500 gotas
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [gameOverMessage, setGameOverMessage] = useState("");
@@ -179,7 +215,6 @@ function Runs() {
     }
 
     if (room === 3) {
-      console.log("Room 3 - Descanso");
       setCalculatedExercises([]); // Sala de descanso
     }
 
@@ -194,7 +229,6 @@ function Runs() {
     }
 
     if (room === 6) {
-      console.log("Room 6 - Descanso");
       setCalculatedExercises([]); // Sala de descanso
     }
 
@@ -214,7 +248,6 @@ function Runs() {
     }
 
     if (room === 10) {
-      console.log("Room 10 - Descanso");
       setCalculatedExercises([]); // Sala de descanso
     }
 
@@ -229,7 +262,6 @@ function Runs() {
     }
 
     if (room === 13) {
-      console.log("Room 13 - Descanso");
       setCalculatedExercises([]); // Sala de descanso
     }
 
@@ -291,7 +323,7 @@ function Runs() {
       );
 
       // Atualizar o estado de timeValueInSeconds
-      setTimeValueInSeconds(5 + extraSeconds); // Começa com o valor inicial de 4 segundos
+      setTimeValueInSeconds(10 + extraSeconds); // Começa com o valor inicial de 4 segundos
     };
 
     bonusTimerChecker();
@@ -317,7 +349,7 @@ function Runs() {
     );
 
     // Define a chance padrão
-    let defaultChance = 0.18;
+    let defaultChance = 0.90;
 
     // Adiciona a chance extra acumulada
     defaultChance += additionalBonusChance;
@@ -363,7 +395,7 @@ function Runs() {
         // Reinicia o jogo
         setRoom(1);
         setLives(3);
-        setDrops(3);
+        setDrops(500);
         setTimers(3);
         setActiveStep(0);
         setIsExerciseStarted(false);
@@ -397,6 +429,7 @@ function Runs() {
       setTimeout(() => setIsTimerAnimating(false), 300);
     } else {
       console.log("Sem timers disponíveis!");
+      window.alert("Sem timers disponíveis! ")
     }
   };
 
@@ -446,7 +479,7 @@ function Runs() {
   const giveUp = () => {
     setRoom(1);
     setLives(3);
-    setDrops(3);
+    setDrops(500);
     setTimers(3);
     setActiveStep(0);
     setIsExerciseStarted(false);
@@ -496,7 +529,6 @@ function Runs() {
 
     // Atualiza o LocalStorage com os upgrades modificados
     localStorage.setItem(upgradesKey, JSON.stringify(updatedUpgrades));
-    console.log("Upgrades atualizados:", updatedUpgrades);
   };
 
   const allExercisesCompleted = activeStep >= calculatedExercises.length;
@@ -512,7 +544,7 @@ function Runs() {
         lives={lives}
         isHeartAnimating={isHeartAnimating}
         isDropAnimating={isDropAnimating}
-        drops={timeValueInSeconds}
+        drops={drops}
         timeValueInSeconds={timeValueInSeconds}
         timers={timers}
         isTimerAnimating={isTimerAnimating}
@@ -662,8 +694,9 @@ function Runs() {
                       <Button
                         variant="outlined"
                         onClick={() => handleUpgrade(upgrade.id)}
+                        color="success"
                       >
-                        Comprar upgrade
+                        Comprar
                       </Button>
                     </Card>
                   );
