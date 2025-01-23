@@ -117,7 +117,7 @@ function Statistics() {
         {history.length > 0 && (
           <CardActions>
             <Button size="small" color="error" onClick={handleDeleteAll}>
-              Deletar tudo
+              Deletar tudo 😢
             </Button>
           </CardActions>
         )}

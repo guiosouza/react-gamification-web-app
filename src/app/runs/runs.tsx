@@ -23,6 +23,10 @@ import Alert from "@mui/material/Alert";
 import LinearProgress, {
   LinearProgressProps,
 } from "@mui/material/LinearProgress";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { motion } from "framer-motion";
+import WaterDropIcon from "@mui/icons-material/WaterDrop";
+import TimerIcon from "@mui/icons-material/Timer";
 
 // types
 interface Exercise {
@@ -136,6 +140,7 @@ function Runs() {
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [gameOverMessage, setGameOverMessage] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // generation functions
   const calculateDifficulty = (room: number) => {
@@ -281,6 +286,9 @@ function Runs() {
     setLives((prevLives) => {
       const newLives = prevLives - 1;
 
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 300);
+
       if (newLives < 0) {
         // Reinicia o jogo
         setRoom(1);
@@ -327,6 +335,8 @@ function Runs() {
       setTimers((prevTimers) => prevTimers + 1);
     } else if (choice === "VIDA") {
       setLives((prevLives) => prevLives + 1);
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 300);
     }
 
     // Avança para o próximo passo após a escolha
@@ -426,15 +436,60 @@ function Runs() {
         className="generic-container"
         style={{ display: "flex", justifyContent: "space-evenly" }}
       >
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Vidas: {lives}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Gotas: {drops}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Timers: {timers} {"(" + timeValueInSeconds + "s)"}
-        </Typography>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            flexDirection: "column",
+          }}
+        >
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {lives}
+          </Typography>
+          <motion.div
+            animate={isAnimating ? { scale: [1, 1.5, 1] } : {}}
+            transition={{ duration: 0.3 }}
+          >
+            <FavoriteIcon color="error" />
+          </motion.div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            flexDirection: "column",
+          }}
+        >
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {drops}
+          </Typography>
+          <motion.div
+            animate={isAnimating ? { scale: [1, 1.5, 1] } : {}}
+            transition={{ duration: 0.3 }}
+          >
+            <WaterDropIcon sx={{ color: "#90CAF9" }} />
+          </motion.div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            flexDirection: "column",
+          }}
+        >
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {timers} {"(" + timeValueInSeconds + "s)"}
+          </Typography>
+          <motion.div
+            animate={isAnimating ? { scale: [1, 1.5, 1] } : {}}
+            transition={{ duration: 0.3 }}
+          >
+            <TimerIcon />
+          </motion.div>
+        </div>
       </div>
       {/* Main content */}
       <div className="generic-container">
@@ -444,7 +499,7 @@ function Runs() {
               <Step key={exercise.id}>
                 <StepLabel>{exercise.name}</StepLabel>
                 <StepContent>
-                  <Card sx={{ maxWidth: 345 }}>
+                  <Card sx={{ maxWidth: 345, border: "1px solid #5A5A5A" }}>
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
                         {exercise.name}
