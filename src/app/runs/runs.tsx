@@ -140,7 +140,9 @@ function Runs() {
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [gameOverMessage, setGameOverMessage] = useState("");
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isHeartAnimating, setIsHeartAnimating] = useState(false);
+  const [isTimerAnimating, setIsTimerAnimating] = useState(false);
+  const [isDropAnimating, setIsDroptAnimating] = useState(false);
 
   // generation functions
   const calculateDifficulty = (room: number) => {
@@ -239,7 +241,7 @@ function Runs() {
   }, []);
 
   // ------------------------------ functions to handle the page main logic ------------------------------
-  const handleSucess = () => {
+  const handleSuccess = () => {
     const upgradesKey = "upgradesData";
     const currentUpgrades = JSON.parse(
       localStorage.getItem(upgradesKey) || "[]"
@@ -271,6 +273,10 @@ function Runs() {
     if (Math.random() < 0.5) {
       const earnedDrops = Math.floor(Math.random() * 11) + 10; // Valor aleatório entre 10 e 20
       setDrops((prevDrops) => prevDrops + earnedDrops); // Incrementa as gotas
+
+      setIsDroptAnimating(true);
+      setTimeout(() => setIsDroptAnimating(false), 300);
+
       console.log(`Você ganhou ${earnedDrops} gotas!`);
     }
 
@@ -286,8 +292,8 @@ function Runs() {
     setLives((prevLives) => {
       const newLives = prevLives - 1;
 
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 300);
+      setIsHeartAnimating(true);
+      setTimeout(() => setIsHeartAnimating(false), 300);
 
       if (newLives < 0) {
         // Reinicia o jogo
@@ -323,6 +329,8 @@ function Runs() {
         )
       );
       setTimers((prevTimers) => prevTimers - 1); // Reduz o número de timers disponíveis
+      setIsTimerAnimating(true);
+      setTimeout(() => setIsTimerAnimating(false), 300);
     } else {
       console.log("Sem timers disponíveis!");
     }
@@ -333,10 +341,12 @@ function Runs() {
     console.log("Escolha extra:", extraChoice);
     if (choice === "TIMER") {
       setTimers((prevTimers) => prevTimers + 1);
+      setIsTimerAnimating(true);
+      setTimeout(() => setIsTimerAnimating(false), 300);
     } else if (choice === "VIDA") {
       setLives((prevLives) => prevLives + 1);
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 300);
+      setIsHeartAnimating(true);
+      setTimeout(() => setIsHeartAnimating(false), 300);
     }
 
     // Avança para o próximo passo após a escolha
@@ -448,7 +458,7 @@ function Runs() {
             {lives}
           </Typography>
           <motion.div
-            animate={isAnimating ? { scale: [1, 1.5, 1] } : {}}
+            animate={isHeartAnimating ? { scale: [1, 1.5, 1] } : {}}
             transition={{ duration: 0.3 }}
           >
             <FavoriteIcon color="error" />
@@ -466,7 +476,7 @@ function Runs() {
             {drops}
           </Typography>
           <motion.div
-            animate={isAnimating ? { scale: [1, 1.5, 1] } : {}}
+            animate={isDropAnimating ? { scale: [1, 1.5, 1] } : {}}
             transition={{ duration: 0.3 }}
           >
             <WaterDropIcon sx={{ color: "#90CAF9" }} />
@@ -484,7 +494,7 @@ function Runs() {
             {timers} {"(" + timeValueInSeconds + "s)"}
           </Typography>
           <motion.div
-            animate={isAnimating ? { scale: [1, 1.5, 1] } : {}}
+            animate={isTimerAnimating ? { scale: [1, 1.5, 1] } : {}}
             transition={{ duration: 0.3 }}
           >
             <TimerIcon />
@@ -512,26 +522,37 @@ function Runs() {
                       </Typography>
                       <Typography
                         variant="body2"
-                        sx={{ color: "text.secondary" }}
+                        sx={{ color: "text.secondary", mb: 2 }}
                       >
                         {isExerciseStarted && activeStep === index
-                          ? `Tempo restante: ${timeLeft}s`
-                          : `Tempo restante: ${exercise.duration}s`}
+                          ? `Tempo restante: ${timeLeft} (s)`
+                          : `Tempo restante: ${exercise.duration} (s)`}
                       </Typography>
-                      <Button
-                        variant="outlined"
-                        sx={{ marginTop: 2 }}
-                        onClick={handleAddTimerToExercise}
-                      >
-                        Usar timer ({timers} disponíveis)
-                      </Button>
+                      <LinearProgressWithLabel
+                        value={
+                          isExerciseStarted &&
+                          activeStep === index &&
+                          timeLeft !== null
+                            ? (timeLeft / exercise.duration) * 100
+                            : 100
+                        }
+                      />
+                      {!isExerciseStarted && (
+                        <Button
+                          variant="outlined"
+                          sx={{ marginTop: 2 }}
+                          onClick={handleAddTimerToExercise}
+                        >
+                          Usar <TimerIcon sx={{ ml: 1 }} />
+                        </Button>
+                      )}
                     </CardContent>
                     <CardActions>
                       {isExerciseStarted && activeStep === index ? (
                         <>
                           <Button
                             size="small"
-                            onClick={handleSucess}
+                            onClick={handleSuccess}
                             disabled={timeLeft !== 0}
                           >
                             Sucesso
@@ -569,13 +590,13 @@ function Runs() {
                   variant="outlined"
                   onClick={() => handleExtraChoice("TIMER")}
                 >
-                  Adicionar TIMER
+                  Adicionar (1) <TimerIcon sx={{ ml: 1 }} />
                 </Button>
                 <Button
                   variant="outlined"
                   onClick={() => handleExtraChoice("VIDA")}
                 >
-                  Adicionar VIDA
+                  Adicionar (1) <FavoriteIcon sx={{ ml: 1 }} />
                 </Button>
               </Box>
             </div>
