@@ -115,6 +115,7 @@ export default function TaskCard({
             {taskName === "Exercícios" ? "🏋️" : ""}
             {taskName === "Sono" ? "😴" : ""}
             {taskName === "Projeto" ? "🍆" : ""}
+            {taskName === "Grind" ? "🔥" : ""}
           </Typography>
           <Divider sx={{ mb: 4 }} />
           {taskName === "Sem Álcool" ? (
