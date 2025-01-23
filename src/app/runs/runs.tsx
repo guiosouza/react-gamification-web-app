@@ -13,11 +13,6 @@ import {
 } from "@mui/material";
 import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import LinearProgress, {
@@ -27,26 +22,9 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { motion } from "framer-motion";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import TimerIcon from "@mui/icons-material/Timer";
+import { Exercise, Upgrade } from "../types/run-types";
+import GiveRunDialog from "@/components/give-run-dialog";
 
-// types
-interface Exercise {
-  id: number;
-  name: string;
-  description: string;
-  duration: number;
-  repetitions: number;
-}
-
-interface Upgrade {
-  id: number;
-  name: string;
-  description: string;
-  completed: boolean;
-  dropsNeededToUpgrade: number;
-  aditionalPercentage?: number;
-  aditionalSeconds?: number;
-  dropsUsedToUpgrade: number;
-}
 
 // mockedExerciseData
 const baseExercises: Exercise[] = [
@@ -124,7 +102,7 @@ function LinearProgressWithLabel(
 }
 
 function Runs() {
-  const [room, setRoom] = useState(1);
+  const [room, setRoom] = useState(3);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -669,32 +647,8 @@ function Runs() {
           Desistir
         </Button>
       </div>
-      {/* Dialog */}
-      <div>
-        <Dialog
-          open={open}
-          onClose={handleDoNotGiveUp}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Desistir da RUN?"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Ao desistir da RUN, você perderá todo o progresso feito até agora.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button color="error" onClick={giveUp}>
-              Sim
-            </Button>
-            <Button onClick={handleDoNotGiveUp} autoFocus>
-              Não
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
+      {/* Give Up  Dialog */}
+      <GiveRunDialog open={open} giveUp={giveUp} handleDoNotGiveUp={handleDoNotGiveUp}/> 
       {/* Snack bar feedback when give up */}
       <Snackbar
         open={snackbarOpen}
