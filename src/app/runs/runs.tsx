@@ -101,7 +101,7 @@ function LinearProgressWithLabel(
 }
 
 function Runs() {
-  const [room, setRoom] = useState(3);
+  const [room, setRoom] = useState(2);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -120,7 +120,7 @@ function Runs() {
   const [isHeartAnimating, setIsHeartAnimating] = useState(false);
   const [isTimerAnimating, setIsTimerAnimating] = useState(false);
   const [isDropAnimating, setIsDroptAnimating] = useState(false);
-  const [isBonusActive, setIsBonusActive] = useState(false)
+  const [isBonusActive, setIsBonusActive] = useState(false);
 
   // generation functions
   const calculateDifficulty = (room: number) => {
@@ -136,32 +136,106 @@ function Runs() {
 
   const generatePageExercises = useCallback((room: number) => {
     console.log("Gerando exercícios para a sala:", room);
-    const exercises = calculateDifficulty(room);
+    const exercises = calculateDifficulty(room); // Calcula os exercícios com base na dificuldade da sala
 
     if (room === 1) {
-      // do something
-      // Sorteio de 1 ou 2 exercícios aleatórios
       const selectedCount = Math.random() < 0.5 ? 1 : 2; // 50% chance para 1 ou 2 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5); // Embaralha os exercícios
-      const selectedExercises = shuffledExercises.slice(0, selectedCount); // Seleciona a quantidade desejada
-
-      console.log("Rom 1 - selectedExercises", selectedExercises);
-
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 1 - selectedExercises", selectedExercises);
       setCalculatedExercises(selectedExercises);
     }
 
     if (room === 2) {
-      // do something
-      const selectedCount = Math.random() < 0.5 ? 3 : 4; // 50% chance para 3 ou 4 exercícios
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5); // Embaralha os exercícios
-      const selectedExercises = shuffledExercises.slice(0, selectedCount); // Seleciona a quantidade desejada
+      const selectedCount = Math.floor(Math.random() * 3) + 2; // Entre 2 a 4 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 2 - selectedExercises", selectedExercises);
       setCalculatedExercises(selectedExercises);
-
-      console.log("Rom 2 - selectedExercises", selectedExercises);
     }
 
     if (room === 3) {
-      setCalculatedExercises([]);
+      console.log("Room 3 - Descanso");
+      setCalculatedExercises([]); // Sala de descanso
+    }
+
+    if (room === 4) {
+      const selectedCount = Math.floor(Math.random() * 7) + 3; // Entre 3 e 9 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 4 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 5) {
+      const selectedCount = Math.floor(Math.random() * 4) + 3; // Entre 3 e 6 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 5 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 6) {
+      console.log("Room 6 - Descanso");
+      setCalculatedExercises([]); // Sala de descanso
+    }
+
+    if (room === 7) {
+      const selectedCount = Math.floor(Math.random() * 5) + 4; // Entre 4 e 8 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 7 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 8) {
+      const selectedCount = Math.floor(Math.random() * 6) + 5; // Entre 5 e 10 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 8 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 9) {
+      const selectedCount = Math.floor(Math.random() * 6) + 6; // Entre 6 e 11 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 9 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 10) {
+      console.log("Room 10 - Descanso");
+      setCalculatedExercises([]); // Sala de descanso
+    }
+
+    if (room === 11) {
+      const selectedCount = Math.floor(Math.random() * 7) + 7; // Entre 7 e 13 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 11 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 12) {
+      const selectedCount = Math.floor(Math.random() * 8) + 8; // Entre 8 e 15 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 12 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
+    }
+
+    if (room === 13) {
+      console.log("Room 13 - Descanso");
+      setCalculatedExercises([]); // Sala de descanso
+    }
+
+    if (room === 14) {
+      const selectedCount = Math.floor(Math.random() * 9) + 9; // Entre 9 e 17 exercícios
+      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
+      const selectedExercises = shuffledExercises.slice(0, selectedCount);
+      console.log("Room 14 - selectedExercises", selectedExercises);
+      setCalculatedExercises(selectedExercises);
     }
   }, []);
 
@@ -243,7 +317,7 @@ function Runs() {
       // 30% chance de ativar um extra step
       if (Math.random() < defaultChance) {
         setExtraStepActive(true);
-        setIsBonusActive(true)
+        setIsBonusActive(true);
         return;
       }
     }
@@ -264,7 +338,6 @@ function Runs() {
     setIsExerciseStarted(false);
     setExtraStepActive(false); // Reseta o estado do passo extra
     setExtraChoice(null); // Reseta a escolha do passo extra
-    setIsBonusActive(false);
   };
 
   const handleFail = () => {
@@ -322,10 +395,12 @@ function Runs() {
     if (choice === "TIMER") {
       setTimers((prevTimers) => prevTimers + 1);
       setIsTimerAnimating(true);
+      setIsBonusActive(false);
       setTimeout(() => setIsTimerAnimating(false), 300);
     } else if (choice === "VIDA") {
       setLives((prevLives) => prevLives + 1);
       setIsHeartAnimating(true);
+      setIsBonusActive(false);
       setTimeout(() => setIsHeartAnimating(false), 300);
     }
 
@@ -482,9 +557,7 @@ function Runs() {
         </div>
       </div>
       {/* Main content */}
-      <div
-        className="generic-container"
-      >
+      <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>
           <Stepper activeStep={activeStep} orientation="vertical">
             {calculatedExercises.map((exercise, index) => (

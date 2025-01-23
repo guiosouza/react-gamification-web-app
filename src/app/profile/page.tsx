@@ -11,6 +11,7 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  Grid2,
   Typography,
 } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -83,7 +84,11 @@ function Profile() {
                   Progresso: {upgrade.dropsUsedToUpgrade}/
                   {upgrade.dropsNeededToUpgrade}
                 </Typography>
-                {upgrade.completed && <Chip label="Completo" size="small" color="success" />}
+                {upgrade.completed && (
+                  <Grid2 mt={2}>
+                    <Chip label="Completo" size="small" color="success" />{" "}
+                  </Grid2>
+                )}
               </Card>
             ))}
           </CardContent>
