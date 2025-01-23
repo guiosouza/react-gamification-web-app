@@ -50,7 +50,7 @@ const options: TaskOption[] = [
   { label: "Todas" },
   { label: "Projeto" },
   { label: "Sono" },
-  // { label: "The Grind" },
+  // { label: "Grind" },
   { label: "Água" },
   { label: "Exercícios" },
   { label: "Nutrição" },
@@ -140,8 +140,8 @@ export default function Exp() {
     const baseMultiplier = Math.floor(levelNumber / 7);
 
     switch (taskName) {
-      case "The Grind":
-        return Math.floor(levelNumber / 20);
+      case "Grind":
+        return Math.floor(levelNumber / 80);
       case "Nutrição":
         return baseMultiplier * 11;
       case "Sem Álcool":
@@ -191,7 +191,7 @@ export default function Exp() {
 
     if (
       selectedTask.label === "Exercícios" ||
-      selectedTask.label === "The Grind"
+      selectedTask.label === "Grind"
     ) {
       if (!taskInput.time) return 0;
       const [hours, minutes] = taskInput.time.split(":").map(Number);
@@ -340,7 +340,7 @@ export default function Exp() {
 
     if (
       selectedTask.label === "Exercícios" ||
-      selectedTask.label === "The Grind"
+      selectedTask.label === "Grind"
     ) {
       return (
         <TextField
