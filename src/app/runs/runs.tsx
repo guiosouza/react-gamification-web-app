@@ -11,7 +11,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -22,38 +22,7 @@ import GiveRunDialog from "@/components/give-run-dialog";
 import LinearProgressWithLabel from "@/components/linear-progress-with-label";
 import HeaderItensRuns from "@/components/header-itens-runs";
 import { generatePageExercises } from "./scripts/exerciseGenerator";
-
-// mockedExerciseData
-// const baseExercises: Exercise[] = [
-  // {
-  //   id: 1,
-  //   name: "Flexão",
-  //   description: "Descrição tarefa 1",
-  //   duration: 1, // 23
-  //   repetitions: 1,
-  // },
-  // {
-  //   id: 2,
-  //   name: "Polichinelo",
-  //   description: "Descrição tarefa 2",
-  //   duration: 15,
-  //   repetitions: 3,
-  // },
-  // {
-  //   id: 3,
-  //   name: "Corrida estacionária",
-  //   description: "Descrição tarefa 3",
-  //   duration: 15,
-  //   repetitions: 3,
-  // },
-  // {
-  //   id: 4,
-  //   name: "Agachamento",
-  //   description: "Descrição tarefa 4",
-  //   duration: 15,
-  //   repetitions: 3,
-  // },
-// ];
+import CircularProgressWithLabel from "@/components/circular-progress-with-label";
 
 const upgrades = [
   {
@@ -140,10 +109,10 @@ const upgrades = [
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(4);
+  const [room, setRoom] = useState(1);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [exerciseTimeLeft, setExerciseTimeLeft] = useState<number | null>(null);
   const [calculatedExercises, setCalculatedExercises] = useState<Exercise[]>(
     []
   );
@@ -161,23 +130,28 @@ function Runs() {
   const [isDropAnimating, setIsDroptAnimating] = useState(false);
   const [isBonusActive, setIsBonusActive] = useState(false);
 
-
   // ------------------------------ all useEffects ------------------------------
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
 
-    if (isExerciseStarted && timeLeft !== null && timeLeft > 0) {
+    if (
+      isExerciseStarted &&
+      exerciseTimeLeft !== null &&
+      exerciseTimeLeft > 0
+    ) {
       timer = setInterval(() => {
-        setTimeLeft((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
+        setExerciseTimeLeft((prev) =>
+          prev !== null && prev > 0 ? prev - 1 : prev
+        );
       }, 1000);
     }
 
-    if (timeLeft === 0) {
+    if (exerciseTimeLeft === 0) {
       clearInterval(timer!);
     }
 
     return () => clearInterval(timer!);
-  }, [isExerciseStarted, timeLeft]);
+  }, [isExerciseStarted, exerciseTimeLeft]);
 
   // Update calculated exercises when room changes
   useEffect(() => {
@@ -281,7 +255,8 @@ function Runs() {
     setExtraChoice(null); // Reseta a escolha do passo extra
   };
 
-  const handleFail = () => {
+  const handleFail = useCallback(() => {
+    console.log("chamou");
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setLives((prevLives) => {
       const newLives = prevLives - 1;
@@ -292,14 +267,14 @@ function Runs() {
       if (newLives < 0) {
         // Reinicia o jogo
         setRoom(1);
-        setLives(3);
+        setLives(1);
         setDrops(0);
-        setTimers(3);
+        setTimers(0);
         setActiveStep(0);
         setIsExerciseStarted(false);
         setExtraStepActive(false);
         setExtraChoice(null);
-        setTimeLeft(null);
+        setExerciseTimeLeft(null);
 
         generatePageExercises(1, setCalculatedExercises);
 
@@ -310,7 +285,7 @@ function Runs() {
 
       return newLives;
     });
-  };
+  }, []);
 
   const handleAddTimerToExercise = () => {
     if (timers > 0) {
@@ -353,14 +328,14 @@ function Runs() {
   };
 
   const handleStartExercise = (exerciseDuration: number) => {
-    setTimeLeft(exerciseDuration);
+    setExerciseTimeLeft(exerciseDuration);
     setIsExerciseStarted(true);
   };
 
   const handleNextRoom = () => {
     setRoom((prevRoom) => prevRoom + 1);
     setIsExerciseStarted(false);
-    setTimeLeft(null);
+    setExerciseTimeLeft(null);
     setActiveStep(0);
   };
 
@@ -383,7 +358,7 @@ function Runs() {
     setIsExerciseStarted(false);
     setExtraStepActive(false);
     setExtraChoice(null);
-    setTimeLeft(null);
+    setExerciseTimeLeft(null);
     setOpen(false);
 
     generatePageExercises(1, setCalculatedExercises);
@@ -468,6 +443,24 @@ function Runs() {
           </Box>
         </div>
       )}
+      <div
+        className="generic-container"
+        style={{ display: "flex", justifyContent: "center" }}
+      >
+        {exerciseTimeLeft === 0 && isExerciseStarted && (
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <Alert severity="warning" sx={{mb: 4}} variant="outlined" >Escolha o resultado ou perca vida</Alert>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+              <CircularProgressWithLabel
+                countdownSeconds={5} // Configura o tempo total
+                onComplete={handleFail} // Chama handleFail ao completar
+                isExerciseStarted={isExerciseStarted}
+                size={80}
+              />
+            </div>
+          </div>
+        )}
+      </div>
       {/* Main content */}
       <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>
@@ -492,15 +485,15 @@ function Runs() {
                         sx={{ color: "text.secondary", mb: 2 }}
                       >
                         {isExerciseStarted && activeStep === index
-                          ? `Tempo restante: ${timeLeft} (s)`
+                          ? `Tempo restante: ${exerciseTimeLeft} (s)`
                           : `Tempo restante: ${exercise.duration} (s)`}
                       </Typography>
                       <LinearProgressWithLabel
                         value={
                           isExerciseStarted &&
                           activeStep === index &&
-                          timeLeft !== null
-                            ? (timeLeft / exercise.duration) * 100
+                          exerciseTimeLeft !== null
+                            ? (exerciseTimeLeft / exercise.duration) * 100
                             : 100
                         }
                       />
@@ -520,13 +513,13 @@ function Runs() {
                           <Button
                             size="small"
                             onClick={handleSuccess}
-                            disabled={timeLeft !== 0 || isBonusActive}
+                            disabled={exerciseTimeLeft !== 0 || isBonusActive}
                           >
                             Sucesso
                           </Button>
                           <Button
                             size="small"
-                            disabled={timeLeft !== 0 || isBonusActive}
+                            disabled={exerciseTimeLeft !== 0 || isBonusActive}
                             onClick={handleFail}
                             color="error"
                           >
@@ -547,61 +540,68 @@ function Runs() {
               </Step>
             ))}
           </Stepper>
-          {room === 3 || room === 6 || room === 10 || room === 13 && (
-            <>
-              <div className="generic-container">Sala de descanso</div>
-              <div className="generic-container">
-                {upgrades.map((upgrade) => {
-                  const upgradesData = JSON.parse(
-                    localStorage.getItem("upgradesData") || "[]"
-                  );
-                  const storedUpgrade = upgradesData.find(
-                    (u: Upgrade) => u.id === upgrade.id
-                  );
+          {room === 3 ||
+            room === 6 ||
+            room === 10 ||
+            (room === 13 && (
+              <>
+                <div className="generic-container">Sala de descanso</div>
+                <div className="generic-container">
+                  {upgrades.map((upgrade) => {
+                    const upgradesData = JSON.parse(
+                      localStorage.getItem("upgradesData") || "[]"
+                    );
+                    const storedUpgrade = upgradesData.find(
+                      (u: Upgrade) => u.id === upgrade.id
+                    );
 
-                  return (
-                    <Card
-                      sx={{
-                        maxWidth: 400,
-                        padding: 2,
-                        mb: 2,
-                        border: "1px solid #cecece",
-                      }}
-                      key={upgrade.id}
-                    >
-                      <Typography
-                        variant="body1"
-                        sx={{ display: "flex", flexDirection: "column", mb: 2 }}
+                    return (
+                      <Card
+                        sx={{
+                          maxWidth: 400,
+                          padding: 2,
+                          mb: 2,
+                          border: "1px solid #cecece",
+                        }}
+                        key={upgrade.id}
                       >
-                        {storedUpgrade?.description || upgrade.description}:{" "}
-                        {storedUpgrade?.dropsUsedToUpgrade}/
-                        {storedUpgrade?.dropsNeededToUpgrade ||
-                          upgrade.dropsNeededToUpgrade}
-                      </Typography>
-                      <div style={{ marginBottom: "16px" }}>
-                        <LinearProgressWithLabel
-                          value={
-                            storedUpgrade
-                              ? (storedUpgrade.dropsUsedToUpgrade /
-                                  storedUpgrade.dropsNeededToUpgrade) *
-                                100
-                              : 0
-                          }
-                        />
-                      </div>
-                      <Button
-                        variant="outlined"
-                        onClick={() => handleUpgrade(upgrade.id)}
-                        color="success"
-                      >
-                        Comprar
-                      </Button>
-                    </Card>
-                  );
-                })}
-              </div>
-            </>
-          )}
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            mb: 2,
+                          }}
+                        >
+                          {storedUpgrade?.description || upgrade.description}:{" "}
+                          {storedUpgrade?.dropsUsedToUpgrade}/
+                          {storedUpgrade?.dropsNeededToUpgrade ||
+                            upgrade.dropsNeededToUpgrade}
+                        </Typography>
+                        <div style={{ marginBottom: "16px" }}>
+                          <LinearProgressWithLabel
+                            value={
+                              storedUpgrade
+                                ? (storedUpgrade.dropsUsedToUpgrade /
+                                    storedUpgrade.dropsNeededToUpgrade) *
+                                  100
+                                : 0
+                            }
+                          />
+                        </div>
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleUpgrade(upgrade.id)}
+                          color="success"
+                        >
+                          Comprar
+                        </Button>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </>
+            ))}
           {allExercisesCompleted && (
             <div className="generic-container">
               <Box mt={2}>
