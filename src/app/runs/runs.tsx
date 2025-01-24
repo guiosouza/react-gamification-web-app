@@ -11,7 +11,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -21,38 +21,39 @@ import { Exercise, Upgrade } from "../types/run-types";
 import GiveRunDialog from "@/components/give-run-dialog";
 import LinearProgressWithLabel from "@/components/linear-progress-with-label";
 import HeaderItensRuns from "@/components/header-itens-runs";
+import { generatePageExercises } from "./scripts/exerciseGenerator";
 
 // mockedExerciseData
-const baseExercises: Exercise[] = [
-  {
-    id: 1,
-    name: "Flexão",
-    description: "Descrição tarefa 1",
-    duration: 23,
-    repetitions: 1,
-  },
-  {
-    id: 2,
-    name: "Polichinelo",
-    description: "Descrição tarefa 2",
-    duration: 15,
-    repetitions: 3,
-  },
-  {
-    id: 3,
-    name: "Corrida estacionária",
-    description: "Descrição tarefa 3",
-    duration: 15,
-    repetitions: 3,
-  },
-  {
-    id: 4,
-    name: "Agachamento",
-    description: "Descrição tarefa 4",
-    duration: 15,
-    repetitions: 3,
-  },
-];
+// const baseExercises: Exercise[] = [
+  // {
+  //   id: 1,
+  //   name: "Flexão",
+  //   description: "Descrição tarefa 1",
+  //   duration: 1, // 23
+  //   repetitions: 1,
+  // },
+  // {
+  //   id: 2,
+  //   name: "Polichinelo",
+  //   description: "Descrição tarefa 2",
+  //   duration: 15,
+  //   repetitions: 3,
+  // },
+  // {
+  //   id: 3,
+  //   name: "Corrida estacionária",
+  //   description: "Descrição tarefa 3",
+  //   duration: 15,
+  //   repetitions: 3,
+  // },
+  // {
+  //   id: 4,
+  //   name: "Agachamento",
+  //   description: "Descrição tarefa 4",
+  //   duration: 15,
+  //   repetitions: 3,
+  // },
+// ];
 
 const upgrades = [
   {
@@ -139,7 +140,7 @@ const upgrades = [
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(1);
+  const [room, setRoom] = useState(4);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -160,116 +161,6 @@ function Runs() {
   const [isDropAnimating, setIsDroptAnimating] = useState(false);
   const [isBonusActive, setIsBonusActive] = useState(false);
 
-  // generation functions
-  const calculateDifficulty = (room: number) => {
-    const durationDifficultyMultiplier = room * 5;
-    const repetitionsDifficultyMultiplier = room * 2;
-
-    return baseExercises.map((exercise) => ({
-      ...exercise,
-      duration: exercise.duration + durationDifficultyMultiplier,
-      repetitions: exercise.repetitions + repetitionsDifficultyMultiplier,
-    }));
-  };
-
-  const generatePageExercises = useCallback((room: number) => {
-    const exercises = calculateDifficulty(room); // Calcula os exercícios com base na dificuldade da sala
-
-    // Função auxiliar para garantir a quantidade necessária de exercícios
-    const ensureExerciseCount = (
-      selectedCount: number,
-      exercises: Exercise[]
-    ): Exercise[] => {
-      const shuffledExercises = [...exercises].sort(() => Math.random() - 0.5);
-      let selectedExercises = shuffledExercises.slice(0, selectedCount);
-
-      if (selectedExercises.length < selectedCount) {
-        const extraExercises: Exercise[] = [];
-        const totalExercises = exercises.length;
-        let nextId = Math.max(...exercises.map((e) => e.id)) + 1;
-
-        while (
-          selectedExercises.length + extraExercises.length <
-          selectedCount
-        ) {
-          const originalExercise: Exercise =
-            exercises[extraExercises.length % totalExercises];
-          const newExercise: Exercise = { ...originalExercise, id: nextId++ };
-          extraExercises.push(newExercise);
-        }
-
-        selectedExercises = [...selectedExercises, ...extraExercises];
-      }
-
-      return selectedExercises;
-    };
-
-    if (room === 1) {
-      const selectedCount = Math.random() < 0.5 ? 1 : 2; // 50% chance para 1 ou 2 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 2) {
-      const selectedCount = Math.floor(Math.random() * 3) + 2; // Entre 2 e 4 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 3) {
-      setCalculatedExercises([]); // Sala de descanso
-    }
-
-    if (room === 4) {
-      const selectedCount = Math.floor(Math.random() * 7) + 3; // Entre 3 e 9 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 5) {
-      const selectedCount = Math.floor(Math.random() * 4) + 3; // Entre 3 e 6 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 6) {
-      setCalculatedExercises([]); // Sala de descanso
-    }
-
-    if (room === 7) {
-      const selectedCount = Math.floor(Math.random() * 5) + 4; // Entre 4 e 8 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 8) {
-      const selectedCount = Math.floor(Math.random() * 6) + 5; // Entre 5 e 10 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 9) {
-      const selectedCount = Math.floor(Math.random() * 6) + 6; // Entre 6 e 11 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 10) {
-      setCalculatedExercises([]); // Sala de descanso
-    }
-
-    if (room === 11) {
-      const selectedCount = Math.floor(Math.random() * 7) + 7; // Entre 7 e 13 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 12) {
-      const selectedCount = Math.floor(Math.random() * 8) + 8; // Entre 8 e 15 exercícios
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-
-    if (room === 13) {
-      setCalculatedExercises([]); // Sala de descanso
-    }
-
-    if (room === 14) {
-      const selectedCount = Math.floor(Math.random() * (20 - 15 + 1)) + 15; // Entre 15 e 20
-      setCalculatedExercises(ensureExerciseCount(selectedCount, exercises));
-    }
-  }, []);
 
   // ------------------------------ all useEffects ------------------------------
   useEffect(() => {
@@ -290,8 +181,8 @@ function Runs() {
 
   // Update calculated exercises when room changes
   useEffect(() => {
-    generatePageExercises(room);
-  }, [room, generatePageExercises]);
+    generatePageExercises(room, setCalculatedExercises);
+  }, [room]);
 
   useEffect(() => {
     if (room === 3) {
@@ -366,7 +257,7 @@ function Runs() {
     }
 
     const minDropChance = 0.42;
-    const maxDropChance = 0.6;
+    const maxDropChance = 0.67;
     const dropChance =
       Math.random() * (maxDropChance - minDropChance) + minDropChance;
 
@@ -410,7 +301,7 @@ function Runs() {
         setExtraChoice(null);
         setTimeLeft(null);
 
-        generatePageExercises(1);
+        generatePageExercises(1, setCalculatedExercises);
 
         // Mostra feedback de reinício
         setSnackbarOpen(true);
@@ -495,7 +386,7 @@ function Runs() {
     setTimeLeft(null);
     setOpen(false);
 
-    generatePageExercises(1);
+    generatePageExercises(1, setCalculatedExercises);
 
     // Mostra feedback
     setSnackbarOpen(true);
@@ -656,10 +547,10 @@ function Runs() {
               </Step>
             ))}
           </Stepper>
-          {calculatedExercises.length === 0 && (
+          {room === 3 || room === 6 || room === 10 || room === 13 && (
             <>
               <div className="generic-container">Sala de descanso</div>
-              <div className="generic-container" style={{}}>
+              <div className="generic-container">
                 {upgrades.map((upgrade) => {
                   const upgradesData = JSON.parse(
                     localStorage.getItem("upgradesData") || "[]"
