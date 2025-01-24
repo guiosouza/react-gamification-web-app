@@ -15,7 +15,7 @@ interface DialogPros {
   giveUp: () => void;
 }
 
-function GiveRunDialog({ open, giveUp, handleDoNotGiveUp } : DialogPros) {
+function GiveUpRunDialog({ open, giveUp, handleDoNotGiveUp } : DialogPros) {
   return (
     <div>
       <Dialog
@@ -43,4 +43,4 @@ function GiveRunDialog({ open, giveUp, handleDoNotGiveUp } : DialogPros) {
   );
 }
 
-export default GiveRunDialog;
+export default GiveUpRunDialog;

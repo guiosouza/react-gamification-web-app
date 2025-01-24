@@ -8,13 +8,15 @@ import Box from "@mui/material/Box";
 interface CircularProgressWithLabelProps extends CircularProgressProps {
   countdownSeconds: number; // Tempo total do contador
   onComplete: () => void; // Função chamada ao finalizar o contador
-  isExerciseStarted: boolean
+  isExerciseStarted: boolean;
+  taskDialogOpen: boolean
 }
 
 const CircularProgressWithLabel: React.FC<CircularProgressWithLabelProps> = ({
   countdownSeconds,
   onComplete,
   isExerciseStarted,
+  taskDialogOpen,
   ...props
 }) => {
   const [secondsLeft, setSecondsLeft] = React.useState(countdownSeconds);
@@ -27,10 +29,10 @@ const CircularProgressWithLabel: React.FC<CircularProgressWithLabelProps> = ({
         setProgress((prev) => prev + 100 / countdownSeconds);
       }, 1000);
       return () => clearInterval(interval);
-    } else if (secondsLeft === 0) {
+    } else if (secondsLeft === 0 && taskDialogOpen) {
       onComplete(); // Só chama quando `secondsLeft` é exatamente 0
     }
-  }, [secondsLeft, countdownSeconds, onComplete, isExerciseStarted]);
+  }, [secondsLeft, countdownSeconds, onComplete, isExerciseStarted, taskDialogOpen]);
 
   return (
     <Box sx={{ position: "relative", display: "inline-flex" }}>

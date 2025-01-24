@@ -18,11 +18,13 @@ import Alert from "@mui/material/Alert";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import TimerIcon from "@mui/icons-material/Timer";
 import { Exercise, Upgrade } from "../types/run-types";
-import GiveRunDialog from "@/components/give-run-dialog";
 import LinearProgressWithLabel from "@/components/linear-progress-with-label";
 import HeaderItensRuns from "@/components/header-itens-runs";
 import { generatePageExercises } from "./scripts/exerciseGenerator";
-import CircularProgressWithLabel from "@/components/circular-progress-with-label";
+// import CircularProgressWithLabel from "@/components/circular-progress-with-label";
+import GiveUpRunDialog from "@/components/give-up-run-dialog";
+import BonusDialog from "@/components/bonus-dialog";
+import TaskDialog from "@/components/task-dialog";
 
 const upgrades = [
   {
@@ -122,13 +124,15 @@ function Runs() {
   const [timeValueInSeconds, setTimeValueInSeconds] = useState(10);
   const [lives, setLives] = useState(1);
   const [drops, setDrops] = useState(0); // Estado inicial com 500 gotas
-  const [open, setOpen] = React.useState(false);
+  const [openGiveUpDialog, setOpenGiveUpDialog] = React.useState(false);
+  const [openBonusDialog, setOpenBonusDialog] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [gameOverMessage, setGameOverMessage] = useState("");
   const [isHeartAnimating, setIsHeartAnimating] = useState(false);
   const [isTimerAnimating, setIsTimerAnimating] = useState(false);
   const [isDropAnimating, setIsDroptAnimating] = useState(false);
   const [isBonusActive, setIsBonusActive] = useState(false);
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
 
   // ------------------------------ all useEffects ------------------------------
   useEffect(() => {
@@ -194,8 +198,15 @@ function Runs() {
     bonusTimerChecker();
   }, []);
 
+  useEffect(() => {
+    if (exerciseTimeLeft === 0 && isExerciseStarted) {
+      setTaskDialogOpen(true);
+    }
+  }, [exerciseTimeLeft, isExerciseStarted]);
+
   // ------------------------------ functions to handle the page main logic ------------------------------
   const handleSuccess = () => {
+    setTaskDialogOpen(false);
     const upgradesKey = "upgradesData";
     const currentUpgrades = JSON.parse(
       localStorage.getItem(upgradesKey) || "[]"
@@ -214,7 +225,7 @@ function Runs() {
     );
 
     // Define a chance padrão
-    let defaultChance = 0.19;
+    let defaultChance = 0.9;
 
     // Adiciona a chance extra acumulada
     defaultChance += additionalBonusChance;
@@ -222,10 +233,11 @@ function Runs() {
     console.log(`Chance de ativar extra step: ${defaultChance * 100}%`);
 
     if (!extraStepActive) {
-      // 30% chance de ativar um extra step
+      // 90% chance de ativar um extra step
       if (Math.random() < defaultChance) {
         setExtraStepActive(true);
         setIsBonusActive(true);
+        setOpenBonusDialog(true);
         return;
       }
     }
@@ -285,6 +297,8 @@ function Runs() {
 
       return newLives;
     });
+    setTaskDialogOpen(false);
+    setIsExerciseStarted(false);
   }, []);
 
   const handleAddTimerToExercise = () => {
@@ -341,11 +355,15 @@ function Runs() {
 
   // modal functions
   const handleGiveUp = () => {
-    setOpen(true);
+    setOpenGiveUpDialog(true);
   };
 
   const handleDoNotGiveUp = () => {
-    setOpen(false);
+    setOpenGiveUpDialog(false);
+  };
+
+  const handleCloseBonusDialog = () => {
+    setOpenBonusDialog(false);
   };
 
   // Após o reset
@@ -359,7 +377,7 @@ function Runs() {
     setExtraStepActive(false);
     setExtraChoice(null);
     setExerciseTimeLeft(null);
-    setOpen(false);
+    setOpenGiveUpDialog(false);
 
     generatePageExercises(1, setCalculatedExercises);
 
@@ -443,24 +461,33 @@ function Runs() {
           </Box>
         </div>
       )}
-      <div
+      {/* <div
         className="generic-container"
         style={{ display: "flex", justifyContent: "center" }}
       >
         {exerciseTimeLeft === 0 && isExerciseStarted && (
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <Alert severity="warning" sx={{mb: 4}} variant="outlined" >Escolha o resultado ou perca vida</Alert>
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+            <Alert severity="warning" sx={{ mb: 4 }} variant="outlined">
+              Escolha o resultado ou perca vida
+            </Alert>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
               <CircularProgressWithLabel
-                countdownSeconds={5} // Configura o tempo total
+                countdownSeconds={3} // Configura o tempo total
                 onComplete={handleFail} // Chama handleFail ao completar
                 isExerciseStarted={isExerciseStarted}
+                taskDialogOpen={taskDialogOpen}
                 size={80}
               />
             </div>
           </div>
         )}
-      </div>
+      </div> */}
       {/* Main content */}
       <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>
@@ -540,68 +567,66 @@ function Runs() {
               </Step>
             ))}
           </Stepper>
-          {room === 3 ||
-            room === 6 ||
-            room === 10 ||
-            (room === 13 && (
-              <>
-                <div className="generic-container">Sala de descanso</div>
-                <div className="generic-container">
-                  {upgrades.map((upgrade) => {
-                    const upgradesData = JSON.parse(
-                      localStorage.getItem("upgradesData") || "[]"
-                    );
-                    const storedUpgrade = upgradesData.find(
-                      (u: Upgrade) => u.id === upgrade.id
-                    );
+          {room === 3 && (
+            <div>
+              <div className="generic-container">Sala de descanso</div>
+              <div className="generic-container">
+                {upgrades.map((upgrade) => {
+                  const upgradesData = JSON.parse(
+                    localStorage.getItem("upgradesData") || "[]"
+                  );
+                  const storedUpgrade = upgradesData.find(
+                    (u: Upgrade) => u.id === upgrade.id
+                  );
 
-                    return (
-                      <Card
+                  return (
+                    <Card
+                      sx={{
+                        maxWidth: 400,
+                        padding: 2,
+                        mb: 2,
+                        border: "1px solid #cecece",
+                      }}
+                      key={upgrade.id}
+                    >
+                      <Typography
+                        variant="body1"
                         sx={{
-                          maxWidth: 400,
-                          padding: 2,
+                          display: "flex",
+                          flexDirection: "column",
                           mb: 2,
-                          border: "1px solid #cecece",
                         }}
-                        key={upgrade.id}
                       >
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            mb: 2,
-                          }}
-                        >
-                          {storedUpgrade?.description || upgrade.description}:{" "}
-                          {storedUpgrade?.dropsUsedToUpgrade}/
-                          {storedUpgrade?.dropsNeededToUpgrade ||
-                            upgrade.dropsNeededToUpgrade}
-                        </Typography>
-                        <div style={{ marginBottom: "16px" }}>
-                          <LinearProgressWithLabel
-                            value={
-                              storedUpgrade
-                                ? (storedUpgrade.dropsUsedToUpgrade /
-                                    storedUpgrade.dropsNeededToUpgrade) *
-                                  100
-                                : 0
-                            }
-                          />
-                        </div>
-                        <Button
-                          variant="outlined"
-                          onClick={() => handleUpgrade(upgrade.id)}
-                          color="success"
-                        >
-                          Comprar
-                        </Button>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </>
-            ))}
+                        {storedUpgrade?.description || upgrade.description}:{" "}
+                        {storedUpgrade?.dropsUsedToUpgrade}/
+                        {storedUpgrade?.dropsNeededToUpgrade ||
+                          upgrade.dropsNeededToUpgrade}
+                      </Typography>
+                      <div style={{ marginBottom: "16px" }}>
+                        <LinearProgressWithLabel
+                          value={
+                            storedUpgrade
+                              ? (storedUpgrade.dropsUsedToUpgrade /
+                                  storedUpgrade.dropsNeededToUpgrade) *
+                                100
+                              : 0
+                          }
+                        />
+                      </div>
+                      <Button
+                        variant="outlined"
+                        onClick={() => handleUpgrade(upgrade.id)}
+                        color="success"
+                      >
+                        Comprar
+                      </Button>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {allExercisesCompleted && (
             <div className="generic-container">
               <Box mt={2}>
@@ -620,10 +645,22 @@ function Runs() {
         </Button>
       </div>
       {/* Give Up  Dialog */}
-      <GiveRunDialog
-        open={open}
+      <GiveUpRunDialog
+        open={openGiveUpDialog}
         giveUp={giveUp}
         handleDoNotGiveUp={handleDoNotGiveUp}
+      />
+      <BonusDialog
+        handleExtraChoice={handleExtraChoice}
+        open={openBonusDialog}
+        handleCloseBonusDialog={handleCloseBonusDialog}
+      />
+      <TaskDialog
+        taskDialogOpen={taskDialogOpen}
+        handleFail={handleFail}
+        handleSuccess={handleSuccess}
+        exerciseTimeLeft={exerciseTimeLeft}
+        isExerciseStarted={isExerciseStarted}
       />
       {/* Snack bar feedback when give up */}
       <Snackbar
