@@ -9,27 +9,27 @@ const baseExercises: Exercise[] = [
         duration: 1, // 23
         repetitions: 1,
     },
-    {
-        id: 2,
-        name: "Polichinelo",
-        description: "Descrição tarefa 2",
-        duration: 1,
-        repetitions: 1,
-    },
-    {
-        id: 3,
-        name: "Corrida estacionária",
-        description: "Descrição tarefa 3",
-        duration: 15,
-        repetitions: 3,
-    },
-    {
-        id: 4,
-        name: "Agachamento",
-        description: "Descrição tarefa 4",
-        duration: 15,
-        repetitions: 3,
-    },
+    // {
+    //     id: 2,
+    //     name: "Polichinelo",
+    //     description: "Descrição tarefa 2",
+    //     duration: 1,
+    //     repetitions: 1,
+    // },
+    // {
+    //     id: 3,
+    //     name: "Corrida estacionária",
+    //     description: "Descrição tarefa 3",
+    //     duration: 15,
+    //     repetitions: 3,
+    // },
+    // {
+    //     id: 4,
+    //     name: "Agachamento",
+    //     description: "Descrição tarefa 4",
+    //     duration: 15,
+    //     repetitions: 3,
+    // },
 ];
 
 // Função para embaralhar utilizando Fisher-Yates

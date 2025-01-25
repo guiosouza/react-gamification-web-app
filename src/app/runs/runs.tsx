@@ -225,7 +225,7 @@ function Runs() {
     );
 
     // Define a chance padrão
-    let defaultChance = 0.9;
+    let defaultChance = 0.19;
 
     // Adiciona a chance extra acumulada
     defaultChance += additionalBonusChance;
@@ -233,17 +233,16 @@ function Runs() {
     console.log(`Chance de ativar extra step: ${defaultChance * 100}%`);
 
     if (!extraStepActive) {
-      // 90% chance de ativar um extra step
+      // % chance de ativar um extra step
       if (Math.random() < defaultChance) {
         setExtraStepActive(true);
         setIsBonusActive(true);
         setOpenBonusDialog(true);
-        return;
       }
     }
 
-    const minDropChance = 0.42;
-    const maxDropChance = 0.67;
+    const minDropChance = 0.38;
+    const maxDropChance = 0.65;
     const dropChance =
       Math.random() * (maxDropChance - minDropChance) + minDropChance;
 
