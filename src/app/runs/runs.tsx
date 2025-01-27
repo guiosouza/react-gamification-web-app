@@ -149,7 +149,7 @@ const upgrades = [
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(6);
+  const [room, setRoom] = useState(1);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [exerciseTimeLeft, setExerciseTimeLeft] = useState<number | null>(null);
@@ -174,8 +174,40 @@ function Runs() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [overTimerStarted, setOverTimerStarted] = useState(false);
   const restRoom = [3, 6, 10, 13];
+  const [farthestRoom, setFarthestRoom] = useState(1);
 
   // ------------------------------ all useEffects ------------------------------
+
+  // Função para adicionar uma nova run ao histórico
+  const addRunToHistory = (finalRoom: number) => {
+    const newRun = {
+      room: finalRoom,
+      time: formatElapsedTime(elapsedTime),
+    };
+
+    // Pega o histórico existente ou array vazio
+    const existingHistory = JSON.parse(
+      localStorage.getItem("runHistory") || "[]"
+    );
+
+    // Atualiza e mantém apenas as últimas 10 runs
+    const updatedHistory = [newRun, ...existingHistory].slice(0, 10);
+
+    // Salva diretamente no localStorage
+    localStorage.setItem("runHistory", JSON.stringify(updatedHistory));
+  };
+
+  useEffect(() => {
+    const savedFarthest = localStorage.getItem("farthestRoom");
+    if (savedFarthest) setFarthestRoom(Number(savedFarthest));
+  }, []);
+
+  useEffect(() => {
+    if (room > farthestRoom) {
+      setFarthestRoom(room);
+      localStorage.setItem("farthestRoom", room.toString());
+    }
+  }, [room, farthestRoom]);
 
   useEffect(() => {
     let timer2: NodeJS.Timeout | null = null;
@@ -430,6 +462,7 @@ function Runs() {
 
   // Após o reset
   const giveUp = () => {
+    addRunToHistory(room);
     setRoom(1);
     setLives(3);
     setDrops(0);
@@ -547,33 +580,6 @@ function Runs() {
           </Box>
         </div>
       )}
-      {/* <div
-        className="generic-container"
-        style={{ display: "flex", justifyContent: "center" }}
-      >
-        {exerciseTimeLeft === 0 && isExerciseStarted && (
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <Alert severity="warning" sx={{ mb: 4 }} variant="outlined">
-              Escolha o resultado ou perca vida
-            </Alert>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              <CircularProgressWithLabel
-                countdownSeconds={3} // Configura o tempo total
-                onComplete={handleFail} // Chama handleFail ao completar
-                isExerciseStarted={isExerciseStarted}
-                taskDialogOpen={taskDialogOpen}
-                size={80}
-              />
-            </div>
-          </div>
-        )}
-      </div> */}
       {/* Main content */}
       <div className="generic-container">
         <Box sx={{ maxWidth: 400 }}>

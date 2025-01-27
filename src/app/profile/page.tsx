@@ -27,9 +27,26 @@ interface Upgrade {
   aditionalSeconds?: number;
 }
 
+interface RunHistory {
+  room: number;
+  time: string;
+}
+
 function Profile() {
   const [open, setOpen] = useState(false);
   const [upgradesData, setUpgradesData] = useState<Upgrade[]>([]);
+  const [farthestRoom, setFarthestRoom] = useState(1);
+  const [runHistory, setRunHistory] = useState<RunHistory[]>([]);
+
+  useEffect(() => {
+    const storedUpgrades = localStorage.getItem("upgradesData");
+    const storedFarthest = localStorage.getItem("farthestRoom");
+    const storedHistory = localStorage.getItem("runHistory");
+
+    if (storedUpgrades) setUpgradesData(JSON.parse(storedUpgrades));
+    if (storedFarthest) setFarthestRoom(Number(storedFarthest));
+    if (storedHistory) setRunHistory(JSON.parse(storedHistory));
+  }, []);
 
   useEffect(() => {
     const storedUpgrades = localStorage.getItem("upgradesData");
@@ -48,8 +65,79 @@ function Profile() {
     setOpen(false);
   };
 
+  const handleDeleteRun = (index: number) => {
+    const newHistory = runHistory.filter((_, i) => i !== index);
+    setRunHistory(newHistory);
+    localStorage.setItem("runHistory", JSON.stringify(newHistory));
+  };
+
   return (
     <>
+      <div className="generic-container">
+        <Card
+          sx={{
+            maxWidth: 345,
+            border: "1px solid #5A5A5A",
+            mb: 2, // Adiciona margem inferior
+          }}
+        >
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              Dados das Runs
+            </Typography>
+            <Divider sx={{ mt: 1, mb: 2 }} />
+
+            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+              Sala mais distante: {farthestRoom}
+            </Typography>
+
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: "bold",
+                mt: 2,
+                mb: 1,
+              }}
+            >
+              Últimas 10 runs:
+            </Typography>
+
+            {runHistory.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                Nenhuma run registrada
+              </Typography>
+            )}
+
+            {runHistory.map((run, index) => (
+              <Card
+                key={index}
+                variant="outlined"
+                sx={{
+                  mb: 1,
+                  p: 1,
+                  backgroundColor: "rgba(0,0,0,0.05)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <Typography variant="body2">
+                    Sala {run.room} - {run.time}
+                  </Typography>
+                </div>
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={() => handleDeleteRun(index)}
+                >
+                  X
+                </Button>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
       <div className="generic-container">
         <Card sx={{ maxWidth: 345, border: "1px solid #5A5A5A" }}>
           <CardContent>
