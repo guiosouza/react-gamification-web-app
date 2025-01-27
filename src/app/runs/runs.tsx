@@ -149,7 +149,7 @@ const upgrades = [
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(1);
+  const [room, setRoom] = useState(6);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [exerciseTimeLeft, setExerciseTimeLeft] = useState<number | null>(null);
@@ -173,6 +173,7 @@ function Runs() {
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [overTimerStarted, setOverTimerStarted] = useState(false);
+  const restRoom = [3, 6, 10, 13];
 
   // ------------------------------ all useEffects ------------------------------
 
@@ -652,7 +653,7 @@ function Runs() {
               </Step>
             ))}
           </Stepper>
-          {room === 3 || room === 6 && (
+          {restRoom.includes(room) && (
             <div>
               <div className="generic-container">Sala de descanso</div>
               <div className="generic-container">
@@ -680,7 +681,7 @@ function Runs() {
                           display: "flex",
                           flexDirection: "column",
                           mb: 2,
-                          fontSize: "14px"
+                          fontSize: "14px",
                         }}
                       >
                         {storedUpgrade?.description || upgrade.description}:{" "}
