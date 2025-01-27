@@ -2,13 +2,13 @@ import { Exercise } from "@/app/types/run-types";
 
 // Dados base
 const baseExercises: Exercise[] = [
-    // {
-    //     id: 1,
-    //     name: "Flexão",
-    //     description: "Descrição tarefa 1",
-    //     duration: 23, // 23
-    //     repetitions: 1,
-    // },
+    {
+        id: 1,
+        name: "Flexão",
+        description: "Descrição tarefa 1",
+        duration: 20, // 23
+        repetitions: 1,
+    },
     {
         id: 2,
         name: "Polichinelo",
@@ -16,20 +16,20 @@ const baseExercises: Exercise[] = [
         duration: 4,
         repetitions: 1,
     },
-    // {
-    //     id: 3,
-    //     name: "Corrida estacionária",
-    //     description: "Descrição tarefa 3",
-    //     duration: 15,
-    //     repetitions: 3,
-    // },
-    // {
-    //     id: 4,
-    //     name: "Agachamento",
-    //     description: "Descrição tarefa 4",
-    //     duration: 15,
-    //     repetitions: 3,
-    // },
+    {
+        id: 3,
+        name: "Corrida estacionária",
+        description: "Descrição tarefa 3",
+        duration: 7,
+        repetitions: 1,
+    },
+    {
+        id: 4,
+        name: "Agachamento",
+        description: "Descrição tarefa 4",
+        duration: 14,
+        repetitions: 1,
+    },
 ];
 
 // Função para embaralhar utilizando Fisher-Yates

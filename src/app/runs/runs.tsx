@@ -149,7 +149,7 @@ const upgrades = [
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(9);
+  const [room, setRoom] = useState(1);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [exerciseTimeLeft, setExerciseTimeLeft] = useState<number | null>(null);
@@ -652,7 +652,7 @@ function Runs() {
               </Step>
             ))}
           </Stepper>
-          {room === 3 && (
+          {room === 3 || room === 6 && (
             <div>
               <div className="generic-container">Sala de descanso</div>
               <div className="generic-container">
