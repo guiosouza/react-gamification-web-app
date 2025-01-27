@@ -361,7 +361,6 @@ function Runs() {
   };
 
   const handleFail = useCallback(() => {
-    console.log("chamou");
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setLives((prevLives) => {
       const newLives = prevLives - 1;
@@ -371,6 +370,7 @@ function Runs() {
 
       if (newLives < 0) {
         // Reinicia o jogo
+        addRunToHistory(room);
         setRoom(1);
         setLives(1);
         setDrops(0);
