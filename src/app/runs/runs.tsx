@@ -179,7 +179,7 @@ function Runs() {
   // ------------------------------ all useEffects ------------------------------
 
   // Função para adicionar uma nova run ao histórico
-  const addRunToHistory = (finalRoom: number) => {
+  const addRunToHistory = useCallback((finalRoom: number) => {
     const newRun = {
       room: finalRoom,
       time: formatElapsedTime(elapsedTime),
@@ -195,7 +195,7 @@ function Runs() {
 
     // Salva diretamente no localStorage
     localStorage.setItem("runHistory", JSON.stringify(updatedHistory));
-  };
+  }, [elapsedTime]);
 
   useEffect(() => {
     const savedFarthest = localStorage.getItem("farthestRoom");
@@ -392,7 +392,7 @@ function Runs() {
     });
     setTaskDialogOpen(false);
     setIsExerciseStarted(false);
-  }, []);
+  }, [addRunToHistory, room]);
 
   const handleAddTimerToExercise = () => {
     if (timers > 0) {
