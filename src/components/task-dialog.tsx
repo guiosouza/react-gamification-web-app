@@ -8,14 +8,13 @@ import {
   DialogTitle,
 } from "@mui/material";
 import React from "react";
-import CircularProgressWithLabel from "./circular-progress-with-label";
 
 interface TaskDialogProps {
   handleSuccess: () => void;
   handleFail: () => void;
   taskDialogOpen: boolean;
   exerciseTimeLeft: number | null;
-  isExerciseStarted: boolean
+  isExerciseStarted: boolean;
 }
 
 function TaskDialog({
@@ -23,7 +22,6 @@ function TaskDialog({
   handleFail,
   exerciseTimeLeft,
   taskDialogOpen,
-  isExerciseStarted
 }: TaskDialogProps) {
   return (
     <div>
@@ -38,7 +36,7 @@ function TaskDialog({
           <div className="generic-container">
             <div style={{ display: "flex", flexDirection: "column" }}>
               <Alert severity="warning" sx={{ mb: 4 }} variant="outlined">
-                Escolha o resultado ou perca vida
+                Escolha o resultado
               </Alert>
               <div
                 style={{
@@ -46,28 +44,18 @@ function TaskDialog({
                   flexDirection: "row",
                   justifyContent: "center",
                 }}
-              >
-                <CircularProgressWithLabel
-                  countdownSeconds={45} // Configura o tempo total
-                  onComplete={handleFail} // Chama handleFail ao completar
-                  isExerciseStarted={isExerciseStarted}
-                  taskDialogOpen={taskDialogOpen}
-                  size={80}
-                />
-              </div>
+              ></div>
             </div>
           </div>
         </DialogContent>
         <DialogActions>
           <Box display="flex" gap={2}>
-            <div>
-              <Button size="small" onClick={handleSuccess}>
-                Sucesso
-              </Button>
-              <Button size="small" onClick={handleFail} color="error">
-                Falha
-              </Button>
-            </div>
+            <Button size="small" onClick={handleSuccess}>
+              Sucesso
+            </Button>
+            <Button size="small" onClick={handleFail} color="error">
+              Falha
+            </Button>
           </Box>
         </DialogActions>
       </Dialog>

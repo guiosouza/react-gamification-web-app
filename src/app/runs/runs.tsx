@@ -21,21 +21,77 @@ import { Exercise, Upgrade } from "../types/run-types";
 import LinearProgressWithLabel from "@/components/linear-progress-with-label";
 import HeaderItensRuns from "@/components/header-itens-runs";
 import { generatePageExercises } from "./scripts/exerciseGenerator";
-// import CircularProgressWithLabel from "@/components/circular-progress-with-label";
 import GiveUpRunDialog from "@/components/give-up-run-dialog";
 import BonusDialog from "@/components/bonus-dialog";
 import TaskDialog from "@/components/task-dialog";
 
 const upgrades = [
+  // Bonus Chance Upgrades
   {
     id: 1,
     name: "Bonus Chance 1",
+    description: "+ 3% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 270,
+    aditionalPercentage: 0.03,
+  },
+  {
+    id: 5,
+    name: "Bonus Chance 2",
+    description: "+ 5% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 600,
+    aditionalPercentage: 0.05,
+  },
+  {
+    id: 6,
+    name: "Bonus Chance 3",
+    description: "+ 6% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 700,
+    aditionalPercentage: 0.06,
+  },
+  {
+    id: 10,
+    name: "Bonus Chance 4",
     description: "+ 8% de chance de sair com um bônus",
     dropsUsedToUpgrade: 0,
     completed: false,
     dropsNeededToUpgrade: 1200,
     aditionalPercentage: 0.08,
   },
+  {
+    id: 11,
+    name: "Bonus Chance 5",
+    description: "+ 9% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 1888,
+    aditionalPercentage: 0.09,
+  },
+  {
+    id: 12,
+    name: "Bonus Chance 6",
+    description: "+ 11% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 2500,
+    aditionalPercentage: 0.09,
+  },
+  {
+    id: 13,
+    name: "Bonus Chance 6",
+    description: "+ 12% de chance de sair com um bônus",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 4140,
+    aditionalPercentage: 0.12,
+  },
+
+  // Timer Extra Upgrades
   {
     id: 2,
     name: "Timer Extra 1",
@@ -60,26 +116,8 @@ const upgrades = [
     description: "+ 5 segundos de duração do timer",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 5200,
+    dropsNeededToUpgrade: 1900,
     aditionalSeconds: 5,
-  },
-  {
-    id: 5,
-    name: "Bonus Chance 2",
-    description: "+ 12% de chance de sair com um bônus",
-    dropsUsedToUpgrade: 0,
-    completed: false,
-    dropsNeededToUpgrade: 2000,
-    aditionalPercentage: 0.12,
-  },
-  {
-    id: 6,
-    name: "Bonus Chance 3",
-    description: "+ 16% de chance de sair com um bônus",
-    dropsUsedToUpgrade: 0,
-    completed: false,
-    dropsNeededToUpgrade: 5000,
-    aditionalPercentage: 0.16,
   },
   {
     id: 7,
@@ -87,17 +125,8 @@ const upgrades = [
     description: "+ 6 segundos de duração do timer",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 8000,
+    dropsNeededToUpgrade: 2700,
     aditionalSeconds: 6,
-  },
-  {
-    id: 8,
-    name: "Bonus Chance 4",
-    description: "+ 17% de chance de sair com um bônus",
-    dropsUsedToUpgrade: 0,
-    completed: false,
-    dropsNeededToUpgrade: 9000,
-    aditionalPercentage: 0.17,
   },
   {
     id: 9,
@@ -105,13 +134,22 @@ const upgrades = [
     description: "+ 9 segundos de duração do timer",
     dropsUsedToUpgrade: 0,
     completed: false,
-    dropsNeededToUpgrade: 9000,
-    aditionalSeconds: 6,
+    dropsNeededToUpgrade: 3500,
+    aditionalSeconds: 9,
+  },
+  {
+    id: 14,
+    name: "Timer Extra 6",
+    description: "+ 14 segundos de duração do timer",
+    dropsUsedToUpgrade: 0,
+    completed: false,
+    dropsNeededToUpgrade: 4800,
+    aditionalSeconds: 14,
   },
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(1);
+  const [room, setRoom] = useState(3);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [exerciseTimeLeft, setExerciseTimeLeft] = useState<number | null>(null);
@@ -123,7 +161,7 @@ function Runs() {
   const [timers, setTimers] = useState(0);
   const [timeValueInSeconds, setTimeValueInSeconds] = useState(10);
   const [lives, setLives] = useState(1);
-  const [drops, setDrops] = useState(0); // Estado inicial com 500 gotas
+  const [drops, setDrops] = useState(0); // Estado inicial com 0 gotas
   const [openGiveUpDialog, setOpenGiveUpDialog] = React.useState(false);
   const [openBonusDialog, setOpenBonusDialog] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -133,8 +171,31 @@ function Runs() {
   const [isDropAnimating, setIsDroptAnimating] = useState(false);
   const [isBonusActive, setIsBonusActive] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [overTimerStarted, setOverTimerStarted] = useState(false);
 
   // ------------------------------ all useEffects ------------------------------
+
+  useEffect(() => {
+    let timer2: NodeJS.Timeout | null = null;
+    const startTime = Date.now();
+
+    if (overTimerStarted) {
+      timer2 = setInterval(() => {
+        const currentTime = Date.now();
+        const elapsedMs = currentTime - startTime;
+
+        setElapsedTime(elapsedMs);
+      }, 1); // Atualiza a cada 50ms para maior fluidez
+    }
+
+    return () => {
+      if (timer2) {
+        clearInterval(timer2);
+      }
+    };
+  }, [overTimerStarted]);
+
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
 
@@ -341,6 +402,7 @@ function Runs() {
   };
 
   const handleStartExercise = (exerciseDuration: number) => {
+    setOverTimerStarted(true);
     setExerciseTimeLeft(exerciseDuration);
     setIsExerciseStarted(true);
   };
@@ -382,6 +444,8 @@ function Runs() {
 
     // Mostra feedback
     setSnackbarOpen(true);
+    setOverTimerStarted(false);
+    setElapsedTime(0);
     setGameOverMessage("Você desistiu e voltou ao início!");
   };
 
@@ -421,6 +485,20 @@ function Runs() {
     localStorage.setItem(upgradesKey, JSON.stringify(updatedUpgrades));
   };
 
+  const formatElapsedTime = (elapsedMs: number) => {
+    const totalSeconds = Math.floor(elapsedMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600)
+      .toString()
+      .padStart(2, "0");
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+    const milliseconds = (elapsedMs % 1000).toString().padStart(3, "0");
+
+    return `${hours}:${minutes}:${seconds}:${milliseconds}`;
+  };
+
   const allExercisesCompleted = activeStep >= calculatedExercises.length;
 
   return (
@@ -428,6 +506,14 @@ function Runs() {
       {/* Room */}
       <div className="generic-container" style={{ textAlign: "center" }}>
         <Typography variant="h5">Sala {room}</Typography>
+      </div>
+      <div
+        className="generic-container"
+        style={{ display: "flex", justifyContent: "center" }}
+      >
+        <Alert variant="outlined" severity="info" sx={{ maxWidth: 330 }}>
+          {formatElapsedTime(elapsedTime)}
+        </Alert>
       </div>
       {/* Top itens */}
       <HeaderItensRuns
@@ -594,6 +680,7 @@ function Runs() {
                           display: "flex",
                           flexDirection: "column",
                           mb: 2,
+                          fontSize: "14px"
                         }}
                       >
                         {storedUpgrade?.description || upgrade.description}:{" "}
