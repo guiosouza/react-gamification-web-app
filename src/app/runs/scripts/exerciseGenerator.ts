@@ -2,20 +2,20 @@ import { Exercise } from "@/app/types/run-types";
 
 // Dados base
 const baseExercises: Exercise[] = [
-    {
-        id: 1,
-        name: "Flexão",
-        description: "Descrição tarefa 1",
-        duration: 1, // 23
-        repetitions: 1,
-    },
     // {
-    //     id: 2,
-    //     name: "Polichinelo",
-    //     description: "Descrição tarefa 2",
-    //     duration: 1,
+    //     id: 1,
+    //     name: "Flexão",
+    //     description: "Descrição tarefa 1",
+    //     duration: 23, // 23
     //     repetitions: 1,
     // },
+    {
+        id: 2,
+        name: "Polichinelo",
+        description: "Descrição tarefa 2",
+        duration: 4,
+        repetitions: 1,
+    },
     // {
     //     id: 3,
     //     name: "Corrida estacionária",
@@ -44,7 +44,7 @@ const shuffleArray = (array: Exercise[]): Exercise[] => {
 
 // Função auxiliar para calcular dificuldade
 const calculateDifficulty = (room: number) => {
-    const durationDifficultyMultiplier = room * 5;
+    const durationDifficultyMultiplier = room * 4;
     const repetitionsDifficultyMultiplier = room * 2;
 
     return baseExercises.map((exercise) => ({

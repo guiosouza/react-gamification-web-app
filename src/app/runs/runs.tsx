@@ -149,7 +149,7 @@ const upgrades = [
 ];
 
 function Runs() {
-  const [room, setRoom] = useState(3);
+  const [room, setRoom] = useState(9);
   const [activeStep, setActiveStep] = React.useState(0);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [exerciseTimeLeft, setExerciseTimeLeft] = useState<number | null>(null);
