@@ -141,22 +141,22 @@ export default function Exp() {
 
     switch (taskName) {
       case "Grind":
-        return Math.floor(levelNumber / 80);
+        return Math.floor(levelNumber / 84);
       case "Nutrição":
-        return baseMultiplier * 11;
+        return baseMultiplier * 10;
       case "Sem Álcool":
-        return baseMultiplier * 19;
+        return baseMultiplier * 17;
       case "Exercícios":
         return baseMultiplier;
       case "Água":
         return baseMultiplier;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 422;
+        return daysPassed * 388;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 422;
+        return daysPassed * 388;
       }
       default:
         return 0;
