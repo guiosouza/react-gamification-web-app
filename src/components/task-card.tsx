@@ -127,7 +127,7 @@ export default function TaskCard({
           ) : null}
           {taskName === "Controle" ? (
             <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-              No mínimo 1 minuto de meditação sobre o que queira se controlar
+              No mínimo 1 minuto de meditação sobre o que queira se controlar. Use mais quando se sentir tentado.
             </Typography>
           ) : null}
           <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
