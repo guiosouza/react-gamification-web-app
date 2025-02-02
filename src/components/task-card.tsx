@@ -23,7 +23,7 @@ interface TaskCardProps {
     packs: number;
     wonPacks: number;
   } | null;
-  onCardClick: (taskName: string) => void; 
+  onCardClick: (taskName: string) => void;
 }
 
 export default function TaskCard({
@@ -116,12 +116,18 @@ export default function TaskCard({
             {taskName === "Sono" ? "😴" : ""}
             {taskName === "Projeto" ? "🍆" : ""}
             {taskName === "Grind" ? "🔥" : ""}
+            {taskName === "Controle" ? "🕶️" : ""}
           </Typography>
           <Divider sx={{ mb: 4 }} />
           {taskName === "Sem Álcool" ? (
             <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
               Ficar sem beber álcool nos dias que costuma beber, ou trocar a
               bebica por algo que gosta de comer.
+            </Typography>
+          ) : null}
+          {taskName === "Controle" ? (
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
+              No mínimo 1 minuto de meditação sobre o que queira se controlar
             </Typography>
           ) : null}
           <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
@@ -176,15 +182,22 @@ export default function TaskCard({
       <div style={{ padding: "16px" }}>
         {taskName === "Água" ||
         taskName === "Nutrição" ||
-        taskName === "Sem Álcool" ? (
+        taskName === "Sem Álcool" ||
+        taskName === "Controle" ? (
           <>
             {!selectedNow ? (
-              <div style={{ marginTop: "16px", display: "flex", justifyContent: "space-evenly" }}>
+              <div
+                style={{
+                  marginTop: "16px",
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
                 <IconButton
                   color="success"
                   aria-label="add"
                   onClick={() => handleAddTask(taskName)}
-                  sx={{border: "1px solid #4caf50", borderRadius: "6px"}}
+                  sx={{ border: "1px solid #4caf50", borderRadius: "6px" }}
                 >
                   <Add />
                 </IconButton>
@@ -192,7 +205,7 @@ export default function TaskCard({
                   color="error"
                   aria-label="remove"
                   onClick={handleRemoveLastAlert}
-                  sx={{border: "1px solid #f44336", borderRadius: "6px"}}
+                  sx={{ border: "1px solid #f44336", borderRadius: "6px" }}
                 >
                   <Remove />
                 </IconButton>

@@ -17,11 +17,10 @@ import { Dayjs } from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import LevelCard from "@/components/level-card";
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrAfter);
-import isBetween from 'dayjs/plugin/isBetween';
+import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(isBetween);
-
 
 interface TaskOption {
   label: string;
@@ -55,6 +54,7 @@ const options: TaskOption[] = [
   { label: "Exercícios" },
   { label: "Nutrição" },
   { label: "Sem Álcool" },
+  { label: "Controle" },
 ];
 
 export default function Exp() {
@@ -105,11 +105,11 @@ export default function Exp() {
     if (!localStorage.getItem(historyKey)) {
       localStorage.setItem(historyKey, JSON.stringify([]));
     }
-  
+
     const savedLevel = localStorage.getItem("userLevel");
     const savedStartDate = localStorage.getItem("startDate");
     const savedExp = localStorage.getItem("currentExp");
-  
+
     if (savedLevel) {
       setLevel(savedLevel);
     }
@@ -120,7 +120,6 @@ export default function Exp() {
       setExp(parseInt(savedExp));
     }
   }, []);
-  
 
   const handleLevelChange = (newLevel: string) => {
     setLevel(newLevel);
@@ -149,6 +148,8 @@ export default function Exp() {
       case "Exercícios":
         return baseMultiplier;
       case "Água":
+        return baseMultiplier;
+      case "Controle":
         return baseMultiplier;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
@@ -184,15 +185,13 @@ export default function Exp() {
     if (
       selectedTask.label === "Água" ||
       selectedTask.label === "Nutrição" ||
-      selectedTask.label === "Sem Álcool"
+      selectedTask.label === "Sem Álcool" ||
+      selectedTask.label === "Controle"
     ) {
       return basePacks * (taskInput.quantity || 0);
     }
 
-    if (
-      selectedTask.label === "Exercícios" ||
-      selectedTask.label === "Grind"
-    ) {
+    if (selectedTask.label === "Exercícios" || selectedTask.label === "Grind") {
       if (!taskInput.time) return 0;
       const [hours, minutes] = taskInput.time.split(":").map(Number);
       const totalMinutes = hours * 60 + minutes;
@@ -259,33 +258,30 @@ export default function Exp() {
   };
 
   // Função para atualizar o histórico
-  const updateDrawHistory = (newDraw: Omit<Draw, 'id'>) => {
+  const updateDrawHistory = (newDraw: Omit<Draw, "id">) => {
     const historyKey = "drawHistory";
-  
+
     // Adiciona um ID único ao novo sorteio
     const newDrawWithId = { ...newDraw, id: Date.now().toString() };
-  
+
     const storedHistory = localStorage.getItem(historyKey);
     const drawHistory: Draw[] = storedHistory ? JSON.parse(storedHistory) : [];
-  
+
     // Adiciona o novo sorteio ao histórico
     drawHistory.push(newDrawWithId);
-  
+
     // Filtra para manter apenas os sorteios dos últimos 7 dias
-    const sevenDaysAgo = dayjs().subtract(7, 'days').startOf('day');
-    const today = dayjs().endOf('day'); // Considera até o final do dia de hoje
-    const recentHistory = drawHistory.filter(draw => {
+    const sevenDaysAgo = dayjs().subtract(7, "days").startOf("day");
+    const today = dayjs().endOf("day"); // Considera até o final do dia de hoje
+    const recentHistory = drawHistory.filter((draw) => {
       const drawDate = dayjs(draw.date, "DD/MM/YYYY HH:mm:ss");
-      return drawDate.isBetween(sevenDaysAgo, today, null, '[]');
+      return drawDate.isBetween(sevenDaysAgo, today, null, "[]");
     });
-  
+
     // Atualiza o localStorage com o histórico recente
     localStorage.setItem(historyKey, JSON.stringify(recentHistory));
   };
-  
-  
-  
-  
+
   const checkIfThereIsQuantityStored = (taskToCheck: TaskOption | null) => {
     if (!taskToCheck) {
       console.log("Nenhuma tarefa foi selecionada.");
@@ -308,7 +304,8 @@ export default function Exp() {
     if (
       selectedTask.label === "Água" ||
       selectedTask.label === "Nutrição" ||
-      selectedTask.label === "Sem Álcool"
+      selectedTask.label === "Sem Álcool" ||
+      selectedTask.label === "Controle"
     ) {
       return disableInput ? (
         <div style={{ marginTop: "32px", marginBottom: "16px" }}>
@@ -338,10 +335,7 @@ export default function Exp() {
       );
     }
 
-    if (
-      selectedTask.label === "Exercícios" ||
-      selectedTask.label === "Grind"
-    ) {
+    if (selectedTask.label === "Exercícios" || selectedTask.label === "Grind") {
       return (
         <TextField
           type="time"
