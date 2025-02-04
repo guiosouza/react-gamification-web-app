@@ -138,6 +138,8 @@ export default function Exp() {
 
     const baseMultiplier = Math.floor(levelNumber / 7);
 
+    const baseMultiplierForWater = Math.floor(levelNumber / 11);
+
     switch (taskName) {
       case "Grind":
         return Math.floor(levelNumber / 80);
@@ -148,7 +150,7 @@ export default function Exp() {
       case "Exercícios":
         return baseMultiplier;
       case "Água":
-        return baseMultiplier;
+        return baseMultiplierForWater;
       case "Controle":
         return baseMultiplier;
       case "Projeto": {
