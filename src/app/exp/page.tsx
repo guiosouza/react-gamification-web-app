@@ -138,7 +138,7 @@ export default function Exp() {
 
     const baseMultiplier = Math.floor(levelNumber / 7);
 
-    const baseMultiplierForWater = Math.floor(levelNumber / 11);
+    const baseMultiplierForWater = Math.floor(levelNumber / 12);
 
     switch (taskName) {
       case "Grind":
@@ -155,7 +155,7 @@ export default function Exp() {
         return baseMultiplier;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 422;
+        return daysPassed * 408;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
