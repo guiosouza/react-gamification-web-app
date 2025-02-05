@@ -140,6 +140,8 @@ export default function Exp() {
 
     const baseMultiplierForWater = Math.floor(levelNumber / 12);
 
+    const baseMultiplierForControlMindset = Math.floor(levelNumber / 21);
+
     switch (taskName) {
       case "Grind":
         return Math.floor(levelNumber / 80);
@@ -152,7 +154,7 @@ export default function Exp() {
       case "Água":
         return baseMultiplierForWater;
       case "Controle":
-        return baseMultiplier;
+        return baseMultiplierForControlMindset;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
         return daysPassed * 408;

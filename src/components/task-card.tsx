@@ -127,7 +127,7 @@ export default function TaskCard({
           ) : null}
           {taskName === "Controle" ? (
             <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-              No mínimo 2 minuto de meditação sobre o que queira se controlar para o pack.
+              No mínimo 1 minuto de cultivação de mentalidade de controle.
             </Typography>
           ) : null}
           <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
