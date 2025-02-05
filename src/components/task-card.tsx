@@ -105,7 +105,7 @@ export default function TaskCard({
   }, [shouldRemoveAlerts, handleRemoveAllAlerts, setShouldRemoveAlerts]);
 
   return (
-    <Card sx={{ marginBottom: 2 }}>
+    <Card sx={{ marginBottom: 4, border: "1px solid #5A5A5A" }}>
       <CardActionArea onClick={() => onCardClick(taskName)}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
