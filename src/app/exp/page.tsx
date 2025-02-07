@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Box,
 } from "@mui/material";
 import TaskCard from "@/components/task-card";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -378,31 +379,33 @@ export default function Exp() {
           onExpChange={(newExp: number) => setExp(newExp)}
         />
       </div>
-      <div className="generic-container">
-        <TextField
-          id="outlined-number"
-          label="Level"
-          type="number"
-          value={level}
-          onChange={(e) => handleLevelChange(e.target.value)}
-          sx={{ width: "100%" }}
-        />
-      </div>
-      <div className="generic-container" style={{ marginBottom: "48px" }}>
-        <Autocomplete
-          disablePortal
-          options={options}
-          value={selectedTask}
-          onChange={(_, newValue: TaskOption | null) => {
-            setSelectedTask(newValue || options[0]);
-            setTaskInput({});
-            setDrawResults(null);
-            checkIfThereIsQuantityStored(newValue);
-          }}
-          sx={{ width: "100%" }}
-          renderInput={(params) => <TextField {...params} label="Task" />}
-        />
-      </div>
+      <Box sx={{ backgroundColor: "#2D2D2D", padding: "16px",  borderRadius: "8px", marginBottom: "96px" }}>
+        <div className="generic-container">
+          <TextField
+            id="outlined-number"
+            label="Level"
+            type="number"
+            value={level}
+            onChange={(e) => handleLevelChange(e.target.value)}
+            sx={{ width: "100%" }}
+          />
+        </div>
+        <div className="generic-container">
+          <Autocomplete
+            disablePortal
+            options={options}
+            value={selectedTask}
+            onChange={(_, newValue: TaskOption | null) => {
+              setSelectedTask(newValue || options[0]);
+              setTaskInput({});
+              setDrawResults(null);
+              checkIfThereIsQuantityStored(newValue);
+            }}
+            sx={{ width: "100%", marginBottom: "24px", backgroundColor: "-moz-initial"  }}
+            renderInput={(params) => <TextField {...params} label="Task" />}
+          />
+        </div>
+      </Box>
 
       {(selectedTask.label === "Projeto" || selectedTask.label === "Sono") && (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
@@ -428,7 +431,14 @@ export default function Exp() {
           Sortear
         </Button>
       )}
-      <div className="generic-container"  style={{backgroundColor: "#5A5A5A", padding: "16px", borderRadius: "8px"}}>
+      <div
+        className="generic-container"
+        style={{
+          backgroundColor: "#5A5A5A",
+          padding: "16px",
+          borderRadius: "8px",
+        }}
+      >
         {selectedTask.label === "Todas" ? (
           options
             .slice(1)
