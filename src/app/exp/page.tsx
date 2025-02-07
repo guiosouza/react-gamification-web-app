@@ -249,6 +249,8 @@ export default function Exp() {
       wonDraws: wonPacks,
     };
 
+    
+
     // Atualizar o histórico no localStorage
     updateDrawHistory(newDrawResult);
 
@@ -269,22 +271,18 @@ export default function Exp() {
     // Adiciona um ID único ao novo sorteio
     const newDrawWithId = { ...newDraw, id: Date.now().toString() };
 
+    
+
     const storedHistory = localStorage.getItem(historyKey);
     const drawHistory: Draw[] = storedHistory ? JSON.parse(storedHistory) : [];
 
     // Adiciona o novo sorteio ao histórico
     drawHistory.push(newDrawWithId);
 
-    // Filtra para manter apenas os sorteios dos últimos 7 dias
-    const sevenDaysAgo = dayjs().subtract(7, "days").startOf("day");
-    const today = dayjs().endOf("day"); // Considera até o final do dia de hoje
-    const recentHistory = drawHistory.filter((draw) => {
-      const drawDate = dayjs(draw.date, "DD/MM/YYYY HH:mm:ss");
-      return drawDate.isBetween(sevenDaysAgo, today, null, "[]");
-    });
+    console.log("drawHistory:", drawHistory);
 
     // Atualiza o localStorage com o histórico recente
-    localStorage.setItem(historyKey, JSON.stringify(recentHistory));
+    localStorage.setItem(historyKey, JSON.stringify(drawHistory));
   };
 
   const checkIfThereIsQuantityStored = (taskToCheck: TaskOption | null) => {
@@ -335,7 +333,7 @@ export default function Exp() {
           })()}
           value={taskInput.quantity || ""}
           onChange={(e) => setTaskInput({ quantity: Number(e.target.value) })}
-          sx={{ width: "100%", marginTop: "24px", marginBottom: "24px" }}
+          sx={{ width: "100%", marginBottom: "4px" }}
         />
       );
     }
@@ -347,7 +345,7 @@ export default function Exp() {
           label="Tempo de execução"
           value={taskInput.time || ""}
           onChange={(e) => setTaskInput({ time: e.target.value })}
-          sx={{ width: "100%", marginTop: "24px", marginBottom: "24px" }}
+          sx={{ width: "100%", marginBottom: "4px" }}
           InputLabelProps={{ shrink: true }}
         />
       );
@@ -409,7 +407,7 @@ export default function Exp() {
 
       {(selectedTask.label === "Projeto" || selectedTask.label === "Sono") && (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
-          <div style={{ marginTop: "24px", marginBottom: "24px" }}>
+          <div style={{ marginTop: "24px", marginBottom: "8px" }}>
             <DatePicker
               sx={{ width: "100%" }}
               label="Data da queda"
@@ -426,7 +424,7 @@ export default function Exp() {
         <Button
           variant="contained"
           onClick={drawPacks}
-          sx={{ width: "100%", marginY: 2 }}
+          sx={{ width: "100%", marginBottom: "64px", height: "54px", marginTop: "8px" }}
         >
           Sortear
         </Button>
