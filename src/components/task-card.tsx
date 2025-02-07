@@ -60,7 +60,7 @@ export default function TaskCard({
 
     const updatedAlerts = [
       ...alerts,
-      `${taskName} adicionado: ${formattedTime}`,
+      `${taskName}: ${formattedTime}`,
     ];
     localStorage.setItem(`${taskKey}_alerts`, JSON.stringify(updatedAlerts));
 
@@ -221,11 +221,11 @@ export default function TaskCard({
               ""
             )}
 
-            <div style={{ marginTop: "16px" }}>
+            <div style={{ padding: "16px 16px 16px 0" }}>
               {alerts.map((alert, index) => (
                 <Alert
                   key={index}
-                  variant="outlined"
+                  variant="standard"
                   severity="success"
                   sx={{ marginTop: 1 }}
                 >
