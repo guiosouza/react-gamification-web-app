@@ -28,7 +28,6 @@ interface TaskCardProps {
 
 export default function TaskCard({
   taskName,
-  level,
   packs,
   drawResults,
   selectedNow,
@@ -105,7 +104,7 @@ export default function TaskCard({
   }, [shouldRemoveAlerts, handleRemoveAllAlerts, setShouldRemoveAlerts]);
 
   return (
-    <Card sx={{ marginBottom: 4, border: "1px solid #5A5A5A" }}>
+    <Card sx={{ marginBottom: 2, border: "1px solid #5A5A5A" }} elevation={5}>
       <CardActionArea onClick={() => onCardClick(taskName)}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
@@ -118,21 +117,17 @@ export default function TaskCard({
             {taskName === "Grind" ? "🔥" : ""}
             {taskName === "Controle" ? "🕶️" : ""}
           </Typography>
-          <Divider sx={{ mb: 4 }} />
+          <Divider sx={{ mb: 2 }} />
           {taskName === "Sem Álcool" ? (
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-              Ficar sem beber álcool nos dias que costuma beber, ou trocar a
-              bebica por algo que gosta de comer.
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0 }}>
+              Ficar sem beber álcool nos dias que costuma beber.
             </Typography>
           ) : null}
           {taskName === "Controle" ? (
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0 }}>
               No mínimo 1 minuto de cultivação de mentalidade de controle.
             </Typography>
           ) : null}
-          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
-            Nível: {level}
-          </Typography>
           <Typography
             variant="body2"
             sx={{ color: "text.secondary", mb: 1 }}
@@ -179,7 +174,7 @@ export default function TaskCard({
           )}
         </CardContent>
       </CardActionArea>
-      <div style={{ padding: "16px" }}>
+      <div style={{ paddingLeft: "16px" }}>
         {taskName === "Água" ||
         taskName === "Nutrição" ||
         taskName === "Sem Álcool" ||
@@ -188,24 +183,36 @@ export default function TaskCard({
             {!selectedNow ? (
               <div
                 style={{
-                  marginTop: "16px",
+                  marginTop: "6px",
                   display: "flex",
-                  justifyContent: "space-evenly",
                 }}
               >
                 <IconButton
                   color="success"
                   aria-label="add"
+                  size="small"
                   onClick={() => handleAddTask(taskName)}
-                  sx={{ border: "1px solid #4caf50", borderRadius: "6px" }}
+                  sx={{
+                    border: "1px solid #4caf50",
+                    backgroundColor: "#4caf50",
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "#388e3c" },
+                  }}
                 >
                   <Add />
                 </IconButton>
                 <IconButton
                   color="error"
+                  size="small"
                   aria-label="remove"
                   onClick={handleRemoveLastAlert}
-                  sx={{ border: "1px solid #f44336", borderRadius: "6px" }}
+                  sx={{
+                    border: "1px solid #f44336",
+                    backgroundColor: "#f44336",
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "#951309" },
+                    ml: 4,
+                  }}
                 >
                   <Remove />
                 </IconButton>

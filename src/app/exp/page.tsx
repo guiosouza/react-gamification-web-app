@@ -428,7 +428,7 @@ export default function Exp() {
           Sortear
         </Button>
       )}
-      <div className="generic-container">
+      <div className="generic-container"  style={{backgroundColor: "#5A5A5A", padding: "16px", borderRadius: "8px"}}>
         {selectedTask.label === "Todas" ? (
           options
             .slice(1)
