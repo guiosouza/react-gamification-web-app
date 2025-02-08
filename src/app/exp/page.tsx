@@ -137,7 +137,7 @@ export default function Exp() {
     const levelNumber = Number(level);
     if (!levelNumber) return 0;
 
-    const baseMultiplier = Math.floor(levelNumber / 7);
+    const baseMultiplier = Math.floor(levelNumber / 8);
 
     const baseMultiplierForWater = Math.floor(levelNumber / 12);
 
@@ -158,7 +158,7 @@ export default function Exp() {
         return baseMultiplierForControlMindset;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 408;
+        return daysPassed * 398;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
