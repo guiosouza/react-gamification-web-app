@@ -96,6 +96,8 @@ function Exercises() {
     { label: "Nádegas" },
     { label: "Elevação pélvica" },
     { label: "Remada unilateral neutra" },
+    { label: "Crucifixo" },
+    { label: "Supino" }
   ];
 
   const [selectedExercise, setSelectedExercise] =
