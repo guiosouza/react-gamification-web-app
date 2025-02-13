@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Chip,
   Divider,
   TextField,
   Typography,
@@ -20,14 +19,14 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[200],
     ...theme.applyStyles("dark", {
-      backgroundColor: theme.palette.grey[800],
+      backgroundColor: "#575757",
     }),
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    backgroundColor: "#1a90ff",
+    backgroundColor: "#0000",
     ...theme.applyStyles("dark", {
-      backgroundColor: "#308fe8",
+      backgroundColor: "#000",
     }),
   },
 }));
@@ -123,7 +122,17 @@ function LevelCard({
     const levelData = getLevelData(level);
 
     return (
-      <Card sx={{ marginBottom: 2, marginTop: 2, border: "1px solid #002D51", borderRadius: "0px" }}>
+      <Card
+        sx={{
+          marginBottom: 2,
+          marginTop: 2,
+          border: "1px solid #002D51",
+          borderRadius: "0px",
+          backgroundColor: "#5C7047",
+          color: "#000",
+          fontWeight: 700,
+        }}
+      >
         <CardMedia
           component="img"
           sx={{ padding: 2, borderRadius: 2 }}
@@ -136,7 +145,7 @@ function LevelCard({
             <Typography gutterBottom variant="h5" component="div">
               LV {level}
             </Typography>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            <Typography variant="body2" sx={{ color: "#000", }}>
               {levelData.name.toUpperCase()}
             </Typography>
           </div>
@@ -154,27 +163,28 @@ function LevelCard({
               justifyContent: "flex-end",
             }}
           >
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            <Typography variant="body2" sx={{ color: "#000" }}>
               {exp.toFixed(0)}/500000
             </Typography>
           </div>
           <div style={{ marginBottom: "12px", marginTop: "12px" }}>
             {editingExp ? (
               <>
+              {/* Quero o dado dentro do input na cor pretas */}
                 <TextField
                   label="Atualizar EXP"
                   type="number"
                   value={editedExp}
                   onChange={(e) => setEditedExp(parseInt(e.target.value))}
                   fullWidth
-                  sx={{ marginBottom: 2 }}
+                  sx={{ marginBottom: 2, color: "#000" }}
                 />
-                <Button variant="contained" onClick={handleExpUpdate}>
+                <Button variant="contained" onClick={handleExpUpdate} sx={{ color: "#fff", backgroundColor: "#000" }}>
                   Salvar
                 </Button>
               </>
             ) : (
-              <Button variant="outlined" onClick={() => setEditingExp(true)}>
+              <Button variant="outlined" onClick={() => setEditingExp(true)} sx={{ color: "#000", borderColor: "#000" }}>
                 Editar EXP
               </Button>
             )}
@@ -182,12 +192,9 @@ function LevelCard({
 
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
           {levelData.nextLevel && (
-            <Chip
-              sx={{ fontSize: "12px", p: 1, borderRadius: "4px" }}
-              color="warning"
-              label={`Próximo: ${levelData.nextName}`}
-              size="small"
-            />
+            <Typography variant="body2" sx={{ color: "#000" }}>
+              Próximo: {levelData.nextName}
+            </Typography>
           )}
         </CardContent>
       </Card>
