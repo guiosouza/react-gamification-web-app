@@ -52,7 +52,7 @@ function ResponsiveAppBar() {
               style={{ color: "inherit", textDecoration: "none" }}
             >
               {" "}
-              MOTHER BASE
+              MB
             </Link>
           </Typography>
 
@@ -115,7 +115,7 @@ function ResponsiveAppBar() {
               href={`/`}
               style={{ color: "inherit", textDecoration: "none" }}
             >
-              MOTHER BASE
+              MB
             </Link>
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>

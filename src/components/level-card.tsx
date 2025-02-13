@@ -126,7 +126,6 @@ function LevelCard({
         sx={{
           marginBottom: 2,
           marginTop: 2,
-          border: "1px solid #002D51",
           borderRadius: "0px",
           backgroundColor: "#5C7047",
           color: "#000",

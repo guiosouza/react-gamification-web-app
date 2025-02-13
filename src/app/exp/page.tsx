@@ -424,7 +424,7 @@ export default function Exp() {
         <Button
           variant="contained"
           onClick={drawPacks}
-          sx={{ width: "100%", marginBottom: "64px", height: "54px", marginTop: "8px" }}
+          sx={{ width: "100%", marginBottom: "64px", height: "54px", marginTop: "8px", backgroundColor: "#A6E765" }}
         >
           Sortear
         </Button>
