@@ -7,6 +7,11 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
+  typography: {
+    // Define a fonte padrão para o MUI
+    // fontFamily: '"Teko", sans-serif',
+    fontFamily: '"Orbitron", sans-serif',
+  },
 });
 
 export default function ThemeProviders({ children }: { children: React.ReactNode }) {

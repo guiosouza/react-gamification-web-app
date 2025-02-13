@@ -433,7 +433,7 @@ export default function Exp() {
         className="generic-container"
         style={{
           backgroundColor: "#5A5A5A",
-          padding: "16px",
+          padding: "12px",
           borderRadius: "8px",
         }}
       >

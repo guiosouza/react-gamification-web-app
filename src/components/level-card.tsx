@@ -123,7 +123,7 @@ function LevelCard({
     const levelData = getLevelData(level);
 
     return (
-      <Card sx={{ marginBottom: 2, marginTop: 2, border: "1px solid #002D51" }}>
+      <Card sx={{ marginBottom: 2, marginTop: 2, border: "1px solid #002D51", borderRadius: "0px" }}>
         <CardMedia
           component="img"
           sx={{ padding: 2, borderRadius: 2 }}
