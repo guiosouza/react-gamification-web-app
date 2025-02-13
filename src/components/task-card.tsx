@@ -58,10 +58,7 @@ export default function TaskCard({
     const currentCount = parseInt(localStorage.getItem(taskKey) || "0", 10);
     localStorage.setItem(taskKey, (currentCount + 1).toString());
 
-    const updatedAlerts = [
-      ...alerts,
-      `${taskName}: ${formattedTime}`,
-    ];
+    const updatedAlerts = [...alerts, `${taskName}: ${formattedTime}`];
     localStorage.setItem(`${taskKey}_alerts`, JSON.stringify(updatedAlerts));
 
     setAlerts(updatedAlerts);
@@ -104,7 +101,10 @@ export default function TaskCard({
   }, [shouldRemoveAlerts, handleRemoveAllAlerts, setShouldRemoveAlerts]);
 
   return (
-    <Card sx={{ marginBottom: 2, border: "1px solid #5A5A5A" }} elevation={5}>
+    <Card
+      sx={{ marginBottom: 2, border: "1px solid #5A5A5A", borderRadius: "0px" }}
+      elevation={5}
+    >
       <CardActionArea onClick={() => onCardClick(taskName)}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
@@ -133,42 +133,40 @@ export default function TaskCard({
             sx={{ color: "text.secondary", mb: 1 }}
             component="div"
           >
-            Pode sortear:{" "}
-            <Chip
-              label={packs + " por execução"}
-              sx={{
-                borderRadius: "6px",
-              }}
-            />
+            SORTEIO POR EXECUÇÃO:{" "}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "#FFFF", mb: 1, fontSize: "38px" }}
+          >
+            {packs}
           </Typography>
           {drawResults && (
             <>
               <Typography
                 variant="body2"
-                sx={{ color: "text.secondary", mb: 1 }}
-              >
-                Total de packs sorteados: {drawResults.packs}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary", mb: 1 }}
+                sx={{ color: "text.secondary", mb: 1, mt: "64px" }}
                 component="div"
               >
-                Packs ganhos: {""}
-                <Chip
-                  variant="filled"
-                  label={drawResults.wonPacks}
-                  color="warning"
-                  sx={{
-                    borderRadius: "6px",
-                  }}
-                />
+                Ganhou: {""}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ color: "text.secondary", mb: 4 }}
+                sx={{ color: "#FFFF", mb: 1, fontSize: "38px" }}
+              >
+                {drawResults.wonPacks}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary" }}
               >
                 Do total sorteado, ganhou: {calculateWinPercentage()}%
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary" }}
+              >
+                Total de packs sorteados: {drawResults.packs}
               </Typography>
             </>
           )}

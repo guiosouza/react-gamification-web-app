@@ -377,7 +377,7 @@ export default function Exp() {
           onExpChange={(newExp: number) => setExp(newExp)}
         />
       </div>
-      <Box sx={{ backgroundColor: "#2D2D2D", padding: "16px",  borderRadius: "8px", marginBottom: "96px" }}>
+      <Box sx={{ backgroundColor: "#2D2D2D", padding: "16px",  borderRadius: "0px", marginBottom: "96px" }}>
         <div className="generic-container">
           <TextField
             id="outlined-number"
@@ -434,7 +434,7 @@ export default function Exp() {
         style={{
           backgroundColor: "#5A5A5A",
           padding: "12px",
-          borderRadius: "8px",
+          borderRadius: "0px",
         }}
       >
         {selectedTask.label === "Todas" ? (
