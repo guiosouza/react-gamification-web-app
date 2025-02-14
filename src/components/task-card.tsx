@@ -136,7 +136,7 @@ export default function TaskCard({
           </Typography>
           <Typography
             variant="body2"
-            sx={{ color: "#FFFF", mb: 1, fontSize: "38px" }}
+            sx={{ color: "#FFFF", mb: 1, fontSize: "26px" }}
           >
             {packs}
           </Typography>
@@ -151,7 +151,7 @@ export default function TaskCard({
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ color: "#FFFF", mb: 1, fontSize: "38px" }}
+                sx={{ mb: 1, fontSize: "44px", color: "#4caf50" }}
               >
                 {drawResults.wonPacks}
               </Typography>
