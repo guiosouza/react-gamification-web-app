@@ -42,7 +42,6 @@ function Statistics() {
   return (
     <div>
       <div className="generic-container">
-
         {/* Lista de entradas individuais */}
         {history.length === 0 ? (
           <Typography variant="body1" color="textSecondary">
@@ -65,7 +64,7 @@ function Statistics() {
                     mt: 2,
                   }}
                 >
-                  Sorteios ganhos: {entry.wonDraws}
+                  Sorteios ganhos:
                   <Button
                     size="small"
                     color="error"
@@ -73,6 +72,9 @@ function Statistics() {
                   >
                     Deletar
                   </Button>
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: "38px", color: "#4caf50" }}>
+                  {entry.wonDraws}
                 </Typography>
                 <Typography
                   variant="body2"

@@ -22,19 +22,33 @@ function LinearProgressWithLabel(
 ) {
   return (
     <Card>
-      <Box sx={{ display: "flex", alignItems: "center", p: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          p: 3,
+          backgroundColor: "#5C7047",
+        }}
+      >
         <Box sx={{ width: "100%", mr: 1 }}>
           <LinearProgress
             variant="determinate"
             {...props}
-            sx={{ height: "26px", borderRadius: "4px" }}
+            sx={{
+              height: "26px",
+              borderRadius: "4px",
+              backgroundColor: "#575757", // Cor de fundo da barra não preenchida (track)
+              "& .MuiLinearProgress-bar": {
+                backgroundColor: "black", // Cor da barra preenchida
+              },
+            }}
           />
         </Box>
         <Box sx={{ minWidth: 65 }}>
           <Typography
             variant="body2"
-            sx={{ color: "text.secondary" }}
-          >{`${props.value.toFixed(6)}%`}</Typography>
+            sx={{ fontSize: "12px", color: "#000", fontWeight: 500 }}
+          >{`${props.value.toFixed(5)}%`}</Typography>
         </Box>
       </Box>
     </Card>
