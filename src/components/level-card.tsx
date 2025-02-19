@@ -39,6 +39,7 @@ interface levelImage {
 
 const urlImages: levelImage[] = [
   { level: 1, path: "/images/novice.png", name: "Novice" },
+  { level: 3944, path: "/images/novice-2.png", name: "Novice 2" },
   { level: 7888, path: "/images/diamond_dog.png", name: "Diamond Dog" },
   { level: 15700, path: "/images/gnome_soldier.png", name: "Gnome Soldier" },
   {
