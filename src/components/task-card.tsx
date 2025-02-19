@@ -3,12 +3,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Add, Remove } from "@mui/icons-material";
-import {
-  Alert,
-  CardActionArea,
-  Divider,
-  IconButton,
-} from "@mui/material";
+import { CardActionArea, Chip, Divider, IconButton } from "@mui/material";
 
 interface TaskCardProps {
   taskName: string;
@@ -155,16 +150,10 @@ export default function TaskCard({
               >
                 {drawResults.wonPacks}
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary" }}
-              >
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 Do total sorteado, ganhou: {calculateWinPercentage()}%
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary" }}
-              >
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 Total de packs sorteados: {drawResults.packs}
               </Typography>
             </>
@@ -220,14 +209,11 @@ export default function TaskCard({
 
             <div style={{ padding: "16px 16px 16px 0" }}>
               {alerts.map((alert, index) => (
-                <Alert
+                <Chip
                   key={index}
-                  variant="standard"
-                  severity="success"
-                  sx={{ marginTop: 1 }}
-                >
-                  {alert}
-                </Alert>
+                  label={alert}
+                  sx={{ marginTop: 1, borderRadius: "0px", color: "#fff", width: "100%" }}
+                />
               ))}
             </div>
           </>
