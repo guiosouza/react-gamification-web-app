@@ -119,7 +119,7 @@ export default function TaskCard({
           ) : null}
           {taskName === "Controle" ? (
             <Typography variant="body2" sx={{ color: "text.secondary", mb: 0 }}>
-              No mínimo 1 minuto de cultivação de mentalidade de controle.
+              A cada 1 minuto na cultivação da mentalidade de auto-controle
             </Typography>
           ) : null}
           <Typography
