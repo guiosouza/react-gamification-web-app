@@ -20,6 +20,18 @@ interface Draw {
 function Statistics() {
   const [history, setHistory] = useState<Draw[]>([]);
 
+  const taskEmojis = {
+    "Sem Álcool": "🚫",
+    Água: "💧",
+    Nutrição: "🍎",
+    Exercícios: "🏋️",
+    Sono: "😴",
+    Projeto: "🍆",
+    Grind: "🔥",
+    "Laboratório Mental": "🧪",
+  };
+
+
   useEffect(() => {
     const storedHistory = localStorage.getItem("drawHistory");
     const parsedHistory: Draw[] = storedHistory
@@ -82,17 +94,11 @@ function Statistics() {
                     color: "text.secondary",
                     display: "flex",
                     justifyContent: "space-between",
-                    mt: 2,
+                    mt: 4,
+                    fontSize: "24px",
                   }}
                 >
-                  {entry.task} {entry.task === "Sem Álcool" ? "🚫" : ""}{" "}
-                  {entry.task === "Água" ? "💧" : ""}{" "}
-                  {entry.task === "Nutrição" ? "🍎" : ""}
-                  {entry.task === "Exercícios" ? "🏋️" : ""}
-                  {entry.task === "Sono" ? "😴" : ""}
-                  {entry.task === "Projeto" ? "🍆" : ""}
-                  {entry.task === "Controle" ? "🕶️" : ""}
-                  {entry.task === "Grind" ? "🔥" : ""}
+                  {taskEmojis[entry.task as keyof typeof taskEmojis] || ""}
                 </Typography>
               </CardContent>
             </Card>

@@ -55,7 +55,7 @@ const options: TaskOption[] = [
   { label: "Exercícios" },
   { label: "Nutrição" },
   { label: "Sem Álcool" },
-  { label: "Controle" },
+  { label: "Laboratório Mental" },
 ];
 
 export default function Exp() {
@@ -154,7 +154,7 @@ export default function Exp() {
         return baseMultiplier;
       case "Água":
         return baseMultiplierForWater;
-      case "Controle":
+      case "Laboratório Mental":
         return baseMultiplierForControlMindset;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
@@ -191,7 +191,7 @@ export default function Exp() {
       selectedTask.label === "Água" ||
       selectedTask.label === "Nutrição" ||
       selectedTask.label === "Sem Álcool" ||
-      selectedTask.label === "Controle"
+      selectedTask.label === "Laboratório Mental"
     ) {
       return basePacks * (taskInput.quantity || 0);
     }
@@ -308,7 +308,7 @@ export default function Exp() {
       selectedTask.label === "Água" ||
       selectedTask.label === "Nutrição" ||
       selectedTask.label === "Sem Álcool" ||
-      selectedTask.label === "Controle"
+      selectedTask.label === "Laboratório Mental"
     ) {
       return disableInput ? (
         <div style={{ marginTop: "32px", marginBottom: "16px" }}>

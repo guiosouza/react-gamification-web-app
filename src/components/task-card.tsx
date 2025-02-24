@@ -31,6 +31,17 @@ export default function TaskCard({
 }: TaskCardProps) {
   const [alerts, setAlerts] = React.useState<string[]>([]);
 
+  const taskEmojis = {
+    "Sem Álcool": "🚫",
+    Água: "💧",
+    Nutrição: "🍎",
+    Exercícios: "🏋️",
+    Sono: "😴",
+    Projeto: "🍆",
+    Grind: "🔥",
+    "Laboratório Mental": "🧪",
+  };
+
   React.useEffect(() => {
     const taskKey = taskName.toLowerCase().replace(" ", "");
     const storedAlerts = JSON.parse(
@@ -102,24 +113,19 @@ export default function TaskCard({
       <CardActionArea onClick={() => onCardClick(taskName)}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {taskName} {taskName === "Sem Álcool" ? "🚫" : ""}{" "}
-            {taskName === "Água" ? "💧" : ""}{" "}
-            {taskName === "Nutrição" ? "🍎" : ""}
-            {taskName === "Exercícios" ? "🏋️" : ""}
-            {taskName === "Sono" ? "😴" : ""}
-            {taskName === "Projeto" ? "🍆" : ""}
-            {taskName === "Grind" ? "🔥" : ""}
-            {taskName === "Controle" ? "🕶️" : ""}
+            {taskName} {taskEmojis[taskName as keyof typeof taskEmojis] || ""}
           </Typography>
+
           <Divider sx={{ mb: 2 }} />
           {taskName === "Sem Álcool" ? (
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
               Ficar sem beber álcool nos dias que costuma beber.
             </Typography>
           ) : null}
-          {taskName === "Controle" ? (
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0 }}>
-              A cada 1 minuto na cultivação da mentalidade de auto-controle
+          {taskName === "Laboratório Mental" ? (
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+              A cada 1 minuto dedicado ao fortalecimento do autocontrole,
+              explorando diferentes abordagens no seu Laboratório Mental.
             </Typography>
           ) : null}
           <Typography
@@ -164,7 +170,7 @@ export default function TaskCard({
         {taskName === "Água" ||
         taskName === "Nutrição" ||
         taskName === "Sem Álcool" ||
-        taskName === "Controle" ? (
+        taskName === "Laboratório Mental" ? (
           <>
             {!selectedNow ? (
               <div
@@ -212,7 +218,12 @@ export default function TaskCard({
                 <Chip
                   key={index}
                   label={alert}
-                  sx={{ marginTop: 1, borderRadius: "0px", color: "#fff", width: "100%" }}
+                  sx={{
+                    marginTop: 1,
+                    borderRadius: "0px",
+                    color: "#fff",
+                    width: "100%",
+                  }}
                 />
               ))}
             </div>
