@@ -141,7 +141,7 @@ export default function Exp() {
 
     const baseMultiplierForWater = Math.floor(levelNumber / 12);
 
-    const baseMultiplierForControlMindset = Math.floor(levelNumber / 54);
+    const baseMultiplierForControlMindset = Math.floor(levelNumber / 62);
 
     switch (taskName) {
       case "Grind":
