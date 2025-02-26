@@ -55,7 +55,7 @@ const options: TaskOption[] = [
   { label: "Exercícios" },
   { label: "Nutrição" },
   { label: "Sem Álcool" },
-  { label: "Laboratório Mental" },
+  // { label: "Laboratório Mental" },
 ];
 
 export default function Exp() {
