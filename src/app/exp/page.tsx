@@ -137,7 +137,7 @@ export default function Exp() {
     const levelNumber = Number(level);
     if (!levelNumber) return 0;
 
-    const baseMultiplier = Math.floor(levelNumber / 7);
+    const baseMultiplier = Math.floor(levelNumber / 6);
 
     const baseMultiplierForWater = Math.floor(levelNumber / 10);
 
