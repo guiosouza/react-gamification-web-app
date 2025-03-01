@@ -145,7 +145,7 @@ export default function Exp() {
 
     switch (taskName) {
       case "Grind":
-        return Math.floor(levelNumber / 61);
+        return Math.floor(levelNumber / 44);
       case "Nutrição":
         return baseMultiplier * 5;
       case "Sem Álcool":
