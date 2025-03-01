@@ -158,11 +158,11 @@ export default function Exp() {
         return baseMultiplierForControlMindset;
       case "Projeto": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 912;
+        return daysPassed * 1112;
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 912;
+        return daysPassed * 1112;
       }
       default:
         return 0;
