@@ -50,7 +50,7 @@ const options: TaskOption[] = [
   { label: "Todas" },
   { label: "Projeto" },
   { label: "Sono" },
-  { label: "Grind" },
+  // { label: "Grind" },
   { label: "Água" },
   { label: "Exercícios" },
   { label: "Nutrição" },
