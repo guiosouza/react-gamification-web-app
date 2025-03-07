@@ -559,7 +559,10 @@ function Exercises() {
           </Grid2>
           <Grid2 sx={{ mt: 16 }}>
             <Divider sx={marginBottomAndTop4}>RECORDES</Divider>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", fontFamily: "Fira Sans" }}
+            >
               Para ver os 36 maiores recordes, selecione o período.
             </Typography>
             <LocalizationProvider
@@ -591,7 +594,10 @@ function Exercises() {
             <>
               {records.length === 0 ? (
                 <div className="generic-container">
-                  <Alert variant="outlined" severity="success">
+                  <Alert variant="outlined" severity="success" sx={{
+                      fontFamily: "Fira Sans",
+                    }}
+                  >
                     Sem dados para exibir.
                   </Alert>
                 </div>
@@ -672,6 +678,7 @@ function Exercises() {
                           : isNearestPast
                           ? "2px solid #F15A24"
                           : "none",
+                        
                       }}
                     >
                       <CardActionArea>
@@ -710,19 +717,19 @@ function Exercises() {
                           </div>
                           <Typography
                             variant="body2"
-                            sx={{ color: "text.secondary" }}
+                            sx={{ color: "text.secondary", fontFamily: "Fira Sans" }}
                           >
                             Data: {record.date}
                           </Typography>
                           <Typography
                             variant="body2"
-                            sx={{ color: "text.secondary" }}
+                            sx={{ color: "text.secondary", fontFamily: "Fira Sans" }}
                           >
                             Repetições: {record.reps}
                           </Typography>
                           <Typography
                             variant="body2"
-                            sx={{ color: "text.secondary" }}
+                            sx={{ color: "text.secondary", fontFamily: "Fira Sans" }}
                           >
                             Peso usado: {formatWeight(record.weight)} KG
                             {baseWeight && (
@@ -731,14 +738,14 @@ function Exercises() {
                           </Typography>
                           <Typography
                             variant="body2"
-                            sx={{ color: "text.secondary" }}
+                            sx={{ color: "text.secondary", fontFamily: "Fira Sans" }}
                           >
                             Negativas ou falhas: {record.failsOrNegative}
                           </Typography>
                           {nextRecord && (
                             <Typography
                               variant="body2"
-                              sx={{ color: "text.secondary" }}
+                              sx={{ color: "text.secondary", fontFamily: "Fira Sans" }}
                             >
                               Melhora de:{" "}
                               <strong style={{ color: "green" }}>
@@ -751,7 +758,7 @@ function Exercises() {
                           <Typography
                             variant="body2"
                             component="span"
-                            sx={{ color: "text.secondary" }}
+                            sx={{ color: "text.secondary", fontFamily: "Fira Sans" }}
                           >
                             Peso total:{" "}
                             <Chip
@@ -760,11 +767,12 @@ function Exercises() {
                                 record.totalWeightLifted
                               )}KG`}
                               size="small"
+                              sx={{ fontFamily: "Fira Sans" }}
                             />
                             <Chip
                               label={`# ${index + 1}`}
                               size="small"
-                              sx={{ marginLeft: 1 }}
+                              sx={{ marginLeft: 1, fontFamily: "Fira Sans" }}
                             />
                           </Typography>
                         </CardContent>

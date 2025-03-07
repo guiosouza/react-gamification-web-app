@@ -118,19 +118,25 @@ export default function TaskCard({
 
           <Divider sx={{ mb: 2 }} />
           {taskName === "Sem Álcool" ? (
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", mb: 4, fontFamily: "Fira Sans" }}
+            >
               Ficar sem beber álcool nos dias que costuma beber.
             </Typography>
           ) : null}
           {taskName === "Laboratório Mental" ? (
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", mb: 4, fontFamily: "Fira Sans" }}
+            >
               A cada 1 minuto dedicado ao fortalecimento do autocontrole,
               explorando diferentes abordagens no seu Laboratório Mental.
             </Typography>
           ) : null}
           <Typography
             variant="body2"
-            sx={{ color: "text.secondary", mb: 1 }}
+            sx={{ color: "text.secondary", mb: 1, fontFamily: "Fira Sans" }}
             component="div"
           >
             SORTEIO POR EXECUÇÃO:{" "}

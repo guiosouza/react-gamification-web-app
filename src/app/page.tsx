@@ -2,7 +2,7 @@
 
 export default function Home() {
   return (
-    <main style={{padding: '0 20px'}}>
+    <main style={{ padding: "0 20px", fontFamily: "Fira Sans" }}>
       <h3>Base-Mãe (Seychelles)</h3>
       {/* <Image
         src="/images/mother-base.png"
