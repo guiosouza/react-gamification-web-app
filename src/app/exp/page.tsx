@@ -50,7 +50,7 @@ const options: TaskOption[] = [
   { label: "Todas" },
   { label: "Projeto" },
   { label: "Sono" },
-  // { label: "Grind" },
+  { label: "Grind" },
   { label: "Água" },
   { label: "Exercícios" },
   { label: "Nutrição" },
@@ -145,7 +145,7 @@ export default function Exp() {
 
     switch (taskName) {
       case "Grind":
-        return Math.floor(levelNumber / 44);
+        return Math.floor(levelNumber / 67);
       case "Nutrição":
         return baseMultiplier * 5;
       case "Sem Álcool":
