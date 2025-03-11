@@ -105,86 +105,95 @@ export default function TaskCard({
     }
   }, [shouldRemoveAlerts, handleRemoveAllAlerts, setShouldRemoveAlerts]);
 
+  const backgroundColor = 
+  taskName === "Projeto" ? "#C8A0FF" : 
+  taskName === "Grind" ? "#FF9B61" : 
+  taskName === "Água" ? "#95DBFA" : 
+  taskName === "Exercícios" ? "#B6F36B" : 
+  taskName === "Sem Álcool" ? "#5A5A5A" : 
+  taskName === "Nutrição" ? "#FFCC66" : 
+  taskName === "Sono" ? "#7051DC" : 
+  taskName === "Laboratório Mental" ? "#3BB273" : 
+  "transparent";
+
+const textColor =
+  taskName === "Projeto" ? "#000000" : 
+  taskName === "Grind" ? "#000000" : 
+  taskName === "Água" ? "#000000" : 
+  taskName === "Exercícios" ? "#000000" : 
+  taskName === "Sem Álcool" ? "##ffff" : 
+  taskName === "Nutrição" ? "#000000" : 
+  taskName === "Sono" ? "#000000" : 
+  taskName === "Laboratório Mental" ? "#000000" : 
+  "#000000"; 
+
   return (
     <Card
-      sx={{ marginBottom: 2, border: "1px solid #5A5A5A", borderRadius: "0px" }}
+      sx={{ 
+        marginBottom: 2, 
+        border: "1px solid #5A5A5A", 
+        borderRadius: "0px",
+        backgroundColor: backgroundColor,
+        color: textColor // Aplica a cor de texto principal
+      }}
       elevation={5}
     >
       <CardActionArea onClick={() => onCardClick(taskName)}>
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
+          <Typography gutterBottom variant="h5" component="div" sx={{ color: textColor }}>
             {taskName} {taskEmojis[taskName as keyof typeof taskEmojis] || ""}
           </Typography>
-
-          <Divider sx={{ mb: 2 }} />
-          {taskName === "Sem Álcool" ? (
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", mb: 4, fontFamily: "Fira Sans" }}
-            >
+  
+          <Divider sx={{ mb: 2, backgroundColor: textColor }} />
+  
+          {taskName === "Sem Álcool" && (
+            <Typography variant="body2" sx={{ color: textColor, mb: 4, fontFamily: "Fira Sans" }}>
               Ficar sem beber álcool nos dias que costuma beber.
             </Typography>
-          ) : null}
-          {taskName === "Laboratório Mental" ? (
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", mb: 4, fontFamily: "Fira Sans" }}
-            >
+          )}
+  
+          {taskName === "Laboratório Mental" && (
+            <Typography variant="body2" sx={{ color: textColor, mb: 4, fontFamily: "Fira Sans" }}>
               A cada 1 minuto dedicado ao fortalecimento do autocontrole,
               explorando diferentes abordagens no seu Laboratório Mental.
             </Typography>
-          ) : null}
-          <Typography
-            variant="body2"
-            sx={{ color: "text.secondary", mb: 1, fontFamily: "Fira Sans" }}
-            component="div"
-          >
-            SORTEIO POR EXECUÇÃO:{" "}
+          )}
+  
+          <Typography variant="body2" sx={{ color: textColor, mb: 1, fontFamily: "Fira Sans" }} component="div">
+            SORTEIO POR EXECUÇÃO:
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "#FFFF", mb: 1, fontSize: "26px" }}
-          >
+  
+          <Typography variant="body2" sx={{ color: textColor, mb: 1, fontSize: "26px" }}>
             {packs}
           </Typography>
+  
           {drawResults && (
             <>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary", mb: 1, mt: "64px" }}
-                component="div"
-              >
-                Ganhou: {""}
+              <Typography variant="body2" sx={{ color: textColor, mb: 1, mt: "64px" }} component="div">
+                Ganhou:
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ mb: 1, fontSize: "44px", color: "#4caf50" }}
-              >
+  
+              <Typography variant="body2" sx={{ mb: 1, fontSize: "44px", color: "#00000", fontWeight: "bold" }}>
                 {drawResults.wonPacks}
               </Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+  
+              <Typography variant="body2" sx={{ color: textColor }}>
                 Do total sorteado, ganhou: {calculateWinPercentage()}%
               </Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+  
+              <Typography variant="body2" sx={{ color: textColor }}>
                 Total de packs sorteados: {drawResults.packs}
               </Typography>
             </>
           )}
         </CardContent>
       </CardActionArea>
+  
       <div style={{ paddingLeft: "16px" }}>
-        {taskName === "Água" ||
-        taskName === "Nutrição" ||
-        taskName === "Sem Álcool" ||
-        taskName === "Laboratório Mental" ? (
+        {["Água", "Nutrição", "Sem Álcool", "Laboratório Mental"].includes(taskName) && (
           <>
-            {!selectedNow ? (
-              <div
-                style={{
-                  marginTop: "6px",
-                  display: "flex",
-                }}
-              >
+            {!selectedNow && (
+              <div style={{ marginTop: "6px", display: "flex" }}>
                 <IconButton
                   color="success"
                   aria-label="add"
@@ -199,6 +208,7 @@ export default function TaskCard({
                 >
                   <Add />
                 </IconButton>
+  
                 <IconButton
                   color="error"
                   size="small"
@@ -215,10 +225,8 @@ export default function TaskCard({
                   <Remove />
                 </IconButton>
               </div>
-            ) : (
-              ""
             )}
-
+  
             <div style={{ padding: "16px 16px 16px 0" }}>
               {alerts.map((alert, index) => (
                 <Chip
@@ -227,14 +235,15 @@ export default function TaskCard({
                   sx={{
                     marginTop: 1,
                     borderRadius: "0px",
-                    color: "#fff",
+                    color: "#ffff",
+                    backgroundColor: "rgba(0, 0, 0, 0.4)", // Leve transparência para contraste
                     width: "100%",
                   }}
                 />
               ))}
             </div>
           </>
-        ) : null}
+        )}
       </div>
     </Card>
   );

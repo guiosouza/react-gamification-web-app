@@ -128,7 +128,7 @@ function LevelCard({
           marginBottom: 2,
           marginTop: 2,
           borderRadius: "0px",
-          backgroundColor: "#5C7047",
+          backgroundColor: "#FDDE67",
           color: "#000",
           fontWeight: 700,
         }}
@@ -142,7 +142,7 @@ function LevelCard({
         />
         <CardContent>
           <div>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography gutterBottom variant="h5" component="div" fontWeight={700}>
               LV {level}
             </Typography>
             <Typography variant="body2" sx={{ color: "#000", }}>

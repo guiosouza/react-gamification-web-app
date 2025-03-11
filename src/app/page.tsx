@@ -4,12 +4,6 @@ export default function Home() {
   return (
     <main style={{ padding: "0 20px", fontFamily: "Fira Sans" }}>
       <h3>Base-Mãe (Seychelles)</h3>
-      {/* <Image
-        src="/images/mother-base.png"
-        alt="Base-Mãe"
-        width={500}
-        height={300}
-      /> */}
       <p>
         <em>
           Nossa nova Base-Mãe. Não sei quanto tempo vai levar, mas vou torná-la
