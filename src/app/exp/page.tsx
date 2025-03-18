@@ -53,6 +53,7 @@ const options: TaskOption[] = [
   { label: "Grind" },
   { label: "Água" },
   { label: "Exercícios" },
+  { label: "Exercícios (focado)" },
   { label: "Nutrição" },
   { label: "Sem Álcool" },
   // { label: "Laboratório Mental" },
@@ -152,6 +153,8 @@ export default function Exp() {
         return baseMultiplier * 8;
       case "Exercícios":
         return baseMultiplier;
+      case "Exercícios (focado)":
+        return Math.round(baseMultiplier * 1.5);
       case "Água":
         return baseMultiplierForWater;
       case "Laboratório Mental":
@@ -196,7 +199,11 @@ export default function Exp() {
       return basePacks * (taskInput.quantity || 0);
     }
 
-    if (selectedTask.label === "Exercícios" || selectedTask.label === "Grind") {
+    if (
+      selectedTask.label === "Exercícios" ||
+      selectedTask.label === "Grind" ||
+      selectedTask.label === "Exercícios (focado)"
+    ) {
       if (!taskInput.time) return 0;
       const [hours, minutes] = taskInput.time.split(":").map(Number);
       const totalMinutes = hours * 60 + minutes;
@@ -249,8 +256,6 @@ export default function Exp() {
       wonDraws: wonPacks,
     };
 
-    
-
     // Atualizar o histórico no localStorage
     updateDrawHistory(newDrawResult);
 
@@ -271,15 +276,13 @@ export default function Exp() {
     // Adiciona um ID único ao novo sorteio
     const newDrawWithId = { ...newDraw, id: Date.now().toString() };
 
-    
-
     const storedHistory = localStorage.getItem(historyKey);
     const drawHistory: Draw[] = storedHistory ? JSON.parse(storedHistory) : [];
 
     // Adiciona o novo sorteio ao histórico
     drawHistory.push(newDrawWithId);
 
-    console.log("drawHistory:", drawHistory);
+    // console.log("drawHistory:", drawHistory);
 
     // Atualiza o localStorage com o histórico recente
     localStorage.setItem(historyKey, JSON.stringify(drawHistory));
@@ -338,7 +341,11 @@ export default function Exp() {
       );
     }
 
-    if (selectedTask.label === "Exercícios" || selectedTask.label === "Grind") {
+    if (
+      selectedTask.label === "Exercícios" ||
+      selectedTask.label === "Grind" ||
+      selectedTask.label === "Exercícios (focado)"
+    ) {
       return (
         <TextField
           type="time"
@@ -347,6 +354,13 @@ export default function Exp() {
           onChange={(e) => setTaskInput({ time: e.target.value })}
           sx={{ width: "100%", marginBottom: "4px" }}
           InputLabelProps={{ shrink: true }}
+          InputProps={{
+            sx: {
+              "& input::-webkit-calendar-picker-indicator": {
+                filter: "invert(1)", // Inverte as cores, tornando preto → branco
+              },
+            },
+          }}
         />
       );
     }
@@ -377,7 +391,14 @@ export default function Exp() {
           onExpChange={(newExp: number) => setExp(newExp)}
         />
       </div>
-      <Box sx={{ backgroundColor: "#2D2D2D", padding: "16px",  borderRadius: "0px", marginBottom: "96px" }}>
+      <Box
+        sx={{
+          backgroundColor: "#2D2D2D",
+          padding: "16px",
+          borderRadius: "0px",
+          marginBottom: "96px",
+        }}
+      >
         <div className="generic-container">
           <TextField
             id="outlined-number"
@@ -399,7 +420,11 @@ export default function Exp() {
               setDrawResults(null);
               checkIfThereIsQuantityStored(newValue);
             }}
-            sx={{ width: "100%", marginBottom: "24px", backgroundColor: "-moz-initial"  }}
+            sx={{
+              width: "100%",
+              marginBottom: "24px",
+              backgroundColor: "-moz-initial",
+            }}
             renderInput={(params) => <TextField {...params} label="Task" />}
           />
         </div>
@@ -424,7 +449,13 @@ export default function Exp() {
         <Button
           variant="contained"
           onClick={drawPacks}
-          sx={{ width: "100%", marginBottom: "64px", height: "54px", marginTop: "8px", backgroundColor: "#A6E765" }}
+          sx={{
+            width: "100%",
+            marginBottom: "64px",
+            height: "54px",
+            marginTop: "8px",
+            backgroundColor: "#A6E765",
+          }}
         >
           Sortear
         </Button>

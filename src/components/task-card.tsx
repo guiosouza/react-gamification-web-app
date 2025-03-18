@@ -36,6 +36,7 @@ export default function TaskCard({
     Água: "💧",
     Nutrição: "🍎",
     Exercícios: "🏋️",
+    "Exercícios (focado)": "🏋️🔥",
     Sono: "😴",
     Projeto: "🍆",
     Grind: "🔥",
@@ -106,10 +107,11 @@ export default function TaskCard({
   }, [shouldRemoveAlerts, handleRemoveAllAlerts, setShouldRemoveAlerts]);
 
   const backgroundColor = 
-  taskName === "Projeto" ? "#C8A0FF" : 
+  taskName === "Projeto" ? "#ffff" : 
   taskName === "Grind" ? "#FF9B61" : 
   taskName === "Água" ? "#95DBFA" : 
-  taskName === "Exercícios" ? "#B6F36B" : 
+  taskName === "Exercícios" ? "#B6F36B" :
+  taskName === "Exercícios (focado)" ? "#FF4C4C" : 
   taskName === "Sem Álcool" ? "#5A5A5A" : 
   taskName === "Nutrição" ? "#FFCC66" : 
   taskName === "Sono" ? "#7051DC" : 

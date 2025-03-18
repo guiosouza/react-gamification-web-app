@@ -25,6 +25,7 @@ function Statistics() {
     Água: "💧",
     Nutrição: "🍎",
     Exercícios: "🏋️",
+    "Exercícios (focado)": "🏋️🔥",
     Sono: "😴",
     Projeto: "🍆",
     Grind: "🔥",

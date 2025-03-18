@@ -41,35 +41,35 @@ const urlImages: levelImage[] = [
   { level: 1, path: "/images/novice.png", name: "Novice" },
   { level: 3944, path: "/images/novice-2.png", name: "Novice 2" },
   { level: 7888, path: "/images/diamond_dog.png", name: "Diamond Dog" },
-  { level: 15700, path: "/images/gnome_soldier.png", name: "Gnome Soldier" },
+  { level: 25000, path: "/images/gnome_soldier.png", name: "Gnome Soldier" },
   {
-    level: 27122,
+    level: 47122,
     path: "/images/outer_heaven_soldier.png",
     name: "Outer Heaven Soldier",
   },
   {
-    level: 39000,
+    level: 89000,
     path: "/images/militaires_sans_frontieres.png",
     name: "Militaires Sans Frontières",
   },
-  { level: 58000, path: "/images/fox.png", name: "Fox" },
+  { level: 118000, path: "/images/fox.png", name: "Fox" },
   {
-    level: 72000,
+    level: 177000,
     path: "/images/desperado_enforcement_llc.png",
     name: "Desperado Enforcement LLC",
   },
   {
-    level: 92000,
+    level: 251111,
     path: "/images/les_enfants_terribles.png",
     name: "Les Enfants Terribles",
   },
   {
-    level: 112000,
+    level: 300000,
     path: "/images/fox_hound_special_forces.png",
     name: "FOX HOUND Special Forces",
   },
-  { level: 378196, path: "/images/big_boss.png", name: "BIG BOSS" },
-  { level: 1378196 , path: "/images/the_boss.png", name: "The Boss" },
+  { level: 814549, path: "/images/big_boss.png", name: "BIG BOSS" },
+  { level: 1378196, path: "/images/the_boss.png", name: "The Boss" },
 ];
 
 function getLevelData(levelStr: string) {
@@ -142,10 +142,15 @@ function LevelCard({
         />
         <CardContent>
           <div>
-            <Typography gutterBottom variant="h5" component="div" fontWeight={700}>
+            <Typography
+              gutterBottom
+              variant="h5"
+              component="div"
+              fontWeight={700}
+            >
               LV {level}
             </Typography>
-            <Typography variant="body2" sx={{ color: "#000", }}>
+            <Typography variant="body2" sx={{ color: "#000" }}>
               {levelData.name.toUpperCase()}
             </Typography>
           </div>
@@ -170,7 +175,7 @@ function LevelCard({
           <div style={{ marginBottom: "12px", marginTop: "12px" }}>
             {editingExp ? (
               <>
-              {/* Quero o dado dentro do input na cor pretas */}
+                {/* Quero o dado dentro do input na cor pretas */}
                 <TextField
                   label="Atualizar EXP"
                   type="number"
@@ -179,12 +184,20 @@ function LevelCard({
                   fullWidth
                   sx={{ marginBottom: 2, color: "#000" }}
                 />
-                <Button variant="contained" onClick={handleExpUpdate} sx={{ color: "#fff", backgroundColor: "#000" }}>
+                <Button
+                  variant="contained"
+                  onClick={handleExpUpdate}
+                  sx={{ color: "#fff", backgroundColor: "#000" }}
+                >
                   Salvar
                 </Button>
               </>
             ) : (
-              <Button variant="outlined" onClick={() => setEditingExp(true)} sx={{ color: "#000", borderColor: "#000" }}>
+              <Button
+                variant="outlined"
+                onClick={() => setEditingExp(true)}
+                sx={{ color: "#000", borderColor: "#000" }}
+              >
                 Editar EXP
               </Button>
             )}
@@ -192,9 +205,17 @@ function LevelCard({
 
           <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
           {levelData.nextLevel && (
-            <Typography variant="body2" sx={{ color: "#000" }}>
-              Próximo: {levelData.nextName}
-            </Typography>
+            <>
+              <Typography
+                variant="body2"
+                sx={{ color: "#000", marginBottom: 1 }}
+              >
+                Próxima Patente: {levelData.nextName}
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#000" }}>
+                Nível necessário: {levelData.nextLevel}
+              </Typography>
+            </>
           )}
         </CardContent>
       </Card>
