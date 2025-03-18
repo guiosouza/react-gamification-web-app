@@ -165,7 +165,7 @@ export default function Exp() {
       }
       case "Sono": {
         const daysPassed = calculateDaysSinceStart(startDate);
-        return daysPassed * 1200;
+        return daysPassed * 1031;
       }
       default:
         return 0;
