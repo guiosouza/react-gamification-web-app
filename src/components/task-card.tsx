@@ -41,6 +41,7 @@ export default function TaskCard({
     Projeto: "🍆",
     Grind: "🔥",
     "Laboratório Mental": "🧪",
+    Caminhada: "👣"
   };
 
   React.useEffect(() => {
@@ -116,6 +117,7 @@ export default function TaskCard({
   taskName === "Nutrição" ? "#FFCC66" : 
   taskName === "Sono" ? "#7051DC" : 
   taskName === "Laboratório Mental" ? "#3BB273" : 
+  taskName === "Caminhada" ? "#000" :
   "transparent";
 
 const textColor =
@@ -124,6 +126,7 @@ const textColor =
   taskName === "Água" ? "#000000" : 
   taskName === "Exercícios" ? "#000000" : 
   taskName === "Sem Álcool" ? "##ffff" : 
+  taskName === "Caminhada" ? "##ffff" : 
   taskName === "Nutrição" ? "#000000" : 
   taskName === "Sono" ? "#000000" : 
   taskName === "Laboratório Mental" ? "#000000" : 

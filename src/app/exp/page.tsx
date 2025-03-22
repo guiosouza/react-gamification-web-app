@@ -56,6 +56,7 @@ const options: TaskOption[] = [
   { label: "Exercícios (focado)" },
   { label: "Nutrição" },
   { label: "Sem Álcool" },
+  { label: "Caminhada" },
   // { label: "Laboratório Mental" },
 ];
 
@@ -155,6 +156,8 @@ export default function Exp() {
         return baseMultiplier;
       case "Exercícios (focado)":
         return Math.round(baseMultiplier * 1.5);
+      case "Caminhada":
+        return Math.round(baseMultiplier * 0.6);
       case "Água":
         return baseMultiplierForWater;
       case "Laboratório Mental":
@@ -202,7 +205,8 @@ export default function Exp() {
     if (
       selectedTask.label === "Exercícios" ||
       selectedTask.label === "Grind" ||
-      selectedTask.label === "Exercícios (focado)"
+      selectedTask.label === "Exercícios (focado)" ||
+      selectedTask.label === "Caminhada"
     ) {
       if (!taskInput.time) return 0;
       const [hours, minutes] = taskInput.time.split(":").map(Number);
@@ -344,7 +348,8 @@ export default function Exp() {
     if (
       selectedTask.label === "Exercícios" ||
       selectedTask.label === "Grind" ||
-      selectedTask.label === "Exercícios (focado)"
+      selectedTask.label === "Exercícios (focado)" ||
+      selectedTask.label === "Caminhada"
     ) {
       return (
         <TextField
