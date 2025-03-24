@@ -30,6 +30,7 @@ function Statistics() {
     Projeto: "🍆",
     Grind: "🔥",
     "Laboratório Mental": "🧪",
+    Caminhada: "👣"
   };
 
 
