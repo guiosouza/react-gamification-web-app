@@ -44,7 +44,7 @@ function Statistics() {
       ? JSON.parse(storedHistory)
       : [];
     setHistory(parsedHistory);
-    
+
     // Expandir automaticamente o dia mais recente
     if (parsedHistory.length > 0) {
       const mostRecentDay = extractDayFromDate(parsedHistory[0].date);
@@ -60,7 +60,7 @@ function Statistics() {
   // Agrupa os dados por dia
   const groupByDay = () => {
     const grouped: Record<string, Draw[]> = {};
-    
+
     history.forEach((entry) => {
       const day = extractDayFromDate(entry.date);
       if (!grouped[day]) {
@@ -68,7 +68,7 @@ function Statistics() {
       }
       grouped[day].push(entry);
     });
-    
+
     return grouped;
   };
 
@@ -91,9 +91,12 @@ function Statistics() {
   const groupedHistory = groupByDay();
   const days = Object.keys(groupedHistory).sort((a, b) => {
     // Ordena por data (mais recente primeiro)
-    const [dayA, monthA, yearA] = a.split('/').map(Number);
-    const [dayB, monthB, yearB] = b.split('/').map(Number);
-    return new Date(yearB, monthB - 1, dayB).getTime() - new Date(yearA, monthA - 1, dayA).getTime();
+    const [dayA, monthA, yearA] = a.split("/").map(Number);
+    const [dayB, monthB, yearB] = b.split("/").map(Number);
+    return (
+      new Date(yearB, monthB - 1, dayB).getTime() -
+      new Date(yearA, monthA - 1, dayA).getTime()
+    );
   });
 
   return (
@@ -117,13 +120,19 @@ function Statistics() {
                 id={`${day}-header`}
               >
                 <Typography variant="h6">Dia: {day}</Typography>
-                <Typography variant="body2" sx={{ ml: 2, color: 'text.secondary' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ ml: 2, color: "text.secondary" }}
+                >
                   ({groupedHistory[day].length} registros)
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 {groupedHistory[day].map((entry, index) => (
-                  <Card key={entry.id} sx={{ mb: 2, border: "1px solid #5A5A5A" }}>
+                  <Card
+                    key={entry.id}
+                    sx={{ mb: 2, border: "1px solid #5A5A5A" }}
+                  >
                     <CardContent>
                       <Typography gutterBottom variant="body1" component="div">
                         Hora: {entry.date.split(" ")[1]}
@@ -163,11 +172,22 @@ function Statistics() {
                           fontSize: "24px",
                         }}
                       >
-                        {taskEmojis[entry.task as keyof typeof taskEmojis] || ""}
+                        {taskEmojis[entry.task as keyof typeof taskEmojis] ||
+                          ""}
                       </Typography>
-                      <Typography sx={{ mt: 4, fontFamily: 'Fira Sans' }}>
+                      <Typography sx={{ mt: 4, fontFamily: "Fira Sans" }}>
                         {entry.task === "Água" &&
-                          `Este é o ${index + 1}° pack de água tomado`}
+                          (() => {
+                            // Filtra apenas as tarefas de água que ocorreram antes (incluindo a atual)
+                            const waterEntries = groupedHistory[day]
+                              .slice(0, index + 1)
+                              .filter((e) => e.task === "Água");
+
+                            // Obtém o número do pack
+                            const packNumber = waterEntries.length;
+
+                            return `Este é o ${packNumber}° pack de água tomado`;
+                          })()}
                       </Typography>
                     </CardContent>
                   </Card>
