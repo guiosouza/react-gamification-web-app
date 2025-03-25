@@ -122,7 +122,7 @@ function Statistics() {
                 <Typography variant="h6">Dia: {day}</Typography>
                 <Typography
                   variant="body2"
-                  sx={{ ml: 2, color: "text.secondary" }}
+                  sx={{ ml: 2, color: "text.secondary", fontFamily: 'Fira Sans' }}
                 >
                   ({groupedHistory[day].length} registros)
                 </Typography>
