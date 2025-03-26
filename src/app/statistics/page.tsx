@@ -21,9 +21,16 @@ interface Draw {
   wonDraws: number;
 }
 
+interface GroupedHistory {
+  [key: string]: number;
+}
+
 function Statistics() {
   const [history, setHistory] = useState<Draw[]>([]);
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
+  const [expPercentageIncrease, setExpPercentageIncrease] = useState<
+    string | null
+  >(null);
 
   const taskEmojis = {
     "Sem Álcool": "🚫",
@@ -37,6 +44,42 @@ function Statistics() {
     "Laboratório Mental": "🧪",
     Caminhada: "👣",
   };
+
+  const calculateExpPercentageIncrease = (history: Draw[]): string | null => {
+    if (history.length === 0) return null;
+
+    const groupedHistory = history.reduce<GroupedHistory>((acc, entry) => {
+      const day = entry.date.split(" ")[0];
+      acc[day] = (acc[day] || 0) + entry.wonDraws;
+      return acc;
+    }, {});
+
+    const days = Object.keys(groupedHistory).sort((a, b) => {
+      const [dayA, monthA, yearA] = a.split("/").map(Number);
+      const [dayB, monthB, yearB] = b.split("/").map(Number);
+      return (
+        new Date(yearB, monthB - 1, dayB).getTime() -
+        new Date(yearA, monthA - 1, dayA).getTime()
+      );
+    });
+
+    if (days.length < 2) return null; // Sem comparações possíveis
+
+    const today = days[0];
+    const yesterday = days[1];
+
+    const todayExp = groupedHistory[today] || 0;
+    const yesterdayExp = groupedHistory[yesterday] || 0;
+
+    if (yesterdayExp === 0) return null; // Evita divisão por zero
+
+    const percentageIncrease = ((todayExp - yesterdayExp) / yesterdayExp) * 100;
+    return percentageIncrease.toFixed(2);
+  };
+
+  useEffect(() => {
+    setExpPercentageIncrease(calculateExpPercentageIncrease(history));
+  }, [history]);
 
   useEffect(() => {
     const storedHistory = localStorage.getItem("drawHistory");
@@ -102,6 +145,30 @@ function Statistics() {
   return (
     <div>
       <div className="generic-container">
+        {/* Adicione este bloco logo no início do container */}
+        {expPercentageIncrease !== null && (
+          <Card sx={{ mb: 2, backgroundColor: "#f5f5f5" }}>
+            <CardContent>
+              <Typography
+                variant="h6"
+                sx={{
+                  color:
+                    Number(expPercentageIncrease) >= 0 ? "#4caf50" : "#f44336",
+                  fontFamily: "Fira Sans",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                }}
+              >
+                {Number(expPercentageIncrease) >= 0
+                  ? `🔥 EXP até agora é ${expPercentageIncrease}% maior (entre ${days[0]} e ${days[1]})`
+                  : `📉 EXP até agora é ${Math.abs(Number(expPercentageIncrease))}% menor (entre ${
+                      days[0]
+                    } e ${days[1]})`}
+              </Typography>
+            </CardContent>
+          </Card>
+        )}
+
         {history.length === 0 ? (
           <Typography variant="body1" color="textSecondary">
             Não há dados para exibir.
@@ -122,7 +189,11 @@ function Statistics() {
                 <Typography variant="h6">Dia: {day}</Typography>
                 <Typography
                   variant="body2"
-                  sx={{ ml: 2, color: "text.secondary", fontFamily: 'Fira Sans' }}
+                  sx={{
+                    ml: 2,
+                    color: "text.secondary",
+                    fontFamily: "Fira Sans",
+                  }}
                 >
                   ({groupedHistory[day].length} registros)
                 </Typography>
