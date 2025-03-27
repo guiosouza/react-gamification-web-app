@@ -41,7 +41,7 @@ export default function TaskCard({
     Projeto: "🍆",
     Grind: "🔥",
     "Laboratório Mental": "🧪",
-    Caminhada: "👣"
+    Caminhada: "👣",
   };
 
   React.useEffect(() => {
@@ -107,85 +107,139 @@ export default function TaskCard({
     }
   }, [shouldRemoveAlerts, handleRemoveAllAlerts, setShouldRemoveAlerts]);
 
-  const backgroundColor = 
-  taskName === "Projeto" ? "#ffff" : 
-  taskName === "Grind" ? "#FF9B61" : 
-  taskName === "Água" ? "#95DBFA" : 
-  taskName === "Exercícios" ? "#B6F36B" :
-  taskName === "Exercícios (focado)" ? "#FF4C4C" : 
-  taskName === "Sem Álcool" ? "#5A5A5A" : 
-  taskName === "Nutrição" ? "#FFCC66" : 
-  taskName === "Sono" ? "#7051DC" : 
-  taskName === "Laboratório Mental" ? "#3BB273" : 
-  taskName === "Caminhada" ? "#000" :
-  "transparent";
+  const backgroundColor =
+    taskName === "Projeto"
+      ? "#ffff"
+      : taskName === "Grind"
+      ? "#FF9B61"
+      : taskName === "Água"
+      ? "#95DBFA"
+      : taskName === "Exercícios"
+      ? "#B6F36B"
+      : taskName === "Exercícios (focado)"
+      ? "#FF4C4C"
+      : taskName === "Sem Álcool"
+      ? "#282828"
+      : taskName === "Nutrição"
+      ? "#FFCC66"
+      : taskName === "Sono"
+      ? "#7051DC"
+      : taskName === "Laboratório Mental"
+      ? "#3BB273"
+      : taskName === "Caminhada"
+      ? "#000"
+      : "transparent";
 
-const textColor =
-  taskName === "Projeto" ? "#000000" : 
-  taskName === "Grind" ? "#000000" : 
-  taskName === "Água" ? "#000000" : 
-  taskName === "Exercícios" ? "#000000" : 
-  taskName === "Sem Álcool" ? "##ffff" : 
-  taskName === "Caminhada" ? "##ffff" : 
-  taskName === "Nutrição" ? "#000000" : 
-  taskName === "Sono" ? "#000000" : 
-  taskName === "Laboratório Mental" ? "#000000" : 
-  "#000000"; 
+  const textColor =
+    taskName === "Projeto"
+      ? "#000000"
+      : taskName === "Grind"
+      ? "#000000"
+      : taskName === "Água"
+      ? "#000000"
+      : taskName === "Exercícios"
+      ? "#000000"
+      : taskName === "Sem Álcool"
+      ? "##ffff"
+      : taskName === "Caminhada"
+      ? "##ffff"
+      : taskName === "Nutrição"
+      ? "#000000"
+      : taskName === "Sono"
+      ? "#000000"
+      : taskName === "Laboratório Mental"
+      ? "#000000"
+      : "#000000";
 
   return (
     <Card
-      sx={{ 
-        marginBottom: 2, 
-        border: "1px solid #5A5A5A", 
+      sx={{
+        marginBottom: 2,
+        border: "1px solid #5A5A5A",
         borderRadius: "0px",
         backgroundColor: backgroundColor,
-        color: textColor // Aplica a cor de texto principal
+        color: textColor, // Aplica a cor de texto principal
       }}
       elevation={5}
     >
       <CardActionArea onClick={() => onCardClick(taskName)}>
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div" sx={{ color: textColor }}>
+          <Typography
+            gutterBottom
+            variant="h5"
+            component="div"
+            sx={{ color: textColor, fontSize: "1.25rem" }}
+          >
             {taskName} {taskEmojis[taskName as keyof typeof taskEmojis] || ""}
           </Typography>
-  
+
           <Divider sx={{ mb: 2, backgroundColor: textColor }} />
-  
+
           {taskName === "Sem Álcool" && (
-            <Typography variant="body2" sx={{ color: textColor, mb: 4, fontFamily: "Fira Sans" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: textColor, mb: 4, fontFamily: "Fira Sans" }}
+            >
               Ficar sem beber álcool nos dias que costuma beber.
             </Typography>
           )}
-  
+
           {taskName === "Laboratório Mental" && (
-            <Typography variant="body2" sx={{ color: textColor, mb: 4, fontFamily: "Fira Sans" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: textColor, mb: 4, fontFamily: "Fira Sans" }}
+            >
               A cada 1 minuto dedicado ao fortalecimento do autocontrole,
               explorando diferentes abordagens no seu Laboratório Mental.
             </Typography>
           )}
-  
-          <Typography variant="body2" sx={{ color: textColor, mb: 1, fontFamily: "Fira Sans" }} component="div">
+
+          <Typography
+            variant="body2"
+            sx={{
+              color: textColor,
+              mb: 1,
+              fontFamily: "Fira Sans",
+              fontSize: "13px",
+            }}
+            component="div"
+          >
             SORTEIO POR EXECUÇÃO:
           </Typography>
-  
-          <Typography variant="body2" sx={{ color: textColor, mb: 1, fontSize: "26px" }}>
+
+          <Typography
+            variant="body2"
+            sx={{ color: textColor, mb: 1, fontSize: "20px" }}
+          >
             {packs}
           </Typography>
-  
+
           {drawResults && (
             <>
-              <Typography variant="body2" sx={{ color: textColor, mb: 1, mt: "64px" }} component="div">
+              <Typography
+                variant="body2"
+                sx={{ color: textColor, mb: 1, mt: "64px" }}
+                component="div"
+              >
                 Ganhou:
               </Typography>
-  
-              <Typography variant="body2" sx={{ mb: 1, fontSize: "44px", color: "#00000", fontWeight: "bold" }}>
+
+              <Typography
+                variant="body2"
+                sx={{
+                  mb: 1,
+                  fontSize: "44px",
+                  color: "#00000",
+                  fontWeight: "bold",
+                }}
+              >
                 {drawResults.wonPacks}
               </Typography>
-  
+
               <Typography variant="body2" sx={{ color: textColor }}>
                 Do total sorteado, ganhou: {calculateWinPercentage()}%
               </Typography>
-  
+
               <Typography variant="body2" sx={{ color: textColor }}>
                 Total de packs sorteados: {drawResults.packs}
               </Typography>
@@ -193,46 +247,55 @@ const textColor =
           )}
         </CardContent>
       </CardActionArea>
-  
-      <div style={{ paddingLeft: "16px" }}>
-        {["Água", "Nutrição", "Sem Álcool", "Laboratório Mental"].includes(taskName) && (
+
+      <div style={{ padding: "0px 16px 0px 16px" }}>
+        {["Água", "Nutrição", "Sem Álcool", "Laboratório Mental"].includes(
+          taskName
+        ) && (
           <>
             {!selectedNow && (
-              <div style={{ marginTop: "6px", display: "flex" }}>
-                <IconButton
-                  color="success"
-                  aria-label="add"
-                  size="small"
-                  onClick={() => handleAddTask(taskName)}
-                  sx={{
-                    border: "1px solid #4caf50",
-                    backgroundColor: "#4caf50",
-                    color: "#fff",
-                    "&:hover": { backgroundColor: "#388e3c" },
-                  }}
-                >
-                  <Add />
-                </IconButton>
-  
-                <IconButton
-                  color="error"
-                  size="small"
-                  aria-label="remove"
-                  onClick={handleRemoveLastAlert}
-                  sx={{
-                    border: "1px solid #f44336",
-                    backgroundColor: "#f44336",
-                    color: "#fff",
-                    "&:hover": { backgroundColor: "#951309" },
-                    ml: 4,
-                  }}
-                >
-                  <Remove />
-                </IconButton>
+              <div style={{ marginTop: "20px", display: "flex", justifyContent: "space-between" }}>
+                <div style={{ width: "100%"}}>
+                  <IconButton
+                    color="success"
+                    aria-label="add"
+                    size="small"
+                    onClick={() => handleAddTask(taskName)}
+                    sx={{
+                      border: "1px solid #4caf50",
+                      borderRadius: "0px",
+                      backgroundColor: "#4caf50",
+                      width: "95%",
+                      color: "#fff",
+                      "&:hover": { backgroundColor: "#388e3c" },
+                    }}
+                  >
+                    <Add />
+                  </IconButton>
+                </div>
+
+                <div style={{ width: "100%"}}>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    aria-label="remove"
+                    onClick={handleRemoveLastAlert}
+                    sx={{
+                      border: "1px solid #f44336",
+                      borderRadius: "0px",
+                      backgroundColor: "#f44336",
+                      color: "#fff",
+                      width: "95%",
+                      "&:hover": { backgroundColor: "#951309" },
+                    }}
+                  >
+                    <Remove />
+                  </IconButton>
+                </div>
               </div>
             )}
-  
-            <div style={{ padding: "16px 16px 16px 0" }}>
+
+            <div style={{ padding: "16px 0px 16px 0px" }}>
               {alerts.map((alert, index) => (
                 <Chip
                   key={index}
@@ -242,7 +305,7 @@ const textColor =
                     borderRadius: "0px",
                     color: "#ffff",
                     backgroundColor: "rgba(0, 0, 0, 0.4)", // Leve transparência para contraste
-                    width: "100%",
+                    width: "97.5%",
                   }}
                 />
               ))}
