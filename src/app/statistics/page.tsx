@@ -10,7 +10,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface Draw {
@@ -21,16 +21,53 @@ interface Draw {
   wonDraws: number;
 }
 
+interface ExpComparison {
+  message: string;
+  isTop: boolean;
+}
+
 interface GroupedHistory {
   [key: string]: number;
 }
 
 function Statistics() {
+  const getCurrentDateFormatted = () => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDateString = (dateStr: string) => {
+    const [day, month, year] = dateStr.split("/");
+    const monthNames = [
+      "janeiro",
+      "fevereiro",
+      "março",
+      "abril",
+      "maio",
+      "junho",
+      "julho",
+      "agosto",
+      "setembro",
+      "outubro",
+      "novembro",
+      "dezembro",
+    ];
+    const monthIndex = parseInt(month, 10) - 1;
+    return `${day} de ${monthNames[monthIndex]} de ${year}`;
+  };
+
   const [history, setHistory] = useState<Draw[]>([]);
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
-  const [expPercentageIncrease, setExpPercentageIncrease] = useState<
-    string | null
-  >(null);
+  // const [expPercentageIncrease, setExpPercentageIncrease] = useState<
+  //   string | null
+  // >(null);
+
+  const [expComparison, setExpComparison] = useState<ExpComparison | null>(
+    null
+  );
 
   const taskEmojis = {
     "Sem Álcool": "🚫",
@@ -45,41 +82,56 @@ function Statistics() {
     Caminhada: "👣",
   };
 
-  const calculateExpPercentageIncrease = (history: Draw[]): string | null => {
+  const calculateExpComparison = useCallback((history: Draw[]): ExpComparison | null => {
     if (history.length === 0) return null;
-
+  
     const groupedHistory = history.reduce<GroupedHistory>((acc, entry) => {
       const day = entry.date.split(" ")[0];
       acc[day] = (acc[day] || 0) + entry.wonDraws;
       return acc;
     }, {});
+  
+    const sortedDays = Object.entries(groupedHistory)
+      .map(([date, total]) => ({ date, total }))
+      .sort((a, b) => b.total - a.total);
+  
+    if (sortedDays.length === 0) return null;
+  
+    const todayStr = getCurrentDateFormatted();
+    const todayEntry = sortedDays.find((entry) => entry.date === todayStr);
+  
+    if (!todayEntry) return null;
+  
+    const todayTotal = todayEntry.total;
+    const formattedToday = formatDateString(todayStr);
+    const topDay = sortedDays[0];
+  
+    if (topDay.date === todayStr) {
+      if (sortedDays.length < 2) return null;
+  
+      const secondDay = sortedDays[1];
+      const percentage = ((todayTotal - secondDay.total) / secondDay.total) * 100;
+      const formattedSecondDay = formatDateString(secondDay.date);
+  
+      return {
+        message: `O dia atual (${formattedToday}) é o dia que mais ganhou EXP. Vencendo o segundo lugar (${formattedSecondDay}) em ${percentage.toFixed(2)}%`,
+        isTop: true,
+      };
+    } else {
+      const percentage = ((todayTotal - topDay.total) / topDay.total) * 100;
+      const formattedTopDay = formatDateString(topDay.date);
+  
+      return {
+        message: `O dia atual (${formattedToday}) está perdendo em ${Math.abs(percentage).toFixed(2)}% para o dia com mais EXP até agora (${formattedTopDay})`,
+        isTop: false,
+      };
+    }
+  }, []); 
 
-    const days = Object.keys(groupedHistory).sort((a, b) => {
-      const [dayA, monthA, yearA] = a.split("/").map(Number);
-      const [dayB, monthB, yearB] = b.split("/").map(Number);
-      return (
-        new Date(yearB, monthB - 1, dayB).getTime() -
-        new Date(yearA, monthA - 1, dayA).getTime()
-      );
-    });
-
-    if (days.length < 2) return null; // Sem comparações possíveis
-
-    const today = days[0];
-    const yesterday = days[1];
-
-    const todayExp = groupedHistory[today] || 0;
-    const yesterdayExp = groupedHistory[yesterday] || 0;
-
-    if (yesterdayExp === 0) return null; // Evita divisão por zero
-
-    const percentageIncrease = ((todayExp - yesterdayExp) / yesterdayExp) * 100;
-    return percentageIncrease.toFixed(2);
-  };
 
   useEffect(() => {
-    setExpPercentageIncrease(calculateExpPercentageIncrease(history));
-  }, [history]);
+    setExpComparison(calculateExpComparison(history));
+  }, [history, calculateExpComparison]);
 
   useEffect(() => {
     const storedHistory = localStorage.getItem("drawHistory");
@@ -88,9 +140,22 @@ function Statistics() {
       : [];
     setHistory(parsedHistory);
 
-    // Expandir automaticamente o dia mais recente
     if (parsedHistory.length > 0) {
-      const mostRecentDay = extractDayFromDate(parsedHistory[0].date);
+      const today = new Date();
+      const todayStr = `${String(today.getDate()).padStart(2, "0")}/${String(
+        today.getMonth() + 1
+      ).padStart(2, "0")}/${today.getFullYear()}`;
+
+      // Verifica se há registros do dia atual
+      const hasToday = parsedHistory.some(
+        (entry) => extractDayFromDate(entry.date) === todayStr
+      );
+
+      // Se houver registros do dia atual, expandi-lo, senão pegar o mais recente
+      const mostRecentDay = hasToday
+        ? todayStr
+        : extractDayFromDate(parsedHistory[0].date);
+
       setExpandedDay(mostRecentDay);
     }
   }, []);
@@ -145,25 +210,19 @@ function Statistics() {
   return (
     <div>
       <div className="generic-container">
-        {/* Adicione este bloco logo no início do container */}
-        {expPercentageIncrease !== null && (
+        {expComparison !== null && (
           <Card sx={{ mb: 2, backgroundColor: "#f5f5f5" }}>
             <CardContent>
               <Typography
                 variant="h6"
                 sx={{
-                  color:
-                    Number(expPercentageIncrease) >= 0 ? "#4caf50" : "#f44336",
+                  color: expComparison.isTop ? "#4caf50" : "#f44336",
                   fontFamily: "Fira Sans",
                   fontWeight: "bold",
                   fontSize: "16px",
                 }}
               >
-                {Number(expPercentageIncrease) >= 0
-                  ? `🔥 EXP até agora é ${expPercentageIncrease}% maior (entre ${days[0]} e ${days[1]})`
-                  : `📉 EXP até agora é ${Math.abs(Number(expPercentageIncrease))}% menor (entre ${
-                      days[0]
-                    } e ${days[1]})`}
+                {expComparison.message}
               </Typography>
             </CardContent>
           </Card>
@@ -195,7 +254,7 @@ function Statistics() {
                     fontFamily: "Fira Sans",
                   }}
                 >
-                  ({groupedHistory[day].length} registros)
+                  ({groupedHistory[day].length})
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
