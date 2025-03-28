@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Chip,
   Divider,
   TextField,
   Typography,
@@ -15,7 +16,7 @@ import LinearProgress, {
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: "26px",
-  borderRadius: 5,
+  borderRadius: 0,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[200],
     ...theme.applyStyles("dark", {
@@ -119,6 +120,16 @@ function LevelCard({
     }
   };
 
+  function calculatePercentageBetweenRanks(
+    currentLevel: number,
+    nextLevel: number,
+    userLevel: number
+  ) {
+    const range = nextLevel - currentLevel;
+    const progress = userLevel - currentLevel;
+    return (progress / range) * 100;
+  }
+
   try {
     const levelData = getLevelData(level);
 
@@ -215,6 +226,30 @@ function LevelCard({
               <Typography variant="body2" sx={{ color: "#000" }}>
                 Nível necessário: {levelData.nextLevel}
               </Typography>
+              {/* <Typography variant="body2" sx={{ color: "#000" }}>
+                Percentagem percorrida entre a patente atual e a próxima:{" "}
+                {calculatePercentageBetweenRanks(
+                  levelData.level,
+                  levelData.nextLevel,
+                  parseInt(level)
+                ).toFixed(2)}
+                %
+              </Typography> */}
+              <Chip
+                size="medium"
+                label={`Percorrido: ${calculatePercentageBetweenRanks(
+                  levelData.level,
+                  levelData.nextLevel,
+                  parseInt(level)
+                ).toFixed(3)}%`}
+                sx={{
+                  backgroundColor: "#000",
+                  color: "#fff",
+                  borderRadius: 0,
+                  mt: 2,
+                  fontWeight: 400,
+                }}
+              />
             </>
           )}
         </CardContent>
