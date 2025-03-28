@@ -1,14 +1,15 @@
 import {
+  Box,
   Button,
   Card,
   CardContent,
   CardMedia,
-  Chip,
+  // Chip,
   Divider,
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import LinearProgress, {
   linearProgressClasses,
@@ -17,6 +18,25 @@ import LinearProgress, {
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: "26px",
   borderRadius: 0,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[200],
+    ...theme.applyStyles("dark", {
+      backgroundColor: "#575757",
+    }),
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 0,
+    backgroundColor: "#0000",
+    ...theme.applyStyles("dark", {
+      backgroundColor: "#000",
+    }),
+  },
+}));
+
+const ThinBorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: "10px",
+  borderRadius: 0,
+  marginTop: "8px",
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[200],
     ...theme.applyStyles("dark", {
@@ -91,6 +111,17 @@ function getLevelData(levelStr: string) {
   };
 }
 
+const lightColors = [
+  "#FDDE67", // Amarelo atual
+  "#A5D6A7", // Verde claro
+  "#81D4FA", // Azul claro
+  "#CE93D8", // Roxo claro
+  "#FFAB91", // Laranja claro
+  "#E6EE9C", // Amarelo esverdeado
+  "#80DEEA", // Azul esverdeado claro
+  "#F48FB1", // Rosa claro
+];
+
 function LevelCard({
   level,
   exp,
@@ -104,8 +135,22 @@ function LevelCard({
     return (exp / 500000) * 100;
   };
 
+  const getRandomLightColor = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * lightColors.length);
+    return lightColors[randomIndex];
+  }, []);
+
   const [editingExp, setEditingExp] = useState<boolean>(false);
   const [editedExp, setEditedExp] = useState<number>(0);
+  const [cardColor, setCardColor] = useState(getRandomLightColor());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCardColor(getRandomLightColor());
+    }, 120000); // Muda a cada 120 segundos
+
+    return () => clearInterval(interval);
+  }, [getRandomLightColor]);
 
   useEffect(() => {
     setEditedExp(exp);
@@ -133,13 +178,22 @@ function LevelCard({
   try {
     const levelData = getLevelData(level);
 
+    const percentageToNextRank = calculatePercentageBetweenRanks(
+      levelData.level,
+      levelData.nextLevel || 0,
+      parseInt(level)
+    );
+
+    // const maxLevel = urlImages[urlImages.length - 1].level;
+    // const percentageToMaxLevel = (parseInt(level) / maxLevel) * 100;
+
     return (
       <Card
         sx={{
           marginBottom: 2,
           marginTop: 2,
           borderRadius: "0px",
-          backgroundColor: "#FDDE67",
+          backgroundColor: cardColor,
           color: "#000",
           fontWeight: 700,
         }}
@@ -193,7 +247,26 @@ function LevelCard({
                   value={editedExp}
                   onChange={(e) => setEditedExp(parseInt(e.target.value))}
                   fullWidth
-                  sx={{ marginBottom: 2, color: "#000" }}
+                  sx={{
+                    marginBottom: 2,
+                    "& .MuiInputBase-input": {
+                      color: "#000", // Cor do texto digitado
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#000", // Cor do label
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "#000", // quando não está em foco
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#000", // Cor da borda ao passar o mouse
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#000", // Cor da borda quando em foco
+                      },
+                    },
+                  }}
                 />
                 <Button
                   variant="contained"
@@ -235,7 +308,7 @@ function LevelCard({
                 ).toFixed(2)}
                 %
               </Typography> */}
-              <Chip
+              {/* <Chip
                 size="medium"
                 label={`Percorrido: ${calculatePercentageBetweenRanks(
                   levelData.level,
@@ -249,7 +322,21 @@ function LevelCard({
                   mt: 2,
                   fontWeight: 400,
                 }}
-              />
+              /> */}
+              <Box mt={4}>
+                <Typography variant="body2" sx={{ color: "#000" }}>
+                  Evolução da patente:{" "}
+                  {`${calculatePercentageBetweenRanks(
+                    levelData.level,
+                    levelData.nextLevel,
+                    parseInt(level)
+                  ).toFixed(3)}%`}
+                </Typography>
+                <ThinBorderLinearProgress
+                  variant="determinate"
+                  value={percentageToNextRank}
+                />
+              </Box>
             </>
           )}
         </CardContent>
