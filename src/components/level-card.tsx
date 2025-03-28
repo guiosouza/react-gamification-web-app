@@ -24,7 +24,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     }),
   },
   [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 5,
+    borderRadius: 0,
     backgroundColor: "#0000",
     ...theme.applyStyles("dark", {
       backgroundColor: "#000",
