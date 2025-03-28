@@ -501,7 +501,7 @@ export default function Exp() {
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogTitle>Level Up!</DialogTitle>
         <DialogContent>
-          <p>
+          <p style={{ fontFamily: "Fira Sans" }}>
             Você subiu do nível {previousLevel} para o nível {level}!
           </p>
         </DialogContent>
